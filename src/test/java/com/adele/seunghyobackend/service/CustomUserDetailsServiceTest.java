@@ -6,6 +6,7 @@ import com.adele.seunghyobackend.repository.MemberRepository;
 import com.adele.seunghyobackend.service.impl.CustomUserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,14 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.List;
 import java.util.Optional;
 
+import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringJUnitConfig(TestConfig.class)
+@Tag(UNIT_TEST_TAG)
 public class CustomUserDetailsServiceTest {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsServiceTest.class);
     @MockBean

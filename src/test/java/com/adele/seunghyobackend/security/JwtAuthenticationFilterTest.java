@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
+import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-
+@Tag(UNIT_TEST_TAG)
 public class JwtAuthenticationFilterTest {
     private JwtTokenProvider jwtTokenProvider;
     private JwtAuthenticationFilter filter;
