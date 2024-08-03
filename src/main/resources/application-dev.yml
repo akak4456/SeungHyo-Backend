@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/${SEUNGHYO_DEV_DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
-    username: ${SEUNGHYO_DEV_DB_USERNAME}
-    password: ${SEUNGHYO_DEV_DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/${SEUNGHYO_DEV_DB_NAME:temptest}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    username: ${SEUNGHYO_DEV_DB_USERNAME:temptest}
+    password: ${SEUNGHYO_DEV_DB_PASSWORD:temptest}
 
   jpa:
     database: mysql

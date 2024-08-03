@@ -1,9 +1,8 @@
-package com.adele.seunghyobackend.service;
+package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.model.domain.Member;
-import com.adele.seunghyobackend.repository.MemberRepository;
-import com.adele.seunghyobackend.service.impl.CustomUserDetailsService;
+import com.adele.seunghyobackend.member.model.domain.Member;
+import com.adele.seunghyobackend.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

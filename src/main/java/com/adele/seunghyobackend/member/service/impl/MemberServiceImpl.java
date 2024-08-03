@@ -1,9 +1,9 @@
-package com.adele.seunghyobackend.service.impl;
+package com.adele.seunghyobackend.member.service.impl;
 
-import com.adele.seunghyobackend.model.dto.JwtToken;
-import com.adele.seunghyobackend.repository.MemberRepository;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
+import com.adele.seunghyobackend.member.repository.MemberRepository;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.service.MemberService;
+import com.adele.seunghyobackend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

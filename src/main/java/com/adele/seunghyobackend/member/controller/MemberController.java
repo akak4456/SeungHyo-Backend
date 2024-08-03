@@ -1,8 +1,8 @@
-package com.adele.seunghyobackend.controller;
+package com.adele.seunghyobackend.member.controller;
 
-import com.adele.seunghyobackend.model.dto.JwtToken;
-import com.adele.seunghyobackend.model.dto.LoginDTO;
-import com.adele.seunghyobackend.service.MemberService;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
+import com.adele.seunghyobackend.member.model.dto.LoginDTO;
+import com.adele.seunghyobackend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

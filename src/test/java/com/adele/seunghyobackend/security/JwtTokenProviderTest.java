@@ -1,22 +1,17 @@
 package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.model.dto.JwtToken;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j

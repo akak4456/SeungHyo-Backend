@@ -1,6 +1,6 @@
 package com.adele.seunghyobackend.security;
 
-import com.adele.seunghyobackend.model.dto.JwtToken;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -18,7 +18,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;

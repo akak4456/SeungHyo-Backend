@@ -1,6 +1,6 @@
-package com.adele.seunghyobackend.service;
+package com.adele.seunghyobackend.member.service;
 
-import com.adele.seunghyobackend.model.dto.JwtToken;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
 
 public interface MemberService {
     /**

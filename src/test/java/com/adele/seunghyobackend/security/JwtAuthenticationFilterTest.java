@@ -1,28 +1,17 @@
 package com.adele.seunghyobackend.security;
 
-import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.model.dto.JwtToken;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.controller;
+package com.adele.seunghyobackend.hello.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,9 +1,9 @@
-package com.adele.seunghyobackend.controller;
+package com.adele.seunghyobackend.member.controller;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.model.dto.LoginDTO;
+import com.adele.seunghyobackend.member.model.dto.LoginDTO;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.service.MemberService;
+import com.adele.seunghyobackend.member.service.MemberService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;

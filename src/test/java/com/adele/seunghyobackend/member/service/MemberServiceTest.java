@@ -1,11 +1,11 @@
-package com.adele.seunghyobackend.service;
+package com.adele.seunghyobackend.member.service;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.model.domain.Member;
-import com.adele.seunghyobackend.model.dto.JwtToken;
-import com.adele.seunghyobackend.repository.MemberRepository;
+import com.adele.seunghyobackend.member.model.domain.Member;
+import com.adele.seunghyobackend.security.model.dto.JwtToken;
+import com.adele.seunghyobackend.member.repository.MemberRepository;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.service.impl.MemberServiceImpl;
+import com.adele.seunghyobackend.member.service.impl.MemberServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

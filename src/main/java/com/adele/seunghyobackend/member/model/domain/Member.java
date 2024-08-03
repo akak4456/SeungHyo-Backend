@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.model.domain;
+package com.adele.seunghyobackend.member.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "MEMBER")

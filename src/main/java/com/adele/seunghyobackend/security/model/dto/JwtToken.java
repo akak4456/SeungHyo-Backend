@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.model.dto;
+package com.adele.seunghyobackend.security.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
