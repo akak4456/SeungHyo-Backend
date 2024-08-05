@@ -1,6 +1,7 @@
 package com.adele.seunghyobackend.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * SecurityConfig 는 특별한 테스트를 하지 않도록 한다.
@@ -21,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${cross-origin-url}")
+    private String crossOriginUrl;
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
@@ -44,6 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/hello").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 ;
@@ -65,5 +72,18 @@ public class SecurityConfig {
                 return rawPassword.toString().equals(encodedPassword);
             }
         };
+    }
+
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern(crossOriginUrl);
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

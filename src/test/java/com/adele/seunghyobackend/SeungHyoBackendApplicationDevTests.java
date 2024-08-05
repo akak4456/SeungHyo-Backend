@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -29,6 +30,9 @@ class SeungHyoBackendApplicationDevTests {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${cross-origin-url}")
+    private String crossOriginUrl;
+
     @Test
     @DisplayName("application-dev.yml 이 제대로 설정되었는지 확인한다.")
     void contextLoads() {
@@ -37,6 +41,7 @@ class SeungHyoBackendApplicationDevTests {
         assertThat(username).isNotBlank();
         assertThat(password).isNotBlank();
         assertThat(jwtSecret).isNotBlank();
+        assertThat(crossOriginUrl).isNotBlank();
     }
 
 }

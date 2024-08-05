@@ -30,3 +30,5 @@ jwt:
   secret: ${JWT_SECRET}
   access-token-validity-in-seconds: 86400
   refresh-token-validity-in-seconds: 86400
+
+cross-origin-url: http://localhost:3000
