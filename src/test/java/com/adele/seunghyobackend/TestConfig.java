@@ -1,9 +1,11 @@
 package com.adele.seunghyobackend;
 
-import com.adele.seunghyobackend.member.service.impl.RefreshTokenService;
+import com.adele.seunghyobackend.auth.service.impl.EmailCheckCodeService;
+import com.adele.seunghyobackend.email.dto.EmailMessage;
+import com.adele.seunghyobackend.email.service.EmailService;
+import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+import jakarta.validation.constraints.Email;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -19,16 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import redis.embedded.RedisExecProvider;
 import redis.embedded.RedisServer;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-
 @TestConfiguration
 @EnableWebSecurity
 public class TestConfig {
     private String redisHost = "localhost";
-    private int redisPort = 6379;
+    private int redisPort = 6380;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -99,6 +96,18 @@ public class TestConfig {
                 .redisExecProvider(RedisExecProvider.defaultProvider())
                 .port(redisPort)
                 .setting("maxmemory 10M").build();
+    }
+
+    @Bean
+    public EmailService mockEmailService() {
+        return emailMessage -> {
+
+        };
+    }
+
+    @Bean
+    public EmailCheckCodeService emailCheckCodeService() {
+        return new EmailCheckCodeService(redisTemplate(), 180);
     }
 
 }

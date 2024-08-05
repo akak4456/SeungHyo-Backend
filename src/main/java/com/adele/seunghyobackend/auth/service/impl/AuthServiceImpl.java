@@ -1,9 +1,9 @@
-package com.adele.seunghyobackend.member.service.impl;
+package com.adele.seunghyobackend.auth.service.impl;
 
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
-import com.adele.seunghyobackend.member.repository.MemberRepository;
+import com.adele.seunghyobackend.db.repository.MemberRepository;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.member.service.MemberService;
+import com.adele.seunghyobackend.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MemberServiceImpl implements MemberService {
+public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;

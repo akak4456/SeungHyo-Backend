@@ -1,7 +1,7 @@
 package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.member.service.impl.RefreshTokenService;
+import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,10 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.member.model.dto;
+package com.adele.seunghyobackend.auth.dto;
 
 import lombok.*;
 

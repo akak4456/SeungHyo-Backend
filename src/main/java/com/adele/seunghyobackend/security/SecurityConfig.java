@@ -30,7 +30,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/favicon.ico")
-                .requestMatchers("/api/v1/login") // login 같은 경우는 JWT Filter 를 타면 안되므로
+                .requestMatchers("/api/v1/auth/*")
         ;
     }
     @Bean
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/v1/login").permitAll()
+                                .requestMatchers("/api/v1/auth/*").permitAll()
                                 .requestMatchers("/api/v1/hello").permitAll()
                                 .anyRequest().authenticated()
                 )

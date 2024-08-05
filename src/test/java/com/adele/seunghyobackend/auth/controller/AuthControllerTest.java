@@ -1,9 +1,9 @@
-package com.adele.seunghyobackend.member.controller;
+package com.adele.seunghyobackend.auth.controller;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.member.model.dto.LoginDTO;
+import com.adele.seunghyobackend.auth.dto.LoginDTO;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.member.service.MemberService;
+import com.adele.seunghyobackend.auth.service.AuthService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -25,16 +25,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = MemberController.class)
+@WebMvcTest(controllers = AuthController.class)
 @SpringJUnitConfig(TestConfig.class)
 @Slf4j
 @Tag(UNIT_TEST_TAG)
-public class MemberControllerTest {
+public class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private MemberService memberService;
+    private AuthService authService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -61,7 +61,7 @@ public class MemberControllerTest {
         LoginDTO loginDTO = new LoginDTO("user1", "pass1");
         String content = gson.toJson(loginDTO);
         Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
-        when(memberService.login("user1", "pass1")).thenReturn(jwtTokenProvider.generateToken(atc));
+        when(authService.login("user1", "pass1")).thenReturn(jwtTokenProvider.generateToken(atc));
         ResultActions actions =
                 mockMvc.perform(
                         post("/api/v1/login")
@@ -79,7 +79,7 @@ public class MemberControllerTest {
     public void loginFailTest() throws Exception {
         LoginDTO loginDTO = new LoginDTO("user1", "pass1");
         String content = gson.toJson(loginDTO);
-        when(memberService.login("user1", "pass1")).thenThrow(BadCredentialsException.class);
+        when(authService.login("user1", "pass1")).thenThrow(BadCredentialsException.class);
         ResultActions actions =
                 mockMvc.perform(
                         post("/api/v1/login")

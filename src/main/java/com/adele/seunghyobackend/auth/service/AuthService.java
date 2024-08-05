@@ -1,8 +1,8 @@
-package com.adele.seunghyobackend.member.service;
+package com.adele.seunghyobackend.auth.service;
 
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
 
-public interface MemberService {
+public interface AuthService {
     /**
      * 로그인 MemberService
      * @param memberId member 아이디

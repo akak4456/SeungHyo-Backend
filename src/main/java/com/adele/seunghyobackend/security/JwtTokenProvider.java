@@ -1,6 +1,6 @@
 package com.adele.seunghyobackend.security;
 
-import com.adele.seunghyobackend.member.service.impl.RefreshTokenService;
+import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

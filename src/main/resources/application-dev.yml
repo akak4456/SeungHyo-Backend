@@ -2,6 +2,19 @@ spring:
   application:
     name: SeungHyo-Backend
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/${SEUNGHYO_DEV_DB_NAME:temptest}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
@@ -38,3 +51,4 @@ jwt:
 
 cross-origin-url: http://localhost:3000
 
+email-check-code-valid-in-seconds: 180 # 3분

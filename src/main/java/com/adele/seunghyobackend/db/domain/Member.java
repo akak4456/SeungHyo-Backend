@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.member.model.domain;
+package com.adele.seunghyobackend.db.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

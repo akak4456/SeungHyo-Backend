@@ -1,11 +1,11 @@
-package com.adele.seunghyobackend.member.service;
+package com.adele.seunghyobackend.auth.service;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.member.model.domain.Member;
+import com.adele.seunghyobackend.db.domain.Member;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
-import com.adele.seunghyobackend.member.repository.MemberRepository;
+import com.adele.seunghyobackend.db.repository.MemberRepository;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import com.adele.seunghyobackend.member.service.impl.MemberServiceImpl;
+import com.adele.seunghyobackend.auth.service.impl.AuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 @SpringJUnitConfig(TestConfig.class)
 @Slf4j
 @Tag(UNIT_TEST_TAG)
-public class MemberServiceTest {
+public class AuthServiceTest {
     @MockBean
     private MemberRepository memberRepository;
 
@@ -43,7 +43,7 @@ public class MemberServiceTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    private MemberService memberService;
+    private AuthService authService;
 
     @Autowired
     private RedisServer redisServer;
@@ -51,7 +51,7 @@ public class MemberServiceTest {
     @BeforeEach
     public void setUp() {
         redisServer.start();
-        memberService = new MemberServiceImpl(memberRepository, authenticationManagerBuilder, jwtTokenProvider);
+        authService = new AuthServiceImpl(memberRepository, authenticationManagerBuilder, jwtTokenProvider);
     }
 
     @AfterEach
@@ -62,7 +62,7 @@ public class MemberServiceTest {
     @Test
     @DisplayName("로그인이 성공할 때")
     public void login() {
-        assertThat(memberService).isNotNull();
+        assertThat(authService).isNotNull();
         Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
         when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
                 "user1",
@@ -74,7 +74,7 @@ public class MemberServiceTest {
         )));
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
-        JwtToken token = memberService.login("user1", "pass1");
+        JwtToken token = authService.login("user1", "pass1");
         assertThat(token.getAccessToken()).isNotBlank();
         assertThat(token.getRefreshToken()).isNotBlank();
     }
@@ -82,7 +82,7 @@ public class MemberServiceTest {
     @Test
     @DisplayName("로그인이 실패할 때")
     public void loginFail() {
-        assertThat(memberService).isNotNull();
+        assertThat(authService).isNotNull();
         Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
         when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
                 "user1",
@@ -95,7 +95,7 @@ public class MemberServiceTest {
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenThrow(new AuthenticationException("Authentication failed") {
         });
-        assertThatCode(() -> memberService.login("user1", "pass111"))
+        assertThatCode(() -> authService.login("user1", "pass111"))
                 .isInstanceOf(AuthenticationException.class);
     }
 }
