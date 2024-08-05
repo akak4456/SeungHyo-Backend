@@ -1,0 +1,48 @@
+version: '3'
+services:
+  seunghyo-mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_DEV_PASSWORD}
+      MYSQL_DATABASE: ${SEUNGHYO_DEV_DB_NAME}
+      MYSQL_USER: ${SEUNGHYO_DEV_DB_USER}
+      MYSQL_PASSWORD: ${SEUNGHYO_DEV_DB_PASSWORD}
+      TZ: Asia/Seoul
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+  seunghyo-redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - redis_data:/data
+
+  seunghyo-backend:
+    build: .
+    image: seunghyo-backend
+    environment:
+      - DEV_DB_URL=seunghyo-mysql
+      - DEV_DB_PORT=3306
+      - SEUNGHYO_DEV_DB_NAME=${SEUNGHYO_DEV_DB_NAME}
+      - SEUNGHYO_DEV_DB_USERNAME=${SEUNGHYO_DEV_DB_USER}
+      - SEUNGHYO_DEV_DB_PASSWORD=${SEUNGHYO_DEV_DB_PASSWORD}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_DEV_HOST=seunghyo-redis
+    depends_on:
+      seunghyo-mysql:
+        condition: service_healthy
+    ports:
+      - "8999:8999"
+
+volumes:
+  mysql-data:
+    driver: local
+  redis_data:
+    driver: local
