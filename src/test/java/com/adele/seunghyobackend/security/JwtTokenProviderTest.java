@@ -1,17 +1,21 @@
 package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
+import com.adele.seunghyobackend.member.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import redis.embedded.RedisServer;
+
+import java.time.LocalDateTime;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -20,6 +24,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JwtTokenProviderTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private RedisServer redisServer;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @BeforeEach
+    public void setUp() {
+        redisServer.start();
+    }
+
+    @AfterEach
+    public void destroy() {
+        redisServer.stop();
+    }
 
     @Test
     @DisplayName("generateToken 이 제대로 동작하는지 확인해본다")
@@ -48,5 +68,32 @@ public class JwtTokenProviderTest {
         JwtToken jwtToken = new JwtToken("Bearer","asdfg","asdfqw");
         assertThat(jwtTokenProvider.validateToken(jwtToken.getAccessToken())).isFalse();
         assertThat(jwtTokenProvider.validateToken(jwtToken.getRefreshToken())).isFalse();
+    }
+
+    @Test
+    @DisplayName("access token 의 유효기간이 지났는지 확인해본다.")
+    public void validateTokenWhenAccessTokenExpired() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        JwtToken token = jwtTokenProvider.generateToken(atc, LocalDateTime.now().minusSeconds(60 + 1));
+        assertThat(jwtTokenProvider.validateToken(token.getAccessToken())).isFalse();
+        assertThat(jwtTokenProvider.validateToken(token.getRefreshToken())).isTrue();
+    }
+
+    @Test
+    @DisplayName("refresh token 의 유효기간이 지났는지 확인해본다.")
+    public void validateTokenWhenRefreshTokenExpired() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        JwtToken token = jwtTokenProvider.generateToken(atc, LocalDateTime.now().minusSeconds(86400 + 1));
+        assertThat(jwtTokenProvider.validateToken(token.getAccessToken())).isFalse();
+        assertThat(jwtTokenProvider.validateToken(token.getRefreshToken())).isFalse();
+    }
+
+    @Test
+    @DisplayName("refresh token 검증이 동작하는지 확인한다.")
+    public void validateRefreshToken() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        JwtToken token = jwtTokenProvider.generateToken(atc);
+        refreshTokenService.saveRefreshToken("user1", token.getRefreshToken());
+        assertThat(jwtTokenProvider.refreshTokenValidation(token.getRefreshToken())).isTrue();
     }
 }

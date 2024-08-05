@@ -22,13 +22,19 @@ spring:
   sql:
     init:
       mode: always
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 
 server:
   port: ${SERVER_PORT:8999}
 
 jwt:
   secret: ${JWT_SECRET}
-  access-token-validity-in-seconds: 86400
+  access-token-validity-in-seconds: 60
   refresh-token-validity-in-seconds: 86400
 
 cross-origin-url: http://localhost:3000
+

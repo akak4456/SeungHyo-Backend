@@ -3,10 +3,7 @@ package com.adele.seunghyobackend.security;
 import com.adele.seunghyobackend.TestConfig;
 import com.adele.seunghyobackend.member.model.domain.Member;
 import com.adele.seunghyobackend.member.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import redis.embedded.RedisServer;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +35,19 @@ public class CustomUserDetailsServiceTest {
 
     private CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
+    private RedisServer redisServer;
+
     @BeforeEach
     public void setUp() {
+        redisServer.start();
         customUserDetailsService = new CustomUserDetailsService(memberRepository, passwordEncoder);
     }
 
+    @AfterEach
+    public void destroy() {
+        redisServer.stop();
+    }
     @Test
     @DisplayName("loadUserByUsername 이 정상 호출되는지 확인해본다.")
     public void loadUserByUsername() {

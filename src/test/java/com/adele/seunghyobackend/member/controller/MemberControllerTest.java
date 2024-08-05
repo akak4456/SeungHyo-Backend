@@ -6,9 +6,7 @@ import com.adele.seunghyobackend.security.JwtTokenProvider;
 import com.adele.seunghyobackend.member.service.MemberService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import redis.embedded.RedisServer;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.mockito.Mockito.when;
@@ -42,6 +41,19 @@ public class MemberControllerTest {
 
     @Autowired
     private Gson gson;
+
+    @Autowired
+    private RedisServer redisServer;
+
+    @BeforeEach
+    public void setUp() {
+        redisServer.start();
+    }
+
+    @AfterEach
+    public void destroy() {
+        redisServer.stop();
+    }
 
     @Test
     @DisplayName("로그인이 성공하는지 확인해본다")

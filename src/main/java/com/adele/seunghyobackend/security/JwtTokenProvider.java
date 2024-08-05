@@ -1,5 +1,6 @@
 package com.adele.seunghyobackend.security;
 
+import com.adele.seunghyobackend.member.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.time.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -31,20 +33,22 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
-    private final long accessTokenValidityInMilliseconds;
-    private final long refreshTokenValidityInMilliseconds;
+    private final long accessTokenValidityInSeconds;
+    private final long refreshTokenValidityInSeconds;
 
     private final Key key;
+    private final RefreshTokenService refreshTokenService;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInMilliseconds,
-            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInMilliseconds
-    ) {
+            @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            RefreshTokenService refreshTokenService) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
-        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds;
+        this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
+        this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
+        this.refreshTokenService = refreshTokenService;
     }
 
     /**
@@ -53,21 +57,25 @@ public class JwtTokenProvider {
      * @return Access Token: 인증된 사용자의 권한 정보와 만료 시간을 담고 있음, Refresh Token: Access Token의 갱신을 위해 사용 됨
      */
     public JwtToken generateToken(Authentication authentication) {
+        return generateToken(authentication, LocalDateTime.now());
+    }
+    public JwtToken generateToken(Authentication authentication, LocalDateTime now) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime();
-        Date accessTokenExpiresIn = new Date(now + this.accessTokenValidityInMilliseconds);
+        LocalDateTime accessTokenExpiresIn = now.plusSeconds(accessTokenValidityInSeconds);
         String accessToken = Jwts.builder()
                 .subject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
-                .expiration(accessTokenExpiresIn)
+                .expiration(Date.from(accessTokenExpiresIn.atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(key)
                 .compact();
-        Date refreshTokenExpiresIn = new Date(now + this.refreshTokenValidityInMilliseconds);
+        LocalDateTime refreshTokenExpiresIn = now.plusSeconds(this.refreshTokenValidityInSeconds);
         String refreshToken = Jwts.builder()
-                .expiration(refreshTokenExpiresIn)
+                .subject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .expiration(Date.from(refreshTokenExpiresIn.atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(key)
                 .compact();
 
@@ -80,14 +88,14 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 주어진 Access token을 복호화하여 사용자의 인증 정보(Authentication)를 생성
+     * 주어진 token을 복호화하여 사용자의 인증 정보(Authentication)를 생성
      * 토큰의 Claims에서 권한 정보를 추출하고, User 객체를 생성하여 Authentication 객체로 반환
      * Collection<? extends GrantedAuthority>로 리턴받는 이유
      * 권한 정보를 다양한 타입의 객체로 처리할 수 있고, 더 큰 유연성과 확장성을 가질 수 있음
-     * @param accessToken access token 을 받음
+     * @param token token 을 받음
      * @return Authentication 인증 정보
      */
-    public Authentication getAuthentication(String accessToken) {
+    public Authentication getAuthentication(String token) {
         /*
         [ Authentication 객체 생성하는 과정 ]
         1. 토큰의 클레임에서 권한 정보를 가져옴. "auth" 클레임은 토큰에 저장된 권한 정보를 나타냄
@@ -96,7 +104,7 @@ public class JwtTokenProvider {
         4. UsernamepasswordAuthenticationToken 객체를 생성하여 주체와 권한 정보를 포함한 인증(Authentication) 객체를 생성
          */
         // Jwt 토큰 복호화
-        Claims claims = parseClaims(accessToken);
+        Claims claims = parseClaims(token);
 
         if(claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
@@ -140,18 +148,24 @@ public class JwtTokenProvider {
         return false;
     }
 
-    private Claims parseClaims(String accessToken) {
+    public boolean refreshTokenValidation(String refreshToken) {
+        if(!validateToken(refreshToken)) return false;
+        Claims claims = parseClaims(refreshToken);
+        String id = claims.getSubject();
+        return refreshTokenService.validateRefreshToken(id, refreshToken);
+    }
+
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(getSignInKey())
                     .build()
-                    .parseSignedClaims(accessToken)
+                    .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
-
     private SecretKey getSignInKey() {
         byte[] keyBytes = key.getEncoded();
         return new SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA256");

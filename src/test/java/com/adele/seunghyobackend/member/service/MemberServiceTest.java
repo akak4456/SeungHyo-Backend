@@ -7,10 +7,7 @@ import com.adele.seunghyobackend.member.repository.MemberRepository;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
 import com.adele.seunghyobackend.member.service.impl.MemberServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import redis.embedded.RedisServer;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,9 +45,18 @@ public class MemberServiceTest {
     private JwtTokenProvider jwtTokenProvider;
     private MemberService memberService;
 
+    @Autowired
+    private RedisServer redisServer;
+
     @BeforeEach
     public void setUp() {
+        redisServer.start();
         memberService = new MemberServiceImpl(memberRepository, authenticationManagerBuilder, jwtTokenProvider);
+    }
+
+    @AfterEach
+    public void destroy() {
+        redisServer.stop();
     }
 
     @Test

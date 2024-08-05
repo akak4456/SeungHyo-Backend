@@ -1,14 +1,14 @@
 package com.adele.seunghyobackend.hello.controller;
 
 import com.adele.seunghyobackend.TestConfig;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import redis.embedded.RedisServer;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,11 +21,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 를 참고해서 만들도록 한다.
  */
 @WebMvcTest(controllers = HelloController.class)
-@Import(TestConfig.class)
+@SpringJUnitConfig(TestConfig.class)
 @Tag(UNIT_TEST_TAG)
 public class HelloControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private RedisServer redisServer;
+
+    @BeforeEach
+    public void setUp() {
+        redisServer.start();
+    }
+
+    @AfterEach
+    public void destroy() {
+        redisServer.stop();
+    }
 
     @Test
     @DisplayName("hello string 을 반환하는지 확인해본다.")
