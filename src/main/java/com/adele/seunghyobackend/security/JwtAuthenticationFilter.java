@@ -34,7 +34,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else if(refreshToken != null) {
                 boolean isRefreshToken = jwtTokenProvider.refreshTokenValidation(refreshToken);
-                log.info(isRefreshToken + "");
                 if(isRefreshToken) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
                     String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
