@@ -1,6 +1,7 @@
 package com.adele.seunghyobackend.auth.controller;
 
 import com.adele.seunghyobackend.TestConfig;
+import com.adele.seunghyobackend.auth.dto.JoinDTO;
 import com.adele.seunghyobackend.auth.dto.LoginDTO;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
 import com.adele.seunghyobackend.auth.service.AuthService;
@@ -64,7 +65,7 @@ public class AuthControllerTest {
         when(authService.login("user1", "pass1")).thenReturn(jwtTokenProvider.generateToken(atc));
         ResultActions actions =
                 mockMvc.perform(
-                        post("/api/v1/login")
+                        post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
                 );
@@ -82,12 +83,30 @@ public class AuthControllerTest {
         when(authService.login("user1", "pass1")).thenThrow(BadCredentialsException.class);
         ResultActions actions =
                 mockMvc.perform(
-                        post("/api/v1/login")
+                        post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
                 );
         actions
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("-1"));
+    }
+
+    @Test
+    @DisplayName("회원가입이 되는지 확인해본다.")
+    public void joinTest() throws Exception {
+        JoinDTO joinDTO = new JoinDTO("user1", "pass1","pass1", "status1", "email1");
+        String content = gson.toJson(joinDTO);
+
+        ResultActions actions =
+                mockMvc.perform(
+                        post("/api/v1/auth/join")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
     }
 }

@@ -1,16 +1,13 @@
 package com.adele.seunghyobackend.auth.controller;
 
-import com.adele.seunghyobackend.auth.dto.ValidEmailDTO;
+import com.adele.seunghyobackend.auth.dto.*;
 import com.adele.seunghyobackend.auth.service.impl.EmailCheckCodeService;
 import com.adele.seunghyobackend.common.ApiResult;
 import com.adele.seunghyobackend.email.dto.EmailMessage;
 import com.adele.seunghyobackend.email.service.EmailService;
-import com.adele.seunghyobackend.auth.dto.EmailDTO;
-import com.adele.seunghyobackend.auth.dto.LogoutDTO;
 import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
 import com.adele.seunghyobackend.security.model.dto.JwtToken;
-import com.adele.seunghyobackend.auth.dto.LoginDTO;
 import com.adele.seunghyobackend.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +94,10 @@ public class AuthController {
      */
     @PostMapping("/valid-email")
     public ApiResult<Boolean> validEmail(@RequestBody ValidEmailDTO validEmailDTO) {
-        boolean isValidEmail = emailCheckCodeService.isValidEmail(validEmailDTO.getEmail(), validEmailDTO.getCode());
+        boolean isValidEmail = emailCheckCodeService.isCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
+        if(isValidEmail) {
+            emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
+        }
         return ApiResult.<Boolean>builder()
                 .code(CODE_SUCCESS)
                 .message("이메일 체크 확인 성공")
@@ -133,6 +133,39 @@ public class AuthController {
         return ApiResult.<Void>builder()
                 .code(CODE_SUCCESS)
                 .message("로그아웃 성공")
+                .build();
+    }
+
+    /**
+     * 회원가입 시도
+     * 회원가입 시도 성공, 실패 여부를 반환한다.
+     * @param joinDTO
+     * <ul>
+     *     <li><b>memberId</b> 회원가입 시도할 아이디</li>
+     *     <li><b>memberPw</b> 회원가입 시도할 비밀번호</li>
+     *     <li><b>memberPwCheck</b> 회원가입 시도할 비밀번호 확인</li>
+     *     <li><b>statusMessage</b> 회원가입 시도할 상태 메시지</li>
+     *     <li><b>email</b> 회원가입 시도할 이메일</li>
+     * </ul>
+     * @return JoinResultDTO
+     * <ul>
+     *     <li><b>idNotValidForm</b> id가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>idDuplicate</b> id가 중복되었는지 여부</li>
+     *     <li><b>statusNotValidForm</b> 상태 메시지가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>pwNotValidForm</b> pw가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>pwAndPwCheckDifferent</b> 비밀번호와 비밀번호 확인이 다른지 여부</li>
+     *     <li><b>emailNotValidForm</b> 이메일이 올바른 형태가 아닌지 여부</li>
+     *     <li><b>emailDuplicate</b> 이메일이 중복되었는지 여부</li>
+     *     <li><b>emailNotValidate</b> 이메일을 인증했는지 여부</li>
+     * </ul>
+     */
+    @PostMapping("/join")
+    public ApiResult<JoinResultDTO> join(@RequestBody JoinDTO joinDTO) {
+        JoinResultDTO joinResultDTO = authService.tryJoin(joinDTO, emailCheckCodeService.isValidEmail(joinDTO.getEmail()));
+        return ApiResult.<JoinResultDTO>builder()
+                .code(CODE_SUCCESS)
+                .message("회원가입 시도 성공")
+                .data(joinResultDTO)
                 .build();
     }
 }

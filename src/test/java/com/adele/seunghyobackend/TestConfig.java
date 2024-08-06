@@ -107,7 +107,7 @@ public class TestConfig {
 
     @Bean
     public EmailCheckCodeService emailCheckCodeService() {
-        return new EmailCheckCodeService(redisTemplate(), 180);
+        return new EmailCheckCodeService(redisTemplate(), 180, 1800);
     }
 
 }

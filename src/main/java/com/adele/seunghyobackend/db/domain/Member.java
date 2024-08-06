@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "MEMBER")
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +34,7 @@ public class Member implements UserDetails {
 
     @JsonIgnore
     @Column(name="DELETE_YN")
-    private String deleteYn; // TODO 나중에 boolean 으로 바꾸는 게 적절할 듯
+    private String deleteYn; // TODO 나중에 boolean 으로 바꾸는 게 적절할 듯 그리고 DEFAULT 로 Y로 부여하기
 
     @JsonIgnore
     @Column(name="EMAIL")
