@@ -62,3 +62,12 @@ CREATE TABLE submit_list(
     source_code LONGTEXT NOT NULL,
     PRIMARY KEY(submit_no)
 );
+CREATE TABLE problem_grade(
+    grade_no BIGINT NOT NULL,
+    grade_result VARCHAR(255) NOT NULL,
+    input_no BIGINT NOT NULL REFERENCES problem_input(input_no),
+    output_no BIGINT NOT NULL REFERENCES problem_output(output_no),
+    submit_no BIGINT NOT NULL REFERENCES  submit_list(submit_no),
+    grade_case_no BIGINT NOT NULL,
+    PRIMARY KEY(grade_no)
+);
