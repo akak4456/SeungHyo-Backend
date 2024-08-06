@@ -1,8 +1,10 @@
 package com.adele.seunghyobackend.db.domain;
 
+import com.adele.seunghyobackend.db.converter.BooleanToYNConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,7 +36,9 @@ public class Member implements UserDetails {
 
     @JsonIgnore
     @Column(name="DELETE_YN")
-    private String deleteYn; // TODO 나중에 boolean 으로 바꾸는 게 적절할 듯 그리고 DEFAULT 로 Y로 부여하기
+    @ColumnDefault("N")
+    @Convert(converter = BooleanToYNConverter.class)
+    private boolean deleteYn;
 
     @JsonIgnore
     @Column(name="EMAIL")
