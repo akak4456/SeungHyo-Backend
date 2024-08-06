@@ -89,4 +89,19 @@ public class MyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("0"));
     }
+
+    @Test
+    @DisplayName("회원탈퇴가 성공하는지 확인해본다")
+    @WithMockUser(username="user1", password="pass1")
+    public void withdraw() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        delete("/api/v1/my/withdraw")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
 }

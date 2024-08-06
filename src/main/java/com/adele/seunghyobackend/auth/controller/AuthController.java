@@ -50,6 +50,7 @@ public class AuthController {
         String memberPw = loginDTO.getMemberPw();
         JwtToken jwtToken = authService.login(memberId, memberPw);
         refreshTokenService.saveRefreshToken(memberId, jwtToken.getRefreshToken());
+        // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
         return ApiResult.<JwtToken>builder()
                 .code(CODE_SUCCESS)
                 .message("로그인 성공")

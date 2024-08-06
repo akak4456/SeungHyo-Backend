@@ -98,4 +98,14 @@ public class MyServiceImpl implements MyService {
         }
         return result;
     }
+
+    @Override
+    public boolean withdraw(String memberId) {
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null) {
+            return false;
+        }
+        member.setDeleteYn(true);
+        return true;
+    }
 }

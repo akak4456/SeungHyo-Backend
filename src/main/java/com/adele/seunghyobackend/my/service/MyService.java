@@ -18,4 +18,11 @@ public interface MyService {
     PatchInfoEditResultDTO patchInfoEdit(PatchInfoEditDTO dto, boolean idMatch);
 
     ChangePwResultDTO tryChangePw(String memberId, ChangePwDTO dto);
+
+    /**
+     * 회원탈퇴 service
+     * @param memberId 회원탈퇴할 id
+     * @return 회원탈퇴 성공 여부
+     */
+    boolean withdraw(String memberId);
 }

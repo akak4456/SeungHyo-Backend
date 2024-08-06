@@ -70,7 +70,7 @@ public class AuthServiceTest {
                 "user1",
                 "pass1",
                 "status1",
-                "Y",
+                false,
                 "email1",
                 List.of("ADMIN")
         )));
@@ -90,7 +90,7 @@ public class AuthServiceTest {
                 "user1",
                 "pass1",
                 "status1",
-                "Y",
+                false,
                 "email1",
                 List.of("ADMIN")
         )));

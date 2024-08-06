@@ -105,4 +105,21 @@ public class MyController {
                 .build();
     }
 
+    /**
+     * 회원탈퇴를 한다
+     * @return 회원탈퇴 성공 여부
+     */
+    @DeleteMapping("/withdraw")
+    public ApiResult<Boolean> withdraw() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        String memberId = ((User)authentication.getPrincipal()).getUsername();
+        boolean result = myService.withdraw(memberId);
+        return ApiResult.<Boolean>builder()
+                .code(CODE_SUCCESS)
+                .message("비밀번호 수정 시도 성공")
+                .data(result)
+                .build();
+    }
+
 }
