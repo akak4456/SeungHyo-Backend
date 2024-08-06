@@ -57,7 +57,7 @@ CREATE TABLE submit_list(
     max_memory DECIMAL(10,2) NOT NULL,
     max_time DECIMAL(10,2) NOT NULL,
     lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
-    submit_date DATETIME NOT NULL,
+    submit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     open_range VARCHAR(255) NOT NULL,
     source_code LONGTEXT NOT NULL,
     PRIMARY KEY(submit_no)
@@ -101,3 +101,16 @@ CREATE TABLE board_category(
     category_name VARCHAR(255) NOT NULL,
     PRIMARY KEY (category_code)
 );
+CREATE TABLE board(
+    board_no BIGINT NOT NULL,
+    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    board_title VARCHAR(255) NOT NULL,
+    category_code VARCHAR(255) NOT NULL REFERENCES board_category(category_code),
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
+    like_count BIGINT NOT NULL DEFAULT 0,
+    reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    board_content LONGTEXT NOT NULL,
+    source_code LONGTEXT NOT NULL,
+    PRIMARY KEY(board_no)
+)

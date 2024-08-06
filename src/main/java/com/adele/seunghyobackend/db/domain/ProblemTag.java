@@ -13,7 +13,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "tag_name")
+@EqualsAndHashCode(of = "tagName")
 public class ProblemTag {
     @Id
     @Column(name="tag_name")

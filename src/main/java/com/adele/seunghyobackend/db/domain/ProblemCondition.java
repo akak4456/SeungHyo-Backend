@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "inputNo")
+@EqualsAndHashCode(of = "conditionNo")
 public class ProblemCondition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

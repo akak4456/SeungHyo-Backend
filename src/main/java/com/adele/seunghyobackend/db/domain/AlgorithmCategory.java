@@ -13,7 +13,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "algorithm_code")
+@EqualsAndHashCode(of = "algorithmCode")
 public class AlgorithmCategory {
     @Id
     @Column(name = "algorithm_code")
