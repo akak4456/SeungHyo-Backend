@@ -18,6 +18,13 @@ CREATE TABLE problem(
     problem_explain VARCHAR(255) NOT NULL,
     problem_input_explain VARCHAR(255) NOT NULL,
     problem_output_explain VARCHAR(255) NOT NULL,
-    IS_GRADABLE VARCHAR(255) NOT NULL,
+    IS_GRADABLE VARCHAR(255) NOT NULL DEFAULT('N'),
     PRIMARY KEY(problem_no)
-)
+);
+CREATE TABLE problem_input(
+    input_no BIGINT NOT NULL,
+    is_example VARCHAR(255) NOT NULL DEFAULT('N'),
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    input_file_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY(input_no)
+);
