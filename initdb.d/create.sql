@@ -35,3 +35,9 @@ CREATE TABLE problem_output(
     output_file_name VARCHAR(255) NOT NULL,
     KEY(output_no)
 );
+CREATE TABLE program_language(
+    lang_code VARCHAR(255) NOT NULL,
+    lang_name VARCHAR(255) NOT NULL,
+    is_gradable VARCHAR(255) NOT NULL DEFAULT('N'),
+    PRIMARY KEY(lang_code)
+);
