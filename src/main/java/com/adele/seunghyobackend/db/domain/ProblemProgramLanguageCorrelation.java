@@ -4,16 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "problem_and_language")
+@Table(name = "problem_program_language_correlation")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class ProblemAndLanguage {
+public class ProblemProgramLanguageCorrelation {
     @EmbeddedId
-    private ProblemAndLanguageId id;
+    private ProblemProgramLanguageCorrelationId id;
 
     @ManyToOne
     @MapsId("problemNo")

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class ProblemAndLanguageId implements Serializable {
+public class ProblemProgramLanguageCorrelationId implements Serializable {
     private Long problemNo;
     private String langCode;
 }
