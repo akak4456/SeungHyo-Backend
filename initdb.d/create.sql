@@ -33,7 +33,7 @@ CREATE TABLE problem_output(
     is_example VARCHAR(255) NOT NULL DEFAULT('N'),
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     output_file_name VARCHAR(255) NOT NULL,
-    KEY(output_no)
+    PRIMARY KEY(output_no)
 );
 CREATE TABLE program_language(
     lang_code VARCHAR(255) NOT NULL,
@@ -46,5 +46,19 @@ CREATE TABLE problem_condition(
     condition_time DECIMAL(5,2) NOT NULL,
     condition_memory DECIMAL(5,2) NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code)
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
+    PRIMARY KEY(condition_no)
+);
+CREATE TABLE submit_list(
+    submit_no BIGINT NOT NULL,
+    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    problem_no BIGINT NOT NULL REFERENCES  problem(problem_no),
+    submit_result VARCHAR(255) NOT NULL,
+    max_memory DECIMAL(10,2) NOT NULL,
+    max_time DECIMAL(10,2) NOT NULL,
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
+    submit_date DATETIME NOT NULL,
+    open_range VARCHAR(255) NOT NULL,
+    source_code LONGTEXT NOT NULL,
+    PRIMARY KEY(submit_no)
 );
