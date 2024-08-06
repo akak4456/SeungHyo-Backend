@@ -81,3 +81,8 @@ CREATE TABLE problem_tag(
     background_color VARCHAR(255) NOT NULL,
     PRIMARY KEY(tag_name)
 );
+CREATE TABLE problem_problem_tag_correlation(
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    tag_name VARCHAR(255) NOT NULL REFERENCES problem_tag(tag_name),
+    PRIMARY KEY(problem_no, tag_name)
+);
