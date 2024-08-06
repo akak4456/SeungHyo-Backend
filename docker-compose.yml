@@ -16,30 +16,15 @@ services:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 10s
       retries: 10
+    ports:
+      - "3307:3306"
   seunghyo-redis:
     image: redis:latest
     container_name: redis
     volumes:
       - redis_data:/data
-
-  seunghyo-backend:
-    build: .
-    image: seunghyo-backend
-    environment:
-      - DEV_DB_URL=seunghyo-mysql
-      - DEV_DB_PORT=3306
-      - SEUNGHYO_DEV_DB_NAME=${SEUNGHYO_DEV_DB_NAME}
-      - SEUNGHYO_DEV_DB_USERNAME=${SEUNGHYO_DEV_DB_USER}
-      - SEUNGHYO_DEV_DB_PASSWORD=${SEUNGHYO_DEV_DB_PASSWORD}
-      - EMAIL_USERNAME=${EMAIL_USERNAME}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - REDIS_DEV_HOST=seunghyo-redis
-    depends_on:
-      seunghyo-mysql:
-        condition: service_healthy
     ports:
-      - "8999:8999"
+      - "6399:6379"
 
 volumes:
   mysql-data:

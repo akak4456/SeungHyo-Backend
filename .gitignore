@@ -36,5 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-# ignore env for security
+# ignore .env for security
 .env
