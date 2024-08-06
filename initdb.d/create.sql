@@ -41,3 +41,10 @@ CREATE TABLE program_language(
     is_gradable VARCHAR(255) NOT NULL DEFAULT('N'),
     PRIMARY KEY(lang_code)
 );
+CREATE TABLE problem_condition(
+    condition_no BIGINT NOT NULL,
+    condition_time DECIMAL(5,2) NOT NULL,
+    condition_memory DECIMAL(5,2) NOT NULL,
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code)
+);
