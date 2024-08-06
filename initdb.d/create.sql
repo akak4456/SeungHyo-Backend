@@ -76,3 +76,8 @@ CREATE TABLE problem_and_language(
     lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
     PRIMARY KEY (problem_no, lang_code)
 );
+CREATE TABLE problem_tag(
+    tag_name VARCHAR(255) NOT NULL,
+    background_color VARCHAR(255) NOT NULL,
+    PRIMARY KEY(tag_name)
+);
