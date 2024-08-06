@@ -28,3 +28,10 @@ CREATE TABLE problem_input(
     input_file_name VARCHAR(255) NOT NULL,
     PRIMARY KEY(input_no)
 );
+CREATE TABLE problem_output(
+    output_no BIGINT NOT NULL,
+    is_example VARCHAR(255) NOT NULL DEFAULT('N'),
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    output_file_name VARCHAR(255) NOT NULL,
+    KEY(output_no)
+);
