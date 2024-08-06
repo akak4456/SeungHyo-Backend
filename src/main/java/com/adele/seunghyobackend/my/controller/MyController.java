@@ -1,9 +1,7 @@
 package com.adele.seunghyobackend.my.controller;
 
 import com.adele.seunghyobackend.common.ApiResult;
-import com.adele.seunghyobackend.my.dto.InfoEditResultDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditResultDTO;
+import com.adele.seunghyobackend.my.dto.*;
 import com.adele.seunghyobackend.my.service.MyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,4 +74,35 @@ public class MyController {
                 .data(result)
                 .build();
     }
+
+    /**
+     * 비밀번호 변경을 시도한다
+     * @param dto
+     * <ul>
+     *     <li><b>currentPw</b> 입력한 현재 비밀번호</li>
+     *     <li><b>newPw</b> 입력한 새 비밀번호</li>
+     *     <li><b>newPwCheck</b> 입력한 새 비밀번호 확인</li>
+     * </ul>
+     * @return ChangePwResultDTO
+     * <ul>
+     *     <li><b>notExistUser</b> 존재하지 않는 유저로 시도하고자 하는 여부</li>
+     *     <li><b>currentPwNotMatch</b> 실제 유저 비밀번호와 입력한 비밀번호가 다른지 여부</li>
+     *     <li><b>currentPwAndNewPwMatch</b> 입력한 비밀번호와 새로 입력한 비밀번호가 같은지 여부</li>
+     *     <li><b>newPwNotMatch</b> 새로 입력한 비밀번호와 비밀번호 확인이 같지 않은지 여부</li>
+     *     <li><b>newPwNotValidForm</b> 새로 입력한 비밀번호의 폼이 맞지 않는지 여부</li>
+     * </ul>
+     */
+    @PatchMapping("/change-pw")
+    public ApiResult<ChangePwResultDTO> changePw(@RequestBody ChangePwDTO dto) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        String memberId = ((User)authentication.getPrincipal()).getUsername();
+        ChangePwResultDTO result = myService.tryChangePw(memberId, dto);
+        return ApiResult.<ChangePwResultDTO>builder()
+                .code(CODE_SUCCESS)
+                .message("비밀번호 수정 시도 성공")
+                .data(result)
+                .build();
+    }
+
 }

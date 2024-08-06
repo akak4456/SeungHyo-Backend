@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Setter
+@EqualsAndHashCode
 public class PatchInfoEditResultDTO {
     private boolean idNotMatch;
     private boolean idNotValidForm;

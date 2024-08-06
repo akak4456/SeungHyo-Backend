@@ -4,20 +4,22 @@ import com.adele.seunghyobackend.TestConfig;
 import com.adele.seunghyobackend.auth.service.impl.AuthServiceImpl;
 import com.adele.seunghyobackend.db.domain.Member;
 import com.adele.seunghyobackend.db.repository.MemberRepository;
-import com.adele.seunghyobackend.my.dto.InfoEditResultDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditResultDTO;
+import com.adele.seunghyobackend.my.dto.*;
 import com.adele.seunghyobackend.my.service.impl.MyServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
 import static org.assertj.core.api.Assertions.*;
@@ -56,9 +58,13 @@ public class MyServiceTest {
         assertThat(result.getEmail()).isEqualTo("email1");
     }
 
-    @Test
-    @DisplayName("info edit 수정 성공")
-    public void patchInfoEditSuccess() {
+    @ParameterizedTest
+    @DisplayName("info-edit 수정 테스트")
+    @MethodSource("provideInfoEdit")
+    public void patchInfoEdit(
+            PatchInfoEditDTO dto,
+            boolean idMatch,
+            PatchInfoEditResultDTO expected) {
         when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
                 "user1",
                 "pass1",
@@ -67,41 +73,52 @@ public class MyServiceTest {
                 "email1",
                 List.of("ADMIN")
         )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "pass1", "status1", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isFalse();
+        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, idMatch);
+        assertThat(result).isEqualTo(expected);
     }
 
-    @Test
-    @DisplayName("info edit 수정 실패 - Id 폼이 잘못 됨")
-    public void patchInfoEditFailCauseId() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
-                "user1",
-                "pass1",
-                "status1",
-                "Y",
-                "email1",
-                List.of("ADMIN")
-        )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("", "pass1", "status1", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isTrue();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isFalse();
+    private static Stream<Arguments> provideInfoEdit() {
+        return Stream.of(
+                Arguments.of(
+                new PatchInfoEditDTO("user1", "pass1", "status1", "email1"), true,
+                new PatchInfoEditResultDTO(false, false, false, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("", "pass1", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, true, false, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, false, true, false, true)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, true, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "status1", ""), true,
+                        new PatchInfoEditResultDTO(false, false, false, false, true, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass2", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, false, false, false, true)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "status1", "email1"), false,
+                        new PatchInfoEditResultDTO(true, false, false, false, false, false)
+                )
+        );
     }
 
-    @Test
-    @DisplayName("info edit 수정 실패 - Pw 폼이 잘못 됨")
-    public void patchInfoEditFailCausePw() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
+    @ParameterizedTest
+    @DisplayName("비밀번호 수정 테스트")
+    @MethodSource("provideChangePw")
+    public void changePw(
+            String memberId,
+            ChangePwDTO dto,
+            ChangePwResultDTO expected
+    ) {
+        when(memberRepository.findById("user1")).thenReturn(Optional.of(new Member(
                 "user1",
                 "pass1",
                 "status1",
@@ -109,97 +126,48 @@ public class MyServiceTest {
                 "email1",
                 List.of("ADMIN")
         )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "", "status1", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isTrue();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isTrue();
+        ChangePwResultDTO result = myService.tryChangePw(memberId, dto);
+        assertThat(result).isEqualTo(expected);
     }
 
-    @Test
-    @DisplayName("info edit 수정 실패 - status message 폼이 잘못 됨")
-    public void patchInfoEditFailCauseStatusMessage() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
-                "user1",
-                "pass1",
-                "status1",
-                "Y",
-                "email1",
-                List.of("ADMIN")
-        )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "pass1", "", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isTrue();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isFalse();
+    private static Stream<Arguments> provideChangePw() {
+        return Stream.of(
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass2","pass2"),
+                        new ChangePwResultDTO(false, false, false, false, false)
+                ),
+                Arguments.of(
+                        "user2",
+                        new ChangePwDTO("pass1","pass2","pass2"),
+                        new ChangePwResultDTO(true, false, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass3","pass2","pass2"),
+                        new ChangePwResultDTO(false, true, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("","pass2","pass2"),
+                        new ChangePwResultDTO(false, true, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass1","pass1"),
+                        new ChangePwResultDTO(false, false, true, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass2","pass3"),
+                        new ChangePwResultDTO(false, false, false, true, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","",""),
+                        new ChangePwResultDTO(false, false, false, false, true)
+                )
+        );
     }
 
-    @Test
-    @DisplayName("info edit 수정 실패 - email 폼이 잘못 됨")
-    public void patchInfoEditFailCauseEmail() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
-                "user1",
-                "pass1",
-                "status1",
-                "Y",
-                "email1",
-                List.of("ADMIN")
-        )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "pass1", "status1", "");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isTrue();
-        assertThat(result.isPwNotMatch()).isFalse();
-    }
-
-    @Test
-    @DisplayName("info edit 수정 실패 - 입력한 비밀번호와 실제 비밀번호가 다를때")
-    public void patchInfoEditFailCauseMember() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
-                "user1",
-                "pass1",
-                "status1",
-                "Y",
-                "email1",
-                List.of("ADMIN")
-        )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "pass2", "status1", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, true);
-        assertThat(result.isIdNotMatch()).isFalse();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isTrue();
-    }
-    
-    @Test
-    @DisplayName("info edit 수정 실패 - id match 하지 않음")
-    public void patchInfoEditFailCauseIdNotMatch() {
-        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
-                "user1",
-                "pass1",
-                "status1",
-                "Y",
-                "email1",
-                List.of("ADMIN")
-        )));
-        PatchInfoEditDTO dto = new PatchInfoEditDTO("user1", "pass1", "status1", "email1");
-        PatchInfoEditResultDTO result = myService.patchInfoEdit(dto, false);
-        assertThat(result.isIdNotMatch()).isTrue();
-        assertThat(result.isIdNotValidForm()).isFalse();
-        assertThat(result.isStatusMessageNotValidForm()).isFalse();
-        assertThat(result.isPwNotValidForm()).isFalse();
-        assertThat(result.isEmailNotValidForm()).isFalse();
-        assertThat(result.isPwNotMatch()).isFalse();
-    }
 }

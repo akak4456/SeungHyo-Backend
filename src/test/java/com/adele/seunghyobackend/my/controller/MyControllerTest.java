@@ -3,6 +3,7 @@ package com.adele.seunghyobackend.my.controller;
 import com.adele.seunghyobackend.TestConfig;
 import com.adele.seunghyobackend.auth.controller.AuthController;
 import com.adele.seunghyobackend.auth.dto.JoinDTO;
+import com.adele.seunghyobackend.my.dto.ChangePwDTO;
 import com.adele.seunghyobackend.my.dto.PatchInfoEditDTO;
 import com.adele.seunghyobackend.my.service.MyService;
 import com.google.gson.Gson;
@@ -62,6 +63,24 @@ public class MyControllerTest {
         ResultActions actions =
                 mockMvc.perform(
                         patch("/api/v1/my/info-edit")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
+
+    @Test
+    @DisplayName("비밀번호 수정이 성공하는지 확인해본다")
+    @WithMockUser(username="user1", password="pass1")
+    public void changePw() throws Exception {
+        ChangePwDTO dto = new ChangePwDTO("pass1", "pass2", "pass2");
+        String content = gson.toJson(dto);
+        ResultActions actions =
+                mockMvc.perform(
+                        patch("/api/v1/my/change-pw")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
                 );

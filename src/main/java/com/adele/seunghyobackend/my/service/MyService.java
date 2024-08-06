@@ -1,8 +1,6 @@
 package com.adele.seunghyobackend.my.service;
 
-import com.adele.seunghyobackend.my.dto.InfoEditResultDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditResultDTO;
+import com.adele.seunghyobackend.my.dto.*;
 
 public interface MyService {
     /**
@@ -18,4 +16,6 @@ public interface MyService {
      * @return PatchInfoEditResultDTO 수정 시도 결과
      */
     PatchInfoEditResultDTO patchInfoEdit(PatchInfoEditDTO dto, boolean idMatch);
+
+    ChangePwResultDTO tryChangePw(String memberId, ChangePwDTO dto);
 }

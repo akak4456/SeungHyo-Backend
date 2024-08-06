@@ -2,9 +2,7 @@ package com.adele.seunghyobackend.my.service.impl;
 
 import com.adele.seunghyobackend.db.domain.Member;
 import com.adele.seunghyobackend.db.repository.MemberRepository;
-import com.adele.seunghyobackend.my.dto.InfoEditResultDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditDTO;
-import com.adele.seunghyobackend.my.dto.PatchInfoEditResultDTO;
+import com.adele.seunghyobackend.my.dto.*;
 import com.adele.seunghyobackend.my.service.MyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +63,38 @@ public class MyServiceImpl implements MyService {
         }
         if(available) {
             member.setStatusMessage(dto.getStatusMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ChangePwResultDTO tryChangePw(String memberId, ChangePwDTO dto) {
+        ChangePwResultDTO result = new ChangePwResultDTO();
+        boolean available = true;
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null) {
+            available = false;
+            result.setNotExistUser(true);
+        } else {
+            if (member.getMemberPw() == null || !member.getMemberPw().equals(dto.getCurrentPw())) {
+                available = false;
+                result.setCurrentPwNotMatch(true);
+            }
+            if (dto.getNewPw() == null || dto.getNewPw().equals(dto.getCurrentPw())) {
+                available = false;
+                result.setCurrentPwAndNewPwMatch(true);
+            }
+            if(dto.getNewPw() == null || !dto.getNewPw().equals(dto.getNewPwCheck())) {
+                available = false;
+                result.setNewPwNotMatch(true);
+            }
+            if(!validatePwForm(dto.getNewPw())) {
+                available = false;
+                result.setNewPwNotValidForm(true);
+            }
+        }
+        if(available) {
+            member.setMemberPw(dto.getNewPw());
         }
         return result;
     }
