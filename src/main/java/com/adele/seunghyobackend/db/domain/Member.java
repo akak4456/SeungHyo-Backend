@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "MEMBER")
+@Table(name = "member")
 @Getter
 @Setter
 @ToString
@@ -23,30 +23,30 @@ import java.util.List;
 @EqualsAndHashCode(of = "memberId")
 public class Member implements UserDetails {
     @Id
-    @Column(name="MEMBER_ID")
+    @Column(name="member_id")
     private String memberId;
 
     @JsonIgnore
-    @Column(name="MEMBER_PW")
+    @Column(name="member_pw")
     private String memberPw;
 
     @JsonIgnore
-    @Column(name="STATUS_MESSAGE")
+    @Column(name="status_message")
     private String statusMessage;
 
     @JsonIgnore
-    @Column(name="DELETE_YN")
+    @Column(name="delete_yn")
     @ColumnDefault("N")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean deleteYn;
 
     @JsonIgnore
-    @Column(name="EMAIL")
+    @Column(name="email")
     private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "MEMBER_ROLES", joinColumns = @JoinColumn(name = "MEMBER_ID"))
-    @Column(name = "ROLES")
+    @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "roles")
     private List<String> roles = new ArrayList<>();
 
     @Override
