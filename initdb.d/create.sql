@@ -71,3 +71,8 @@ CREATE TABLE problem_grade(
     grade_case_no BIGINT NOT NULL,
     PRIMARY KEY(grade_no)
 );
+CREATE TABLE problem_and_language(
+    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
+    PRIMARY KEY (problem_no, lang_code)
+);
