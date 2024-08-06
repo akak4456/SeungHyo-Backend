@@ -96,3 +96,8 @@ CREATE TABLE problem_algorithm_category_correlation(
     algorithm_code VARCHAR(255) NOT NULL REFERENCES algorithm_category(algorithm_code),
     PRIMARY KEY(problem_no, algorithm_code)
 );
+CREATE TABLE board_category(
+    category_code VARCHAR(255) NOT NULL,
+    category_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (category_code)
+);
