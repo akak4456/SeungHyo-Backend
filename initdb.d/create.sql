@@ -113,4 +113,13 @@ CREATE TABLE board(
     board_content LONGTEXT NOT NULL,
     source_code LONGTEXT NOT NULL,
     PRIMARY KEY(board_no)
-)
+);
+CREATE TABLE reply(
+    reply_no BIGINT NOT NULL,
+    board_no BIGINT NOT NULL REFERENCES board(board_no),
+    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    like_count BIGINT NOT NULL,
+    reply_content LONGTEXT NOT NULL,
+    source_code LONGTEXT NOT NULL,
+    PRIMARY KEY(reply_no)
+);
