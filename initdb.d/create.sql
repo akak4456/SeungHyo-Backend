@@ -86,3 +86,8 @@ CREATE TABLE problem_problem_tag_correlation(
     tag_name VARCHAR(255) NOT NULL REFERENCES problem_tag(tag_name),
     PRIMARY KEY(problem_no, tag_name)
 );
+CREATE TABLE algorithm_category(
+    algorithm_code VARCHAR(255) NOT NULL,
+    algorithm_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY(algorithm_code)
+);
