@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.adele.seunghyobackend.util.ValidFormUtil.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -56,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
             joinAvailable = false;
             joinResultDTO.setIdDuplicate(true);
         }
-        if(!validateEmailForm(joinDTO.getStatusMessage())) {
+        if(!validateStatusMessageForm(joinDTO.getStatusMessage())) {
             // 상태 메시지가 올바른 형태가 아닌가?
             joinAvailable = false;
             joinResultDTO.setStatusNotValidForm(true);
@@ -96,17 +98,5 @@ public class AuthServiceImpl implements AuthService {
             memberRepository.save(member);
         }
         return joinResultDTO;
-    }
-
-    private boolean validatePwForm(String pw) {
-        return !pw.isBlank();
-    }
-
-    private boolean validateIdForm(String id) {
-        return !id.isBlank();
-    }
-    
-    private boolean validateEmailForm(String email) {
-        return !email.isBlank();
     }
 }
