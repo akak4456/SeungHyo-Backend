@@ -40,10 +40,11 @@ public class SubmitController {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication authentication = context.getAuthentication();
         String memberId = ((User)authentication.getPrincipal()).getUsername();
-        submitService.tryNewSubmit(memberId, newSubmitRequestDTO);
+        NewSubmitResultDTO result = submitService.tryNewSubmit(memberId, newSubmitRequestDTO);
         return ApiResult.<NewSubmitResultDTO>builder()
                 .code(CODE_SUCCESS)
                 .message("제출 시도 성공")
+                .data(result)
                 .build();
     }
 }
