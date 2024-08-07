@@ -10,18 +10,18 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "correlationId")
 public class ProblemProblemTagCorrelation {
-    @EmbeddedId
-    private ProblemProblemTagCorrelationId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "correlation_id")
+    private Long correlationId;
 
     @ManyToOne
-    @MapsId("problemNo")
     @JoinColumn(name = "problem_no")
     private Problem problem;
 
     @ManyToOne
-    @MapsId("tagNo")
     @JoinColumn(name = "tag_no")
     private ProblemTag tag;
 }

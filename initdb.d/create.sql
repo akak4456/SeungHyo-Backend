@@ -72,9 +72,10 @@ CREATE TABLE problem_grade(
     PRIMARY KEY(grade_no)
 );
 CREATE TABLE problem_program_language_correlation(
+    correlation_id BIGINT NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
-    PRIMARY KEY (problem_no, lang_code)
+    PRIMARY KEY (correlation_id)
 );
 CREATE TABLE problem_tag(
     tag_no BIGINT NOT NULL,
@@ -83,9 +84,10 @@ CREATE TABLE problem_tag(
     PRIMARY KEY(tag_no)
 );
 CREATE TABLE problem_problem_tag_correlation(
+    correlation_id BIGINT NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     tag_no BIGINT NOT NULL REFERENCES problem_tag(tag_no),
-    PRIMARY KEY(problem_no, tag_no)
+    PRIMARY KEY(correlation_id)
 );
 CREATE TABLE algorithm_category(
     algorithm_no BIGINT NOT NULL,
@@ -93,9 +95,10 @@ CREATE TABLE algorithm_category(
     PRIMARY KEY(algorithm_no)
 );
 CREATE TABLE problem_algorithm_category_correlation(
+    correlation_id BIGINT NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     algorithm_no BIGINT NOT NULL REFERENCES algorithm_category(algorithm_no),
-    PRIMARY KEY(problem_no, algorithm_no)
+    PRIMARY KEY(correlation_id)
 );
 CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,
