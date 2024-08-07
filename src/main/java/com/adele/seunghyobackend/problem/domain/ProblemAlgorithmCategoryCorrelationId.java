@@ -11,5 +11,5 @@ import lombok.*;
 @EqualsAndHashCode
 public class ProblemAlgorithmCategoryCorrelationId {
     private Long problemNo;
-    private String algorithmCode;
+    private Long algorithmNo;
 }

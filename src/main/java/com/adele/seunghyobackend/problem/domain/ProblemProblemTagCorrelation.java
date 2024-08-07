@@ -21,7 +21,7 @@ public class ProblemProblemTagCorrelation {
     private Problem problem;
 
     @ManyToOne
-    @MapsId("tagName")
-    @JoinColumn(name = "tag_name")
+    @MapsId("tagNo")
+    @JoinColumn(name = "tag_no")
     private ProblemTag tag;
 }

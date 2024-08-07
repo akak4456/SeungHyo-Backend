@@ -77,24 +77,25 @@ CREATE TABLE problem_program_language_correlation(
     PRIMARY KEY (problem_no, lang_code)
 );
 CREATE TABLE problem_tag(
+    tag_no BIGINT NOT NULL,
     tag_name VARCHAR(255) NOT NULL,
     background_color VARCHAR(255) NOT NULL,
-    PRIMARY KEY(tag_name)
+    PRIMARY KEY(tag_no)
 );
 CREATE TABLE problem_problem_tag_correlation(
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    tag_name VARCHAR(255) NOT NULL REFERENCES problem_tag(tag_name),
-    PRIMARY KEY(problem_no, tag_name)
+    tag_no BIGINT NOT NULL REFERENCES problem_tag(tag_no),
+    PRIMARY KEY(problem_no, tag_no)
 );
 CREATE TABLE algorithm_category(
-    algorithm_code VARCHAR(255) NOT NULL,
+    algorithm_no BIGINT NOT NULL,
     algorithm_name VARCHAR(255) NOT NULL,
-    PRIMARY KEY(algorithm_code)
+    PRIMARY KEY(algorithm_no)
 );
 CREATE TABLE problem_algorithm_category_correlation(
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    algorithm_code VARCHAR(255) NOT NULL REFERENCES algorithm_category(algorithm_code),
-    PRIMARY KEY(problem_no, algorithm_code)
+    algorithm_no BIGINT NOT NULL REFERENCES algorithm_category(algorithm_no),
+    PRIMARY KEY(problem_no, algorithm_no)
 );
 CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,

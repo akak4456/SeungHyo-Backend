@@ -11,5 +11,5 @@ import lombok.*;
 @EqualsAndHashCode
 public class ProblemProblemTagCorrelationId {
     private Long problemNo;
-    private String tagName;
+    private Long tagNo;
 }

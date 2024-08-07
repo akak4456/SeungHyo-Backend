@@ -1,9 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -13,10 +10,12 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "tagName")
+@EqualsAndHashCode(of = "tagNo")
 public class ProblemTag {
-    @Id
-    @Column(name="tag_name")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "tag_no")
+    private Long tagNo;
+
     private String tagName;
 
     @Column(name="background_color")

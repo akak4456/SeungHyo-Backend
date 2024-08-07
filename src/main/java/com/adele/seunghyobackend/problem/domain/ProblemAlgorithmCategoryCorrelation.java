@@ -21,7 +21,7 @@ public class ProblemAlgorithmCategoryCorrelation {
     private Problem problem;
 
     @ManyToOne
-    @MapsId("algorithmCode")
-    @JoinColumn(name = "algorithm_code")
+    @MapsId("algorithmNo")
+    @JoinColumn(name = "algorithm_no")
     private AlgorithmCategory algorithmCategory;
 }

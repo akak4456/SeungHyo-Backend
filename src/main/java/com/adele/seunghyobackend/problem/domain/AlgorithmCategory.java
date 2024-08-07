@@ -1,9 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -16,8 +13,9 @@ import lombok.*;
 @EqualsAndHashCode(of = "algorithmCode")
 public class AlgorithmCategory {
     @Id
-    @Column(name = "algorithm_code")
-    private String algorithmCode;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "algorithm_no")
+    private Long algorithmNo;
 
     @Column(name = "algorithm_name")
     private String algorithmName;
