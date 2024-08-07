@@ -1,5 +1,4 @@
-package com.adele.seunghyobackend.problem.repository;
-
+package com.adele.seunghyobackend.problem.service;
 
 import com.adele.seunghyobackend.DotenvTestExecutionListener;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
@@ -27,15 +25,15 @@ import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
 @ActiveProfiles("dev")
 @Tag(INTEGRATED_TAG)
 @Slf4j
-public class ProblemRepositoryTest {
+public class ProblemServiceIntegratedTest {
     @Autowired
-    private ProblemRepository problemRepository;
+    private ProblemService problemService;
 
     @Test
     @DisplayName("page 가 정상 작동하는지 확인해본다.")
     public void pageTest() {
         Pageable pageable = PageRequest.of(0 ,10);
-        Page<ProblemListDTO> result = problemRepository.searchPage(pageable);
+        Page<ProblemListDTO> result = problemService.searchPage(pageable);
         for (ProblemListDTO problem : result.getContent()) {
             log.info(problem.toString());
         }

@@ -28,6 +28,6 @@ public class ProblemOutput {
     @JoinColumn(name = "problem_no")
     private Problem problem;
 
-    @Column(name="output_file_name")
-    private String outputFileName;
+    @Column(name="output_source")
+    private String outputSource;
 }

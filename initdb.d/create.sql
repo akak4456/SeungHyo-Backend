@@ -25,14 +25,14 @@ CREATE TABLE problem_input(
     input_no BIGINT NOT NULL,
     is_example VARCHAR(255) NOT NULL DEFAULT('N'),
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    input_file_name VARCHAR(255) NOT NULL,
+    input_source LONGTEXT NOT NULL,
     PRIMARY KEY(input_no)
 );
 CREATE TABLE problem_output(
     output_no BIGINT NOT NULL,
     is_example VARCHAR(255) NOT NULL DEFAULT('N'),
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    output_file_name VARCHAR(255) NOT NULL,
+    output_source LONGTEXT NOT NULL,
     PRIMARY KEY(output_no)
 );
 CREATE TABLE program_language(
