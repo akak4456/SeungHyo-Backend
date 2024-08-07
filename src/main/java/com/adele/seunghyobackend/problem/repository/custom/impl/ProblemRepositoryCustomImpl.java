@@ -1,9 +1,15 @@
 package com.adele.seunghyobackend.problem.repository.custom.impl;
 
+import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.problem.domain.QProblem;
+import com.adele.seunghyobackend.problem.domain.QSubmitList;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
 import com.adele.seunghyobackend.problem.repository.custom.ProblemRepositoryCustom;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -11,25 +17,58 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-
     @Override
     public Page<ProblemListDTO> searchPage(Pageable pageable) {
         QProblem problem = QProblem.problem;
+        QSubmitList submitList = QSubmitList.submitList;
+
+        // Fetch problem list with correct people count, submit count, and correct ratio
         List<ProblemListDTO> fetch = queryFactory
-                .select(Projections.bean(ProblemListDTO.class,
+                .select(Projections.bean(
+                        ProblemListDTO.class,
                         problem.problemNo,
-                        problem.problemTitle))
+                        problem.problemTitle,
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(submitList.member.memberId.countDistinct())
+                                        .from(submitList)
+                                        .where(submitList.problem.eq(problem).and(submitList.submitResult.eq(SubmitStatus.CORRECT))),
+                                "correctPeopleCount"
+                        ),
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(submitList.count())
+                                        .from(submitList)
+                                        .where(submitList.problem.eq(problem)),
+                                "submitCount"
+                        ),
+                        ExpressionUtils.as(
+                                Expressions.numberTemplate(BigDecimal.class, "COALESCE(ROUND((cast({0} as double) / nullif(cast({1} as double), 0)), 5), 0)", // Explicitly casting for division
+                                        JPAExpressions
+                                                .select(submitList.count())
+                                                .from(submitList)
+                                                .where(submitList.problem.eq(problem).and(submitList.submitResult.eq(SubmitStatus.CORRECT))),
+                                        JPAExpressions
+                                                .select(submitList.count())
+                                                .from(submitList)
+                                                .where(submitList.problem.eq(problem))
+                                ),
+                                "correctRatio"
+                        )
+                ))
                 .from(problem)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        // TODO 올바른 값으로 채워넣기
+
+        // Count total problems for pagination
         JPQLQuery<Long> countQuery = queryFactory
                 .select(problem.count())
                 .from(problem);

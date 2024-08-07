@@ -1,5 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
+import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,8 +30,9 @@ public class SubmitList {
     @JoinColumn(name = "problem_no")
     private Problem problem;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="submit_result")
-    private String submitResult;
+    private SubmitStatus submitResult;
 
     @Column(name="max_memory")
     private BigDecimal maxMemory;

@@ -5,11 +5,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Table(name = "problem")
 @Getter
-@Setter
-@ToString
+@ToString(exclude = "submitList")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "problemNo")
@@ -34,4 +35,7 @@ public class Problem {
     @ColumnDefault("N")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isGradable;
+
+    @OneToMany(mappedBy = "problem")
+    private List<SubmitList> submitList;
 }

@@ -27,7 +27,6 @@ import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
 @ActiveProfiles("dev")
 @Tag(INTEGRATED_TAG)
 @Slf4j
-@Sql({"/initdb.d/insert_0002_problem.sql"})
 public class ProblemRepositoryTest {
     @Autowired
     private ProblemRepository problemRepository;
@@ -35,7 +34,7 @@ public class ProblemRepositoryTest {
     @Test
     @DisplayName("page 가 정상 작동하는지 확인해본다.")
     public void pageTest() {
-        Pageable pageable = PageRequest.of(10 ,10);
+        Pageable pageable = PageRequest.of(0 ,10);
         Page<ProblemListDTO> result = problemRepository.searchPage(pageable);
         for (ProblemListDTO problem : result.getContent()) {
             log.info(problem.toString());
