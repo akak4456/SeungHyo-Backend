@@ -30,7 +30,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/favicon.ico")
-                .requestMatchers("/api/v1/auth/*")
+                .requestMatchers("/api/v1/member/auth/*")
         ;
     }
     @Bean
@@ -45,8 +45,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/v1/auth/*").permitAll()
-                                .requestMatchers("/api/v1/hello").permitAll()
+                                .requestMatchers("/api/v1/member/auth/*").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
