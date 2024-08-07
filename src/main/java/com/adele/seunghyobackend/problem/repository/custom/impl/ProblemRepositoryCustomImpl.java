@@ -5,10 +5,10 @@ import com.adele.seunghyobackend.problem.domain.QProblem;
 import com.adele.seunghyobackend.problem.domain.QSubmitList;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
 import com.adele.seunghyobackend.problem.repository.custom.ProblemRepositoryCustom;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -49,19 +49,7 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                                         .where(submitList.problem.eq(problem)),
                                 "submitCount"
                         ),
-                        ExpressionUtils.as(
-                                Expressions.numberTemplate(BigDecimal.class, "COALESCE(ROUND((cast({0} as double) / nullif(cast({1} as double), 0)), 5), 0)", // Explicitly casting for division
-                                        JPAExpressions
-                                                .select(submitList.count())
-                                                .from(submitList)
-                                                .where(submitList.problem.eq(problem).and(submitList.submitResult.eq(SubmitStatus.CORRECT))),
-                                        JPAExpressions
-                                                .select(submitList.count())
-                                                .from(submitList)
-                                                .where(submitList.problem.eq(problem))
-                                ),
-                                "correctRatio"
-                        )
+                        correctionExpression(problem, submitList)
                 ))
                 .from(problem)
                 .offset(pageable.getOffset())
@@ -74,5 +62,32 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                 .from(problem);
 
         return PageableExecutionUtils.getPage(fetch, pageable, countQuery::fetchCount);
+    }
+
+    @Override
+    public BigDecimal getCorrectionRatioById(Long id) {
+        QProblem problem = QProblem.problem;
+        QSubmitList submitList = QSubmitList.submitList;
+        return queryFactory
+                .select(correctionExpression(problem, submitList))
+                .from(problem)
+                .where(problem.problemNo.eq(id))
+                .fetchOne();
+    }
+
+    private Expression<BigDecimal> correctionExpression(QProblem problem, QSubmitList submitList) {
+        return ExpressionUtils.as(
+                Expressions.numberTemplate(BigDecimal.class, "COALESCE(ROUND((cast({0} as double) / nullif(cast({1} as double), 0)), 5), 0)", // Explicitly casting for division
+                        JPAExpressions
+                                .select(submitList.count())
+                                .from(submitList)
+                                .where(submitList.problem.eq(problem).and(submitList.submitResult.eq(SubmitStatus.CORRECT))),
+                        JPAExpressions
+                                .select(submitList.count())
+                                .from(submitList)
+                                .where(submitList.problem.eq(problem))
+                ),
+                "correctRatio"
+        );
     }
 }

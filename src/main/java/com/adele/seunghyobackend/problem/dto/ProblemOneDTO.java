@@ -1,9 +1,6 @@
 package com.adele.seunghyobackend.problem.dto;
 
-import com.adele.seunghyobackend.problem.domain.AlgorithmCategory;
-import com.adele.seunghyobackend.problem.domain.ProblemCondition;
-import com.adele.seunghyobackend.problem.domain.ProblemTag;
-import com.adele.seunghyobackend.problem.domain.ProgramLanguage;
+import com.adele.seunghyobackend.problem.domain.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,13 +16,13 @@ import java.util.List;
 public class ProblemOneDTO {
     private String problemTitle;
     private List<ProblemTag> problemTags;
-    private ProblemCondition problemCondition;
+    private List<ProblemCondition> problemCondition;
     private BigDecimal correctRatio;
     private String problemExplain;
     private String problemInputExplain;
     private String problemOutputExplain;
-    private String problemInput;
-    private String problemOutput;
-    private AlgorithmCategory algorithmCategory;
+    private List<String> problemInput;
+    private List<String> problemOutput;
+    private List<AlgorithmCategory> algorithmCategory;
     private List<ProgramLanguage> programLanguages;
 }

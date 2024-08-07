@@ -2,6 +2,7 @@ package com.adele.seunghyobackend.problem.service;
 
 import com.adele.seunghyobackend.DotenvTestExecutionListener;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
+import com.adele.seunghyobackend.problem.dto.ProblemOneDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -37,5 +38,12 @@ public class ProblemServiceIntegratedTest {
         for (ProblemListDTO problem : result.getContent()) {
             log.info(problem.toString());
         }
+    }
+
+    @Test
+    @DisplayName("하나 조회를 테스트해본다")
+    public void getOneTest() {
+        ProblemOneDTO one = problemService.problemOne(1L);
+        log.info(one.toString());
     }
 }

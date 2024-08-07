@@ -1,6 +1,7 @@
 package com.adele.seunghyobackend.problem.service;
 
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
+import com.adele.seunghyobackend.problem.dto.ProblemOneDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,4 +12,11 @@ public interface ProblemService {
      * @return Page&lt;ProblemListDTO&gt; 페이지 객체
      */
     Page<ProblemListDTO> searchPage(Pageable pageable);
+
+    /**
+     * problem 상세 조회 서비스
+     * @param problemNo problem 아이디 번호
+     * @return ProblemOneDTO
+     */
+    ProblemOneDTO problemOne(Long problemNo);
 }
