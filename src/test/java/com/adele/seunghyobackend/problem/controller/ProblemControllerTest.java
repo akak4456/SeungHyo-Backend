@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ProblemListController.class)
+@WebMvcTest(controllers = ProblemController.class)
 @SpringJUnitConfig(TestConfig.class)
 @Slf4j
 @Tag(UNIT_TEST_TAG)
@@ -32,7 +32,7 @@ public class ProblemControllerTest {
     private ProblemService problemService;
 
     @Test
-    @DisplayName(" api 가 정상 작동하는지 확인해본다")
+    @DisplayName("list api 가 정상 작동하는지 확인해본다")
     public void getPageTest() throws Exception {
         ResultActions actions =
                 mockMvc.perform(
@@ -61,6 +61,20 @@ public class ProblemControllerTest {
                 );
 
         actions3
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
+
+    @Test
+    @DisplayName("one test 가 잘 동작하는지 확인해본다")
+    public void getOneTest() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/problem/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("0"));
     }

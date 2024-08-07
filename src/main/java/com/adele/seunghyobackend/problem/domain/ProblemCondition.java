@@ -1,5 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class ProblemCondition {
 
     @ManyToOne
     @JoinColumn(name = "problem_no")
+    @JsonIgnore
     private Problem problem;
 
     @ManyToOne

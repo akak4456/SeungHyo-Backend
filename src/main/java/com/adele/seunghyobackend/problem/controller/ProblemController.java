@@ -2,14 +2,15 @@ package com.adele.seunghyobackend.problem.controller;
 
 import com.adele.seunghyobackend.ApiResult;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
+import com.adele.seunghyobackend.problem.dto.ProblemOneDTO;
 import com.adele.seunghyobackend.problem.service.ProblemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ import static com.adele.seunghyobackend.Constant.CODE_SUCCESS;
 @RequestMapping("/api/v1/problem")
 @RequiredArgsConstructor
 @Slf4j
-public class ProblemListController {
+public class ProblemController {
     private final ProblemService problemService;
 
     /**
@@ -48,12 +49,39 @@ public class ProblemListController {
             @PageableDefault
             Pageable pageable
     ) {
-        log.info("{}", pageable);
         Page<ProblemListDTO> page = problemService.searchPage(pageable);
         return ApiResult.<Page<ProblemListDTO>>builder()
                 .code(CODE_SUCCESS)
                 .message("리스트 조회 성공")
                 .data(page)
+                .build();
+    }
+
+    /**
+     * 하나를 조회한다
+     * @param problemNo 조회할 문제 번호
+     * @return ProblemOneDTO
+     * <ul>
+     *     <li><b>problemTitle</b> 문제 제목</li>
+     *     <li><b>problemTags</b> 문제 태그들</li>
+     *     <li><b>problemCondition</b> 문제 조건들</li>
+     *     <li><b>correctRatio</b> 정답 비율</li>
+     *     <li><b>problemExplain</b> 문제에 대한 정보</li>
+     *     <li><b>problemInputExplain</b> 입력 설명</li>
+     *     <li><b>problemOutputExplain</b> 출력 설명</li>
+     *     <li><b>problemInput</b> 예제 입력들</li>
+     *     <li><b>problemOutput</b> 예제 출력들</li>
+     *     <li><b>algorithmCategory</b> 알고리즘 분류</li>
+     *     <li><b>programLanguages</b> 제출 지원 언어</li>
+     * </ul>
+     */
+    @GetMapping("{problemNo}")
+    public ApiResult<ProblemOneDTO> getOne(@PathVariable Long problemNo) {
+        ProblemOneDTO one = problemService.problemOne(problemNo);
+        return ApiResult.<ProblemOneDTO>builder()
+                .code(CODE_SUCCESS)
+                .message("하나 조회 성공")
+                .data(one)
                 .build();
     }
 }
