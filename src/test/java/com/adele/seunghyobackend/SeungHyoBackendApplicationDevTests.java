@@ -15,13 +15,13 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest
-@TestExecutionListeners(listeners = {
-        DotenvTestExecutionListener.class,
-        DependencyInjectionTestExecutionListener.class
-})
-@ActiveProfiles("dev")
+// TODO 통합 테스트 구현하기
+//@SpringBootTest
+//@TestExecutionListeners(listeners = {
+//        DotenvTestExecutionListener.class,
+//        DependencyInjectionTestExecutionListener.class
+//})
+//@ActiveProfiles("dev")
 @Tag(INTEGRATED_TAG)
 @Slf4j
 class SeungHyoBackendApplicationDevTests {

@@ -1,11 +1,9 @@
 package com.adele.seunghyobackend;
 
-import com.adele.seunghyobackend.auth.service.impl.EmailCheckCodeService;
-import com.adele.seunghyobackend.email.dto.EmailMessage;
+import com.adele.seunghyobackend.member.auth.service.impl.EmailCheckCodeService;
 import com.adele.seunghyobackend.email.service.EmailService;
-import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
+import com.adele.seunghyobackend.member.auth.service.impl.RefreshTokenService;
 import com.adele.seunghyobackend.security.JwtTokenProvider;
-import jakarta.validation.constraints.Email;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

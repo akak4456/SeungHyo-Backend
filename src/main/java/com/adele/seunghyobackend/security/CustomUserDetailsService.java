@@ -1,6 +1,6 @@
 package com.adele.seunghyobackend.security;
 
-import com.adele.seunghyobackend.db.repository.MemberRepository;
+import com.adele.seunghyobackend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.adele.seunghyobackend.db.domain.Member;
+import com.adele.seunghyobackend.member.domain.Member;
 
 @Service
 @RequiredArgsConstructor

@@ -14,10 +14,10 @@ CREATE TABLE member_roles (
 
 CREATE TABLE problem(
     problem_no BIGINT NOT NULL,
-    problem_title VARCHAR(255) NOT NULL,
-    problem_explain VARCHAR(255) NOT NULL,
-    problem_input_explain VARCHAR(255) NOT NULL,
-    problem_output_explain VARCHAR(255) NOT NULL,
+    problem_title VARCHAR(1000) NOT NULL,
+    problem_explain LONGTEXT NOT NULL,
+    problem_input_explain LONGTEXT NOT NULL,
+    problem_output_explain LONGTEXT NOT NULL,
     IS_GRADABLE VARCHAR(255) NOT NULL DEFAULT('N'),
     PRIMARY KEY(problem_no)
 );

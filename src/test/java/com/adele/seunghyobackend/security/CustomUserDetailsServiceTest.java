@@ -1,8 +1,8 @@
 package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.db.domain.Member;
-import com.adele.seunghyobackend.db.repository.MemberRepository;
+import com.adele.seunghyobackend.member.domain.Member;
+import com.adele.seunghyobackend.member.repository.MemberRepository;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

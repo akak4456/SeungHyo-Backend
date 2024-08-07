@@ -1,8 +1,8 @@
 package com.adele.seunghyobackend.security;
 
 import com.adele.seunghyobackend.TestConfig;
-import com.adele.seunghyobackend.auth.service.impl.RefreshTokenService;
-import com.adele.seunghyobackend.security.model.dto.JwtToken;
+import com.adele.seunghyobackend.member.auth.service.impl.RefreshTokenService;
+import com.adele.seunghyobackend.security.dto.JwtToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.*;
