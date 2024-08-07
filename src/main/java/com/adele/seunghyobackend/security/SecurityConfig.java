@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .requestMatchers("/favicon.ico")
                 .requestMatchers("/api/v1/member/auth/*")
                 .requestMatchers("/api/v1/problem/*")
+                .requestMatchers("/api/v1/programlanguage/*")
         ;
     }
     @Bean
@@ -48,6 +49,7 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers("/api/v1/member/auth/*").permitAll()
                                 .requestMatchers("/api/v1/problem/*").permitAll()
+                                .requestMatchers("/api/v1/programlanguage/*").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

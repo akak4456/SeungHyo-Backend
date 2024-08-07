@@ -1,6 +1,7 @@
 package com.adele.seunghyobackend.problem.dto;
 
 import com.adele.seunghyobackend.problem.domain.*;
+import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,5 +25,4 @@ public class ProblemOneDTO {
     private List<String> problemInput;
     private List<String> problemOutput;
     private List<AlgorithmCategory> algorithmCategory;
-    private List<ProgramLanguage> programLanguages;
 }

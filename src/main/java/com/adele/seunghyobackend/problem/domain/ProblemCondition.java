@@ -1,5 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
+import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

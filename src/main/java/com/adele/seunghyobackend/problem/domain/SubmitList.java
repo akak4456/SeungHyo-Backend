@@ -3,6 +3,7 @@ package com.adele.seunghyobackend.problem.domain;
 import com.adele.seunghyobackend.data.SourceCodeDisclosureScope;
 import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.member.domain.Member;
+import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import jakarta.persistence.*;
 import lombok.*;
 

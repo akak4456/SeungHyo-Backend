@@ -2,13 +2,13 @@ package com.adele.seunghyobackend.problem.repository;
 
 import com.adele.seunghyobackend.problem.domain.*;
 import com.adele.seunghyobackend.problem.repository.custom.ProblemRepositoryCustom;
+import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProblemRepository extends JpaRepository<Problem, Long>, ProblemRepositoryCustom {
 
@@ -23,12 +23,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long>, Problem
             "JOIN ac.algorithmCategory a " +
             "WHERE p.problemNo = :id")
     List<AlgorithmCategory> findByIdWithAlgorithmCategory(@NotNull @Param("id") Long id);
-
-    @Query("SELECT l FROM Problem p " +
-            "JOIN p.programLanguageCorrelations lc " +
-            "JOIN lc.programLanguage l " +
-            "WHERE p.problemNo = :id")
-    List<ProgramLanguage> findByIdWithLanguage(@NotNull @Param("id") Long id);
 
     @Query("SELECT inputs.inputSource FROM Problem p " +
             "JOIN p.problemInputs inputs " +

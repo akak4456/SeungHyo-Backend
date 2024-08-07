@@ -2,7 +2,7 @@ package com.adele.seunghyobackend.board.domain;
 
 import com.adele.seunghyobackend.member.domain.Member;
 import com.adele.seunghyobackend.problem.domain.Problem;
-import com.adele.seunghyobackend.problem.domain.ProgramLanguage;
+import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import jakarta.persistence.*;
 import lombok.*;
 

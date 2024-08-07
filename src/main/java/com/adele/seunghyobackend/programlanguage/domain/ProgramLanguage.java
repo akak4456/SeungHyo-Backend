@@ -1,14 +1,17 @@
-package com.adele.seunghyobackend.problem.domain;
+package com.adele.seunghyobackend.programlanguage.domain;
 
 import com.adele.seunghyobackend.data.converter.BooleanToYNConverter;
+import com.adele.seunghyobackend.problem.domain.ProblemProgramLanguageCorrelation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Table(name = "program_language")
 @Getter
-@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +28,8 @@ public class ProgramLanguage {
     @ColumnDefault("N")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isGradable;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "programLanguage")
+    private List<ProblemProgramLanguageCorrelation> correlationList;
 }

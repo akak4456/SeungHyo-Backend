@@ -4,10 +4,8 @@ import com.adele.seunghyobackend.data.converter.BooleanToYNConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "problem")

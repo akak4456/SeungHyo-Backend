@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "algorithmCode")
+@EqualsAndHashCode(of = "algorithmNo")
 public class AlgorithmCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -41,7 +41,6 @@ public class ProblemServiceImpl implements ProblemService {
             problemOneDTO.setProblemInput(problemRepository.findByIdWithInput(problemNo));
             problemOneDTO.setProblemOutput(problemRepository.findByIdWithOutput(problemNo));
             problemOneDTO.setAlgorithmCategory(problemRepository.findByIdWithAlgorithmCategory(problemNo));
-            problemOneDTO.setProgramLanguages(problemRepository.findByIdWithLanguage(problemNo));
         }
         return problemOneDTO;
     }
