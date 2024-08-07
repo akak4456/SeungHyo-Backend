@@ -21,4 +21,13 @@ public class GlobalExceptionHandler {
                 .message("로그인 실패")
                 .build(), HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResult<Void>> handleBadCredentialsException(Exception e) {
+        log.error("심각한 error", e);
+        return new ResponseEntity<>(ApiResult.<Void>builder()
+                .code(CODE_LOGIN_FAIL)
+                .message("심각한 에러")
+                .build(), HttpStatus.FORBIDDEN);
+    }
 }

@@ -2,9 +2,9 @@ package com.adele.seunghyobackend.problem.repository.custom.impl;
 
 import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.problem.domain.QProblem;
-import com.adele.seunghyobackend.problem.domain.QSubmitList;
 import com.adele.seunghyobackend.problem.dto.ProblemListDTO;
 import com.adele.seunghyobackend.problem.repository.custom.ProblemRepositoryCustom;
+import com.adele.seunghyobackend.submit.domain.QSubmitList;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;

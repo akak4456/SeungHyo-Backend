@@ -1,11 +1,13 @@
-package com.adele.seunghyobackend.problem.domain;
+package com.adele.seunghyobackend.submit.domain;
 
 import com.adele.seunghyobackend.data.SourceCodeDisclosureScope;
 import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.member.domain.Member;
+import com.adele.seunghyobackend.problem.domain.Problem;
 import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "submitNo")
+@Builder
 public class SubmitList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,7 @@ public class SubmitList {
     @JoinColumn(name = "lang_code")
     private ProgramLanguage language;
 
+    @CreationTimestamp
     @Column(name="submit_date")
     private LocalDateTime submitDate;
 

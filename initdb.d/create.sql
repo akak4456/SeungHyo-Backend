@@ -13,27 +13,24 @@ CREATE TABLE member_roles (
 );
 
 CREATE TABLE problem(
-    problem_no BIGINT NOT NULL,
+    problem_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     problem_title VARCHAR(1000) NOT NULL,
     problem_explain LONGTEXT NOT NULL,
     problem_input_explain LONGTEXT NOT NULL,
     problem_output_explain LONGTEXT NOT NULL,
-    IS_GRADABLE VARCHAR(255) NOT NULL DEFAULT('N'),
-    PRIMARY KEY(problem_no)
+    IS_GRADABLE VARCHAR(255) NOT NULL DEFAULT('N')
 );
 CREATE TABLE problem_input(
-    input_no BIGINT NOT NULL,
+    input_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     is_example VARCHAR(255) NOT NULL DEFAULT('N'),
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    input_source LONGTEXT NOT NULL,
-    PRIMARY KEY(input_no)
+    input_source LONGTEXT NOT NULL
 );
 CREATE TABLE problem_output(
-    output_no BIGINT NOT NULL,
+    output_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     is_example VARCHAR(255) NOT NULL DEFAULT('N'),
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    output_source LONGTEXT NOT NULL,
-    PRIMARY KEY(output_no)
+    output_source LONGTEXT NOT NULL
 );
 CREATE TABLE program_language(
     lang_code VARCHAR(255) NOT NULL,
@@ -42,15 +39,14 @@ CREATE TABLE program_language(
     PRIMARY KEY(lang_code)
 );
 CREATE TABLE problem_condition(
-    condition_no BIGINT NOT NULL,
+    condition_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     condition_time DECIMAL(5,2) NOT NULL,
     condition_memory DECIMAL(5,2) NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
-    PRIMARY KEY(condition_no)
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code)
 );
 CREATE TABLE submit_list(
-    submit_no BIGINT NOT NULL,
+    submit_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
     problem_no BIGINT NOT NULL REFERENCES  problem(problem_no),
     submit_result VARCHAR(255) NOT NULL,
@@ -59,46 +55,39 @@ CREATE TABLE submit_list(
     lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
     submit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     open_range VARCHAR(255) NOT NULL,
-    source_code LONGTEXT NOT NULL,
-    PRIMARY KEY(submit_no)
+    source_code LONGTEXT NOT NULL
 );
 CREATE TABLE problem_grade(
-    grade_no BIGINT NOT NULL,
+    grade_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     grade_result VARCHAR(255) NOT NULL,
     input_no BIGINT NOT NULL REFERENCES problem_input(input_no),
     output_no BIGINT NOT NULL REFERENCES problem_output(output_no),
     submit_no BIGINT NOT NULL REFERENCES  submit_list(submit_no),
-    grade_case_no BIGINT NOT NULL,
-    PRIMARY KEY(grade_no)
+    grade_case_no BIGINT NOT NULL
 );
 CREATE TABLE problem_program_language_correlation(
-    correlation_id BIGINT NOT NULL,
+    correlation_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
-    PRIMARY KEY (correlation_id)
+    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code)
 );
 CREATE TABLE problem_tag(
-    tag_no BIGINT NOT NULL,
+    tag_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     tag_name VARCHAR(255) NOT NULL,
-    background_color VARCHAR(255) NOT NULL,
-    PRIMARY KEY(tag_no)
+    background_color VARCHAR(255) NOT NULL
 );
 CREATE TABLE problem_problem_tag_correlation(
-    correlation_id BIGINT NOT NULL,
+    correlation_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    tag_no BIGINT NOT NULL REFERENCES problem_tag(tag_no),
-    PRIMARY KEY(correlation_id)
+    tag_no BIGINT NOT NULL REFERENCES problem_tag(tag_no)
 );
 CREATE TABLE algorithm_category(
-    algorithm_no BIGINT NOT NULL,
-    algorithm_name VARCHAR(255) NOT NULL,
-    PRIMARY KEY(algorithm_no)
+    algorithm_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    algorithm_name VARCHAR(255) NOT NULL
 );
 CREATE TABLE problem_algorithm_category_correlation(
-    correlation_id BIGINT NOT NULL,
+    correlation_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
-    algorithm_no BIGINT NOT NULL REFERENCES algorithm_category(algorithm_no),
-    PRIMARY KEY(correlation_id)
+    algorithm_no BIGINT NOT NULL REFERENCES algorithm_category(algorithm_no)
 );
 CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,
@@ -106,7 +95,7 @@ CREATE TABLE board_category(
     PRIMARY KEY (category_code)
 );
 CREATE TABLE board(
-    board_no BIGINT NOT NULL,
+    board_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
     board_title VARCHAR(255) NOT NULL,
     category_code VARCHAR(255) NOT NULL REFERENCES board_category(category_code),
@@ -115,15 +104,13 @@ CREATE TABLE board(
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     board_content LONGTEXT NOT NULL,
-    source_code LONGTEXT NOT NULL,
-    PRIMARY KEY(board_no)
+    source_code LONGTEXT NOT NULL
 );
 CREATE TABLE reply(
-    reply_no BIGINT NOT NULL,
+    reply_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     board_no BIGINT NOT NULL REFERENCES board(board_no),
     member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
     like_count BIGINT NOT NULL,
     reply_content LONGTEXT NOT NULL,
-    source_code LONGTEXT NOT NULL,
-    PRIMARY KEY(reply_no)
+    source_code LONGTEXT NOT NULL
 );
