@@ -1,5 +1,6 @@
 package com.adele.seunghyobackend.problem.domain;
 
+import com.adele.seunghyobackend.data.SourceCodeDisclosureScope;
 import com.adele.seunghyobackend.data.SubmitStatus;
 import com.adele.seunghyobackend.member.domain.Member;
 import jakarta.persistence.*;
@@ -47,8 +48,9 @@ public class SubmitList {
     @Column(name="submit_date")
     private LocalDateTime submitDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="open_range")
-    private String openRange;
+    private SourceCodeDisclosureScope openRange;
 
     @Column(name="source_code")
     private String sourceCode;
