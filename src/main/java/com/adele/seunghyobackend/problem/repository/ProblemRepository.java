@@ -2,7 +2,6 @@ package com.adele.seunghyobackend.problem.repository;
 
 import com.adele.seunghyobackend.problem.domain.*;
 import com.adele.seunghyobackend.problem.repository.custom.ProblemRepositoryCustom;
-import com.adele.seunghyobackend.programlanguage.domain.ProgramLanguage;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,13 +25,13 @@ public interface ProblemRepository extends JpaRepository<Problem, Long>, Problem
 
     @Query("SELECT inputs.inputSource FROM Problem p " +
             "JOIN p.problemInputs inputs " +
-            "WHERE p.problemNo = :id")
-    List<String> findByIdWithInput(@NotNull @Param("id") Long id);
+            "WHERE p.problemNo = :id AND inputs.isExample = true")
+    List<String> findByIdWithInputExampleOnly(@NotNull @Param("id") Long id);
 
     @Query("SELECT outputs.outputSource FROM Problem p " +
             "JOIN p.problemOutputs outputs " +
-            "WHERE p.problemNo = :id")
-    List<String> findByIdWithOutput(@NotNull @Param("id") Long id);
+            "WHERE p.problemNo = :id AND outputs.isExample = true")
+    List<String> findByIdWithOutputExampleOnly(@NotNull @Param("id") Long id);
 
     @Query("SELECT con FROM Problem p " +
             "JOIN p.problemConditions con " +
