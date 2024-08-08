@@ -49,3 +49,6 @@ cross-origin-url: http://localhost:3000
 
 email-check-code-valid-in-seconds: 180 # 3분
 valid-email-time-in-seconds: 1800 # 30분
+
+compiler:
+  java11-path: ${COMPILER_JAVA11_PATH}
