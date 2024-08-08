@@ -1,8 +1,10 @@
 package com.adele.seunghyobackend.compile.strategy;
 
-import org.apache.commons.exec.ExecuteException;
+import com.adele.seunghyobackend.compile.ExecuteResultConsumer;
+import com.adele.seunghyobackend.compile.dto.CompileResultDTO;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 주의!!! 상태를 가지고 있으므로
@@ -11,9 +13,9 @@ import java.io.IOException;
 public interface CompileStrategy {
     void writeSourceCode(String sourceCode) throws IOException;
 
-    void compile() throws IOException;
+    void compile() throws IOException, InterruptedException;
 
-    String execute() throws IOException;
+    List<CompileResultDTO> execute(List<String> input, Long timeoutInMillis, Long memoryLimitInMegabyte, ExecuteResultConsumer consumer);
 
     void releaseResources();
 }

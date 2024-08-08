@@ -33,6 +33,16 @@ public interface ProblemRepository extends JpaRepository<Problem, Long>, Problem
             "WHERE p.problemNo = :id AND outputs.isExample = true")
     List<String> findByIdWithOutputExampleOnly(@NotNull @Param("id") Long id);
 
+    @Query("SELECT inputs.inputSource FROM Problem p " +
+            "JOIN p.problemInputs inputs " +
+            "WHERE p.problemNo = :id")
+    List<String> findByIdWithInput(@NotNull @Param("id") Long id);
+
+    @Query("SELECT outputs.outputSource FROM Problem p " +
+            "JOIN p.problemOutputs outputs " +
+            "WHERE p.problemNo = :id")
+    List<String> findByIdWithOutput(@NotNull @Param("id") Long id);
+
     @Query("SELECT con FROM Problem p " +
             "JOIN p.problemConditions con " +
             "WHERE p.problemNo = :id")

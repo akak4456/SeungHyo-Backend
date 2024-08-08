@@ -2,6 +2,7 @@ package com.adele.seunghyobackend.compile.service;
 
 import com.adele.seunghyobackend.DotenvTestExecutionListener;
 import com.adele.seunghyobackend.compile.CompileStatus;
+import com.adele.seunghyobackend.compile.ExecuteResultConsumer;
 import com.adele.seunghyobackend.compile.dto.CompileResultDTO;
 import com.adele.seunghyobackend.compile.service.impl.CompileServiceImpl;
 import com.adele.seunghyobackend.compile.strategy.impl.Java11CompileStrategy;
@@ -28,14 +29,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.adele.seunghyobackend.Constant.CLEAN_UP_DONE_MESSAGE;
 import static com.adele.seunghyobackend.TestConstant.INTEGRATED_TAG;
 import static com.adele.seunghyobackend.TestConstant.UNIT_TEST_TAG;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -75,13 +76,21 @@ public class CompileServiceTest {
         String expectedOutput = "Hello, World!" + System.lineSeparator();
 
         // 비동기 메서드 호출
-        CompletableFuture<CompileResultDTO> futureResult = compileService.compileAndRun(java11CompileStrategy, sourceCode, input);
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                List.of(input),
+                1000L,
+                128L,
+                (idx, output) -> {
+
+        });
 
         // 결과 검증
-        CompileResultDTO result = futureResult.get();
+        CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.SUCCESS, result.getStatus());
         assertEquals(expectedOutput, result.getOutput());
-        assertEquals("", result.getError());
+        assertNull(result.getError());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
     }
@@ -96,12 +105,20 @@ public class CompileServiceTest {
         String input = "";
 
         // 비동기 메서드 호출
-        CompletableFuture<CompileResultDTO> futureResult = compileService.compileAndRun(java11CompileStrategy, sourceCode, input);
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                List.of(input),
+                1_000L,
+                128L,
+                (idx, output) -> {
+
+        });
 
         // 결과 검증
-        CompileResultDTO result = futureResult.get();
+        CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.COMPILE_ERROR, result.getStatus());
-        assertNotEquals("", result.getError()); // 에러 메시지가 비어 있지 않음을 확인
+        assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
 
         verify(java11CompileStrategy, times(1)).releaseResources();
     }
@@ -116,12 +133,144 @@ public class CompileServiceTest {
         String input = "";
 
         // 비동기 메서드 호출
-        CompletableFuture<CompileResultDTO> futureResult = compileService.compileAndRun(java11CompileStrategy, sourceCode, input);
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                List.of(input),
+                1000L,
+                128L,
+                (idx, output) -> {
+
+        });
 
         // 결과 검증
-        CompileResultDTO result = futureResult.get();
+        CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
-        assertNotEquals("", result.getError()); // 에러 메시지가 비어 있지 않음을 확인
+        assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
+
+        verify(java11CompileStrategy, times(1)).releaseResources();
+    }
+
+    @Test
+    @DisplayName("ADD 가 정상적으로 되는지 확인해본다")
+    public void addTest() throws IOException, InterruptedException, ExecutionException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        String sourceCode = """
+                import java.io.*;
+                import java.util.*;
+                
+                public class Main {
+                    public static void main(String[] args) throws IOException {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                        StringTokenizer tokenizer = new StringTokenizer(reader.readLine(), " ");
+                        int a = Integer.parseInt(tokenizer.nextToken());
+                        int b = Integer.parseInt(tokenizer.nextToken());
+                        System.out.println(a + b);
+                    }
+                }
+                """;
+        List<String> input = List.of("1 2", "3 4");
+
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                input,
+                1_000L,
+                128L,
+                (idx, output) -> {
+
+        });
+
+        CompileResultDTO result = futureResult.get().get(0);
+        assertEquals(CompileStatus.SUCCESS, result.getStatus());
+        assertEquals("3" + System.lineSeparator(), result.getOutput());
+        assertNull(result.getError());
+
+        CompileResultDTO result2 = futureResult.get().get(1);
+        assertEquals(CompileStatus.SUCCESS, result2.getStatus());
+        assertEquals("7" + System.lineSeparator(), result2.getOutput());
+        assertNull(result2.getError());
+
+        verify(java11CompileStrategy, times(1)).releaseResources();
+
+    }
+
+    @Test
+    @DisplayName("무한 루프가 발생하게 된다면?")
+    public void infiniteLoop() throws IOException, InterruptedException, ExecutionException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        String sourceCode = """
+                import java.io.*;
+                import java.util.*;
+                
+                public class Main {
+                    public static void main(String[] args) throws IOException {
+                        while(true) {
+                            System.out.println("A");
+                        }
+                    }
+                }
+                """;
+        List<String> input = List.of("");
+
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                input,
+                1_000L,
+                128L,
+                (idx, output) -> {
+
+        });
+
+        // 결과 검증
+        CompileResultDTO result = futureResult.get().get(0);
+        assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
+        assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
+
+        verify(java11CompileStrategy, times(1)).releaseResources();
+    }
+
+    @Test
+    @DisplayName("메모리가 초과된다면?(힙 메모리)")
+    public void memoryOver() throws IOException, InterruptedException, ExecutionException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        String sourceCode = """
+                import java.io.*;
+                import java.util.*;
+                
+                public class Main {
+                    public static void main(String[] args) throws IOException {
+                        ArrayList<Object> objects = new ArrayList<>();
+                        while(true) {
+                            objects.add(new Object());
+                        }
+                    }
+                }
+                """;
+        List<String> input = List.of("");
+
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                input,
+                10_000L,
+                10L,
+                (idx, output) -> {
+
+                });
+
+        // 결과 검증
+        CompileResultDTO result = futureResult.get().get(0);
+        assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
+        assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
+        log.info(result.getError().getMessage());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
     }
