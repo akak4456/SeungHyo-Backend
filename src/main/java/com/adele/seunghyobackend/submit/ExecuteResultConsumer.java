@@ -1,6 +1,6 @@
-package com.adele.seunghyobackend.compile;
+package com.adele.seunghyobackend.submit;
 
-import com.adele.seunghyobackend.compile.dto.CompileResultDTO;
+import com.adele.seunghyobackend.submit.dto.CompileResultDTO;
 
 @FunctionalInterface
 public interface ExecuteResultConsumer {

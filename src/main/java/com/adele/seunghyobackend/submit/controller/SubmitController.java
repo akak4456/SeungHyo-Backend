@@ -1,11 +1,17 @@
 package com.adele.seunghyobackend.submit.controller;
 
 import com.adele.seunghyobackend.ApiResult;
+import com.adele.seunghyobackend.submit.dto.ConditionDTO;
+import com.adele.seunghyobackend.submit.service.CompileService;
+import com.adele.seunghyobackend.submit.compilestrategy.CompileStrategy;
+import com.adele.seunghyobackend.submit.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.seunghyobackend.submit.dto.NewSubmitRequestDTO;
 import com.adele.seunghyobackend.submit.dto.NewSubmitResultDTO;
 import com.adele.seunghyobackend.submit.service.SubmitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 import static com.adele.seunghyobackend.Constant.CODE_SUCCESS;
 
 @RestController
@@ -23,6 +31,16 @@ import static com.adele.seunghyobackend.Constant.CODE_SUCCESS;
 @Slf4j
 public class SubmitController {
     private final SubmitService submitService;
+
+    private final CompileService compileService;
+
+
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
     /**
      * 소스코드 새로운 제출을 시도한다
      * @param newSubmitRequestDTO
@@ -36,15 +54,44 @@ public class SubmitController {
      * 제출 시도 성공했는지 여부
      */
     @PostMapping("")
-    public ApiResult<NewSubmitResultDTO> newSubmit(@RequestBody NewSubmitRequestDTO newSubmitRequestDTO) {
+    public ApiResult<NewSubmitResultDTO> newSubmit(@RequestBody NewSubmitRequestDTO newSubmitRequestDTO) throws IOException, InterruptedException {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication authentication = context.getAuthentication();
-        String memberId = ((User)authentication.getPrincipal()).getUsername();
+        String memberId = "";
+        if(authentication != null) {
+            memberId = ((User)authentication.getPrincipal()).getUsername();
+        }
         NewSubmitResultDTO result = submitService.tryNewSubmit(memberId, newSubmitRequestDTO);
+        tryCompile(newSubmitRequestDTO);
         return ApiResult.<NewSubmitResultDTO>builder()
                 .code(CODE_SUCCESS)
                 .message("제출 시도 성공")
                 .data(result)
                 .build();
+    }
+
+    private void tryCompile(NewSubmitRequestDTO requestDTO) throws IOException, InterruptedException {
+        CompileStrategy strategy = null;
+        if(requestDTO.getLangCode().equals("JAVA_11")) {
+            strategy = applicationContext.getBean(Java11CompileStrategy.class);
+        }
+        ConditionDTO conditionDTO = compileService.getCondition(requestDTO.getProblemNo(), requestDTO.getLangCode());
+        compileService.compileAndRun(
+                strategy,
+                requestDTO.getSourceCode(),
+                conditionDTO.getInput(),
+                (long) (conditionDTO.getTimeCondition().doubleValue() * 1000),
+                conditionDTO.getMemoryCondition().longValue(),
+                (idx, compileResult) -> {
+                    log.info("idx : {}, result : {}", idx, compileResult);
+                }).thenAccept(result -> {
+            // 전체 결과가 완료된 후 추가적인 처리 가능
+            // 예: 결과를 데이터베이스에 저장
+            log.info("All compile results processed");
+        }).exceptionally(ex -> {
+            // 예외 처리
+            log.error("An error occurred during compilation: ", ex);
+            throw new RuntimeException(ex);
+        });;
     }
 }

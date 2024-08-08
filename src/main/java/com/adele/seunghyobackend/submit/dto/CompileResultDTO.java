@@ -1,9 +1,7 @@
-package com.adele.seunghyobackend.compile.dto;
+package com.adele.seunghyobackend.submit.dto;
 
-import com.adele.seunghyobackend.compile.CompileStatus;
+import com.adele.seunghyobackend.submit.CompileStatus;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

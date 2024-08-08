@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.compile.strategy.timeoutprocess;
+package com.adele.seunghyobackend.submit.compilestrategy.timeoutprocess;
 
 /**
  * Exception thrown when TimeoutProcess times out while it is being waited for.

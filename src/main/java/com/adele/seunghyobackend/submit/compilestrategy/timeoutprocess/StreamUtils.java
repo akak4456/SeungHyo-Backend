@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.compile.strategy.timeoutprocess;
+package com.adele.seunghyobackend.submit.compilestrategy.timeoutprocess;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

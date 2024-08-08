@@ -1,4 +1,4 @@
-package com.adele.seunghyobackend.compile.dto;
+package com.adele.seunghyobackend.submit.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
