@@ -8,6 +8,10 @@ import com.adele.memberservice.service.MemberService;
 import com.adele.memberservice.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -49,5 +53,19 @@ public class MemberController {
                 .message("로그인 성공")
                 .data(response)
                 .build();
+    }
+
+    /**
+     * 정보 수정에서 이용할 데이터를 조회한다
+     * @return InfoEditResultDTO
+     * <ul>
+     *     <li><b>memberId</b> 조회한 member id</li>
+     *     <li><b>statusMessage</b> 조회한 상태 메시지</li>
+     *     <li><b>email</b> 조회한 이메일</li>
+     * </ul>
+     */
+    @GetMapping("/my/info-edit")
+    public String getInfoEdit() {
+        return "hello";
     }
 }
