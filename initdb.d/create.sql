@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS `member_service`;
+GRANT ALL PRIVILEGES on *.* TO 'adele'@'%' WITH GRANT OPTION;
+USE member_service;
 CREATE TABLE member (
     delete_yn VARCHAR(255) DEFAULT 'N',
     email VARCHAR(255) NOT NULL UNIQUE,

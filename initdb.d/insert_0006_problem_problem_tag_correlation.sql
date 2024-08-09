@@ -1,3 +1,4 @@
+USE member_service;
 insert into problem_problem_tag_correlation (correlation_id, problem_no, tag_no) values (1, 100, 1);
 insert into problem_problem_tag_correlation (correlation_id, problem_no, tag_no) values (2, 72, 1);
 insert into problem_problem_tag_correlation (correlation_id, problem_no, tag_no) values (3, 66, 1);

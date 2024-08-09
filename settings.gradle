@@ -2,3 +2,5 @@ rootProject.name = 'SeungHyo-Backend'
 
 include "common"
 include "eureka"
+include "member-service"
+include "apigateway-service"

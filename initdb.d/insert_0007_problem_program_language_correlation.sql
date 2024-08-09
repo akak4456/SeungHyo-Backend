@@ -1,3 +1,4 @@
+USE member_service;
 insert into problem_program_language_correlation (correlation_id, problem_no, lang_code) values (1, 1, 'JAVA_11');
 insert into problem_program_language_correlation (correlation_id, problem_no, lang_code) values (2, 2, 'JAVA_11');
 insert into problem_program_language_correlation (correlation_id, problem_no, lang_code) values (3, 3, 'JAVA_11');
