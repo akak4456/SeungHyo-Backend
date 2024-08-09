@@ -1,6 +1,6 @@
 package com.adele.apigatewayservice;
 
-import io.jsonwebtoken.Jwts;
+import com.adele.common.AuthHeaderConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -9,18 +9,24 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
     Environment env;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthorizationHeaderFilter(Environment env) {
+    public AuthorizationHeaderFilter(Environment env, JwtTokenProvider jwtTokenProvider) {
         super(Config.class);
         this.env = env;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public static class Config {
@@ -41,47 +47,29 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
             // "Authorization" 헤더에서 JWT 토큰을 추출.
             String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-            String jwt = authorizationHeader.replace("Bearer", "");
+            String jwt = authorizationHeader.replace("Bearer ", "");
 
             // 추출한 JWT 토큰의 유효성을 확인.
-            if (!isJwtValid(jwt)) {
+            Authentication authentication;
+            if (jwtTokenProvider.validateToken(jwt)) {
+                authentication = jwtTokenProvider.getAuthentication(jwt);
+            } else {
                 return onError(exchange, "JWT Token is not valid", HttpStatus.UNAUTHORIZED);
             }
+            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                    .header(AuthHeaderConstant.AUTH_USER, authentication.getName())
+                    .header(AuthHeaderConstant.AUTH_USER_ROLES, authentication.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(",")))
+                    .build();
+
+            ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
 
             // JWT 토큰이 유효한 경우, 다음 필터로 요청을 전달.
-            return chain.filter(exchange);
+            return chain.filter(modifiedExchange);
         };
 
         return filter;
-    }
-
-    private boolean isJwtValid(String jwt) {
-        // 반환값으로 사용할 boolean 변수를 초기값 true로 설정
-        boolean returnValue = true;
-
-        // JWT의 'subject'를 저장할 변수 초기화
-        String subject = null;
-
-        try {
-            // JWT 토큰을 파싱하고 검증하는 부분
-            subject = Jwts.parser()
-                    .setSigningKey(env.getProperty("JWT_SECRET")) // 토큰의 비밀 키 설정
-                    .parseClaimsJws(jwt) // JWT 토큰 파싱 및 검증
-                    .getBody()
-                    .getSubject(); // 토큰에서 'subject' 정보 추출
-
-        } catch (Exception e) {
-            // 예외가 발생하면 JWT가 유효하지 않다고 판단하고 반환값을 false로 변경
-            returnValue = false;
-        }
-
-        // 'subject' 값이 비어있으면 JWT가 유효하지 않다고 판단하고 반환값을 false로 변경
-        if (subject == null || subject.isEmpty()) {
-            returnValue = false;
-        }
-
-        // 최종적으로 JWT의 유효성 여부를 나타내는 반환값을 반환
-        return returnValue;
     }
 
     // Mono, Flux -> Spring WebFlux (기존의 SpringMVC 방식이 아니기때문에 Servlet 을 사용하지 않음)

@@ -22,15 +22,22 @@ ext {
 }
 
 dependencies {
+    implementation project(":common");
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     // eureka-client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     // Jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // DotEnv
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

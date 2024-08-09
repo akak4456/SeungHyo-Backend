@@ -1,6 +1,7 @@
 package com.adele.memberservice.controller;
 
 import com.adele.common.ApiResult;
+import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
 import com.adele.memberservice.dto.LoginRequest;
 import com.adele.memberservice.dto.LoginResponse;
@@ -8,10 +9,6 @@ import com.adele.memberservice.service.MemberService;
 import com.adele.memberservice.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -65,7 +62,9 @@ public class MemberController {
      * </ul>
      */
     @GetMapping("/my/info-edit")
-    public String getInfoEdit() {
+    public String getInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestHeader(AuthHeaderConstant.AUTH_USER_ROLES) String roles) {
+        log.info("memberId: {}", memberId);
+        log.info("roles: {}", roles);
         return "hello";
     }
 }
