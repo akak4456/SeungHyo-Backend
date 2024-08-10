@@ -11,9 +11,19 @@ eureka:
 spring:
   application:
     name: apigateway-service
+  data:
+    redis:
+      host: ${REDIS_DEV_HOST}
+      port: ${REDIS_DEV_PORT}
   cloud:
     gateway:
       routes:
+        - id: member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/api/v1/member/auth/logout
+          filters:
+            - CustomLogoutFilter
         - id: member-service
           uri: lb://MEMBER-SERVICE
           predicates:

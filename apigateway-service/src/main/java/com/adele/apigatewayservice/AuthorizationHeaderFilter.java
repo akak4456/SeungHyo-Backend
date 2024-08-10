@@ -27,12 +27,14 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     Environment env;
     private final JwtTokenProvider jwtTokenProvider;
     private final WebClient.Builder webClientBuilder;
+    private final RedisUtil redisUtil;
 
-    public AuthorizationHeaderFilter(Environment env, JwtTokenProvider jwtTokenProvider, WebClient.Builder webClientBuilder) {
+    public AuthorizationHeaderFilter(Environment env, JwtTokenProvider jwtTokenProvider, WebClient.Builder webClientBuilder, RedisUtil redisUtil) {
         super(Config.class);
         this.env = env;
         this.jwtTokenProvider = jwtTokenProvider;
         this.webClientBuilder = webClientBuilder;
+        this.redisUtil = redisUtil;
     }
 
     public static class Config {
@@ -58,7 +60,11 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
             // 추출한 JWT 토큰의 유효성을 확인.
             if (jwtTokenProvider.validateToken(jwt)) {
-                return chain.filter(getValidWebExchangeFromJWTToken(exchange, jwt, null));
+                Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+                if(redisUtil.isBlackList(authentication.getName(), jwt)) {
+                    return onError(exchange, "this token is logouted", HttpStatus.UNAUTHORIZED);
+                }
+                return chain.filter(getValidWebExchangeFromJWTToken(exchange, authentication, jwt, null));
             } else {
                 String refreshToken = request.getHeaders().get("Refresh-Token").get(0);
                 return reissueToken(exchange, chain, refreshToken);
@@ -75,7 +81,8 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 .exchangeToMono((response) -> {
                     String newAccessToken = Objects.requireNonNull(response.headers().asHttpHeaders().get("Authorization")).get(0).substring("Bearer ".length());
                     String newRefreshToken = Objects.requireNonNull(response.headers().asHttpHeaders().get("Refresh-Token")).get(0);
-                    return chain.filter(getValidWebExchangeFromJWTToken(exchange, newAccessToken, newRefreshToken));
+                    Authentication authentication = jwtTokenProvider.getAuthentication(newAccessToken);
+                    return chain.filter(getValidWebExchangeFromJWTToken(exchange, authentication, newAccessToken, newRefreshToken));
                 })
                 .onErrorResume(e -> {
                     log.error("error occured", e);
@@ -83,8 +90,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 });
     }
 
-    private ServerWebExchange getValidWebExchangeFromJWTToken(ServerWebExchange exchange, String accessToken, String newRefreshToken) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+    private ServerWebExchange getValidWebExchangeFromJWTToken(ServerWebExchange exchange, Authentication authentication, String accessToken, String newRefreshToken) {
         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                 .header(AuthHeaderConstant.AUTH_USER, authentication.getName())
                 .header(AuthHeaderConstant.AUTH_USER_ROLES, authentication.getAuthorities().stream()
