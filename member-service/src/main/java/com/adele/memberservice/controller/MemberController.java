@@ -3,10 +3,7 @@ package com.adele.memberservice.controller;
 import com.adele.common.ApiResult;
 import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
-import com.adele.memberservice.dto.EmailDTO;
-import com.adele.memberservice.dto.EmailMessage;
-import com.adele.memberservice.dto.LoginRequest;
-import com.adele.memberservice.dto.LoginResponse;
+import com.adele.memberservice.dto.*;
 import com.adele.memberservice.service.EmailCheckCodeService;
 import com.adele.memberservice.service.EmailService;
 import com.adele.memberservice.service.MemberService;
@@ -101,6 +98,29 @@ public class MemberController {
             }
         }
         return key.toString();
+    }
+
+    /**
+     * 이메일 체크 코드 확인
+     * @param validEmailDTO
+     * <ul>
+     *  <li><b>email</b>: 인증코드 확인할 이메일</li>
+     *  <li><b>code</b>: 인증코드</li>
+     * </ul>
+     * @return
+     * 이메일 인증이 성공했는지 여부
+     */
+    @PostMapping("/auth/valid-email")
+    public ApiResult<Boolean> validEmail(@RequestBody ValidEmailDTO validEmailDTO) {
+        boolean isValidEmail = emailCheckCodeService.isCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
+        if(isValidEmail) {
+            emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
+        }
+        return ApiResult.<Boolean>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("이메일 체크 확인 성공")
+                .data(isValidEmail)
+                .build();
     }
 
     /**
