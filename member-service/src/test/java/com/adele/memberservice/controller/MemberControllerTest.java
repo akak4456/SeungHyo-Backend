@@ -2,7 +2,10 @@ package com.adele.memberservice.controller;
 
 import com.adele.memberservice.JwtTokenProvider;
 import com.adele.memberservice.TestConfig;
+import com.adele.memberservice.dto.JoinDTO;
 import com.adele.memberservice.dto.LoginRequest;
+import com.adele.memberservice.service.EmailCheckCodeService;
+import com.adele.memberservice.service.EmailService;
 import com.adele.memberservice.service.MemberService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +36,12 @@ public class MemberControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private EmailCheckCodeService emailCheckCodeService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -72,22 +81,22 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("0"));
     }
 
-//    @Test
-//    @DisplayName("회원가입이 되는지 확인해본다.")
-//    public void joinTest() throws Exception {
-//        JoinDTO joinDTO = new JoinDTO("user1", "pass1","pass1", "status1", "email1");
-//        String content = gson.toJson(joinDTO);
-//
-//        ResultActions actions =
-//                mockMvc.perform(
-//                        post("/api/v1/member/auth/join")
-//                                .contentType(MediaType.APPLICATION_JSON)
-//                                .content(content)
-//                );
-//
-//        actions
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.code").value("0"));
-//    }
+    @Test
+    @DisplayName("회원가입이 되는지 확인해본다.")
+    public void joinTest() throws Exception {
+        JoinDTO joinDTO = new JoinDTO("user1", "pass1","pass1", "status1", "email1");
+        String content = gson.toJson(joinDTO);
+
+        ResultActions actions =
+                mockMvc.perform(
+                        post("/api/v1/member/auth/join")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
 }
 

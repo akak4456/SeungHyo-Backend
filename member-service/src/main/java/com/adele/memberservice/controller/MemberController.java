@@ -138,6 +138,39 @@ public class MemberController {
     }
 
     /**
+     * 회원가입 시도
+     * 회원가입 시도 성공, 실패 여부를 반환한다.
+     * @param joinDTO
+     * <ul>
+     *     <li><b>memberId</b> 회원가입 시도할 아이디</li>
+     *     <li><b>memberPw</b> 회원가입 시도할 비밀번호</li>
+     *     <li><b>memberPwCheck</b> 회원가입 시도할 비밀번호 확인</li>
+     *     <li><b>statusMessage</b> 회원가입 시도할 상태 메시지</li>
+     *     <li><b>email</b> 회원가입 시도할 이메일</li>
+     * </ul>
+     * @return JoinResultDTO
+     * <ul>
+     *     <li><b>idNotValidForm</b> id가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>idDuplicate</b> id가 중복되었는지 여부</li>
+     *     <li><b>statusNotValidForm</b> 상태 메시지가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>pwNotValidForm</b> pw가 올바른 형태가 아닌지 여부</li>
+     *     <li><b>pwAndPwCheckDifferent</b> 비밀번호와 비밀번호 확인이 다른지 여부</li>
+     *     <li><b>emailNotValidForm</b> 이메일이 올바른 형태가 아닌지 여부</li>
+     *     <li><b>emailDuplicate</b> 이메일이 중복되었는지 여부</li>
+     *     <li><b>emailNotValidate</b> 이메일을 인증했는지 여부</li>
+     * </ul>
+     */
+    @PostMapping("/auth/join")
+    public ApiResult<JoinResultDTO> join(@RequestBody JoinDTO joinDTO) {
+        JoinResultDTO joinResultDTO = memberService.tryJoin(joinDTO, emailCheckCodeService.isValidEmail(joinDTO.getEmail()));
+        return ApiResult.<JoinResultDTO>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("회원가입 시도 성공")
+                .data(joinResultDTO)
+                .build();
+    }
+
+    /**
      * 정보 수정에서 이용할 데이터를 조회한다
      * @return InfoEditResultDTO
      * <ul>

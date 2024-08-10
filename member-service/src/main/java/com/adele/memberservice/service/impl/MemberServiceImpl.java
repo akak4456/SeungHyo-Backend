@@ -2,6 +2,8 @@ package com.adele.memberservice.service.impl;
 
 import com.adele.memberservice.JwtTokenProvider;
 import com.adele.memberservice.domain.Member;
+import com.adele.memberservice.dto.JoinDTO;
+import com.adele.memberservice.dto.JoinResultDTO;
 import com.adele.memberservice.dto.LoginRequest;
 import com.adele.memberservice.dto.LoginResponse;
 import com.adele.memberservice.repository.MemberRepository;
@@ -17,6 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.adele.common.ValidFormUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +63,61 @@ public class MemberServiceImpl implements MemberService {
                 .password(passwordEncoder.encode(member.getPassword()))
                 .roles(member.getRoles().toArray(new String[0]))
                 .build();
+    }
+
+    @Override
+    public JoinResultDTO tryJoin(JoinDTO joinDTO, boolean isEmailValid) {
+        boolean joinAvailable = true;
+        JoinResultDTO joinResultDTO = new JoinResultDTO();
+        if(!validateIdForm(joinDTO.getMemberId())) {
+            // 아이디가 올바른 형태가 아니냐?
+            joinAvailable = false;
+            joinResultDTO.setIdNotValidForm(true);
+        }
+        if(memberRepository.findById(joinDTO.getMemberId()).isPresent()) {
+            // 아이디가 존재하냐?
+            joinAvailable = false;
+            joinResultDTO.setIdDuplicate(true);
+        }
+        if(!validateStatusMessageForm(joinDTO.getStatusMessage())) {
+            // 상태 메시지가 올바른 형태가 아닌가?
+            joinAvailable = false;
+            joinResultDTO.setStatusNotValidForm(true);
+        }
+        if(!validatePwForm(joinDTO.getMemberPw())) {
+            // 비밀번호가 올바른 형태가 아닌가?
+            joinAvailable = false;
+            joinResultDTO.setPwNotValidForm(true);
+        }
+        if(!joinDTO.getMemberPw().equals(joinDTO.getMemberPwCheck())) {
+            // 비밀번호와 비밀번호 확인이 다르나?
+            joinAvailable = false;
+            joinResultDTO.setPwAndPwCheckDifferent(true);
+        }
+        if(!validateEmailForm(joinDTO.getEmail())) {
+            // 이메일이 올바른 형태가 아닌가?
+            joinAvailable = false;
+            joinResultDTO.setEmailNotValidForm(true);
+        }
+        if(memberRepository.findByEmail(joinDTO.getEmail()).isPresent()) {
+            // 이메일이 존재 하나?
+            joinAvailable = false;
+            joinResultDTO.setEmailDuplicate(true);
+        }
+        if(!isEmailValid) {
+            // 이메일 인증을 안했나?
+            joinAvailable = false;
+            joinResultDTO.setEmailNotValidate(true);
+        }
+        if(joinAvailable) {
+            Member member = new Member();
+            member.setMemberId(joinDTO.getMemberId());
+            member.setMemberPw(joinDTO.getMemberPw());
+            member.setRoles(List.of("MEMBER"));
+            member.setStatusMessage(joinDTO.getStatusMessage());
+            member.setEmail(joinDTO.getEmail());
+            memberRepository.save(member);
+        }
+        return joinResultDTO;
     }
 }
