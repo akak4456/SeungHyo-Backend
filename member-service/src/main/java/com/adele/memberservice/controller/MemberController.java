@@ -3,18 +3,17 @@ package com.adele.memberservice.controller;
 import com.adele.common.ApiResult;
 import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
+import com.adele.memberservice.JwtTokenProvider;
 import com.adele.memberservice.dto.*;
 import com.adele.memberservice.service.EmailCheckCodeService;
 import com.adele.memberservice.service.EmailService;
 import com.adele.memberservice.service.MemberService;
 import com.adele.memberservice.service.RefreshTokenService;
 import com.adele.memberservice.service.impl.EmailCheckCodeServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
@@ -28,6 +27,8 @@ public class MemberController {
     private final RefreshTokenService refreshTokenService;
     private final EmailService emailService;
     private final EmailCheckCodeService emailCheckCodeService;
+    private final JwtTokenProvider jwtTokenProvider;
+
     /**
      * login 을 처리하는 API
      * login 성공 시 JWT 토큰을 반환
@@ -37,7 +38,7 @@ public class MemberController {
      *     <li><b>memberId</b> 로그인할 id</li>
      *     <li><b>memberPw</b> 로그인할 pw</li>
      * </ul>
-     * @return LoginResponse
+     * @return JwtToken
      * <ul>
      *     <li><b>grantType</b> grant type</li>
      *     <li><b>accessToken</b> access token</li>
@@ -45,17 +46,17 @@ public class MemberController {
      * </ul>
      */
     @PostMapping("/auth/login")
-    public ApiResult<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse response = memberService.login(loginRequest);
+    public ApiResult<JwtToken> login(@RequestBody LoginRequest loginRequest) {
+        JwtToken response = memberService.login(loginRequest);
         refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), response.getRefreshToken());
         log.info("response: {}", response);
         // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
-        ApiResult<LoginResponse> res = ApiResult.<LoginResponse>builder()
+        ApiResult<JwtToken> res = ApiResult.<JwtToken>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그인 성공")
                 .data(response)
                 .build();
-        return ApiResult.<LoginResponse>builder()
+        return ApiResult.<JwtToken>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그인 성공")
                 .data(response)
@@ -172,6 +173,23 @@ public class MemberController {
                 .message("회원가입 시도 성공")
                 .data(joinResultDTO)
                 .build();
+    }
+
+    /**
+     * reissue 를 시도한다.
+     * 클라이언트가 시도할 일은 없고 주로 JWT Filter 에서 access token 이 만료되었을 때 호출된다
+     * @param refreshToken refresh token
+     * @return String 새로운 jwt access token
+     */
+    @PostMapping("/auth/reissue")
+    public String reissue(@RequestHeader("Refresh-Token") String refreshToken, HttpServletResponse response) {
+        JwtToken token = memberService.reissue(refreshToken);
+        String memberId = jwtTokenProvider.getAuthentication(token.getAccessToken()).getName();
+        log.info(memberId);
+        refreshTokenService.saveRefreshToken(memberId, token.getRefreshToken());
+        response.addHeader("Authorization", "Bearer " + token.getAccessToken());
+        response.addHeader("Refresh-Token", refreshToken);
+        return token.getAccessToken();
     }
 
     /**

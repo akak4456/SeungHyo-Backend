@@ -9,7 +9,7 @@ public interface MemberService extends UserDetailsService {
      * @param loginRequest member 아이디, pw
      * @return LoginResponse 검증 성공 시 JWT 토큰
      */
-    LoginResponse login(LoginRequest loginRequest);
+    JwtToken login(LoginRequest loginRequest);
 
     /**
      * 회원가입 시도 AuthService
@@ -58,4 +58,6 @@ public interface MemberService extends UserDetailsService {
      * @return 회원탈퇴 성공 여부
      */
     boolean withdraw(String memberId);
+
+    JwtToken reissue(String refreshToken);
 }

@@ -1,6 +1,6 @@
 package com.adele.memberservice;
 
-import com.adele.memberservice.dto.LoginResponse;
+import com.adele.memberservice.dto.JwtToken;
 import com.adele.memberservice.service.RefreshTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -52,10 +52,10 @@ public class JwtTokenProvider {
      * @param authentication spring boot 에서 생성해주는 authentication
      * @return Access Token: 인증된 사용자의 권한 정보와 만료 시간을 담고 있음, Refresh Token: Access Token의 갱신을 위해 사용 됨
      */
-    public LoginResponse generateToken(Authentication authentication) {
+    public JwtToken generateToken(Authentication authentication) {
         return generateToken(authentication, LocalDateTime.now());
     }
-    public LoginResponse generateToken(Authentication authentication, LocalDateTime now) {
+    public JwtToken generateToken(Authentication authentication, LocalDateTime now) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
 
-        return LoginResponse.builder()
+        return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -140,6 +140,8 @@ public class JwtTokenProvider {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);
+        } catch (Exception e) {
+            log.info("JWT claims exception occur", e);
         }
         return false;
     }

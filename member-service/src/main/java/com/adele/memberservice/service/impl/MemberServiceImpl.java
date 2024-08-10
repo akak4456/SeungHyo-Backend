@@ -5,11 +5,13 @@ import com.adele.memberservice.domain.Member;
 import com.adele.memberservice.dto.*;
 import com.adele.memberservice.repository.MemberRepository;
 import com.adele.memberservice.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public JwtToken login(LoginRequest loginRequest) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPw());
@@ -205,5 +207,14 @@ public class MemberServiceImpl implements MemberService {
         }
         member.setDeleteYn(true);
         return true;
+    }
+
+    @Override
+    public JwtToken reissue(String refreshToken) {
+        if(!jwtTokenProvider.refreshTokenValidation(refreshToken)) {
+            throw new IllegalArgumentException("refresh token is not valid");
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

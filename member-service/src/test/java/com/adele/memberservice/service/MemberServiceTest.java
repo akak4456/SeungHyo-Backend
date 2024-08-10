@@ -8,7 +8,6 @@ import com.adele.memberservice.repository.MemberRepository;
 import com.adele.memberservice.service.impl.MemberServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.hibernate.mapping.Join;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,6 +19,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import redis.embedded.RedisServer;
@@ -28,8 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -55,6 +54,9 @@ public class MemberServiceTest {
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @BeforeEach
     public void setUp() {
@@ -82,7 +84,7 @@ public class MemberServiceTest {
         )));
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
-        LoginResponse token = memberService.login(new LoginRequest("user1", "pass1"));
+        JwtToken token = memberService.login(new LoginRequest("user1", "pass1"));
         assertThat(token.getAccessToken()).isNotBlank();
         assertThat(token.getRefreshToken()).isNotBlank();
     }
@@ -116,6 +118,39 @@ public class MemberServiceTest {
         JoinResultDTO result = memberService.tryJoin(joinDTO, isEmailValid);
         Assertions.assertThat(result).isEqualTo(expected);
         verify(memberRepository, times(saveCalledTime)).save(any());
+    }
+
+    @Test
+    @DisplayName("reissue가 성공하는지 확인해본다.")
+    public void reissueTest() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
+        when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
+        refreshTokenService.saveRefreshToken("user1", token.getRefreshToken());
+        Assertions.assertThat(memberService.reissue(token.getRefreshToken())).isNotNull();
+    }
+
+    @Test
+    @DisplayName("redis 에 저장된 것과 refresh token 이 다를 때 reissue가 실패하는지 확인해본다.")
+    public void reissueFailById() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
+        when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
+        refreshTokenService.saveRefreshToken("user1", jwtTokenProvider.generateToken(atc).getRefreshToken() + "A");
+        Assertions.assertThatCode(() -> memberService.reissue(token.getRefreshToken())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("refresh token 이 유효하지 않을 때 reissue 가 실패하는지 확인해본다.")
+    public void reissueFailByNotValidRefresh() {
+        Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
+        when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
+        when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
+        refreshTokenService.saveRefreshToken("user1", token.getRefreshToken());
+        Assertions.assertThatCode(() -> memberService.reissue(token.getRefreshToken() + "ABC")).isInstanceOf(IllegalArgumentException.class);
     }
 
     private static Stream<Arguments> provideJoin() {
