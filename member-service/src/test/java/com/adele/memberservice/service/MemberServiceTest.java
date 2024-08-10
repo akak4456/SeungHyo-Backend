@@ -3,10 +3,7 @@ package com.adele.memberservice.service;
 import com.adele.memberservice.JwtTokenProvider;
 import com.adele.memberservice.TestConfig;
 import com.adele.memberservice.domain.Member;
-import com.adele.memberservice.dto.JoinDTO;
-import com.adele.memberservice.dto.JoinResultDTO;
-import com.adele.memberservice.dto.LoginRequest;
-import com.adele.memberservice.dto.LoginResponse;
+import com.adele.memberservice.dto.*;
 import com.adele.memberservice.repository.MemberRepository;
 import com.adele.memberservice.service.impl.MemberServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -182,6 +179,136 @@ public class MemberServiceTest {
                         null,null,true,
                         new JoinResultDTO(false, false, false, false,false, false, false, false),
                         1
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("info edit 조회")
+    public void getInfoEdit() {
+        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
+                "user1",
+                "pass1",
+                "status1",
+                false,
+                "email1",
+                List.of("ADMIN")
+        )));
+        InfoEditResultDTO result = memberService.getInfoEdit("user1");
+        assertThat(result).isNotNull();
+        assertThat(result.getMemberId()).isEqualTo("user1");
+        assertThat(result.getStatusMessage()).isEqualTo("status1");
+        assertThat(result.getEmail()).isEqualTo("email1");
+    }
+
+    @ParameterizedTest
+    @DisplayName("info-edit 수정 테스트")
+    @MethodSource("provideInfoEdit")
+    public void patchInfoEdit(
+            PatchInfoEditDTO dto,
+            boolean idMatch,
+            PatchInfoEditResultDTO expected) {
+        when(memberRepository.findById(anyString())).thenReturn(Optional.of(new Member(
+                "user1",
+                "pass1",
+                "status1",
+                false,
+                "email1",
+                List.of("ADMIN")
+        )));
+        PatchInfoEditResultDTO result = memberService.patchInfoEdit(dto, idMatch);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> provideInfoEdit() {
+        return Stream.of(
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, false, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("", "pass1", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, true, false, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, false, true, false, true)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, true, false, false, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "status1", ""), true,
+                        new PatchInfoEditResultDTO(false, false, false, false, true, false)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass2", "status1", "email1"), true,
+                        new PatchInfoEditResultDTO(false, false, false, false, false, true)
+                ),
+                Arguments.of(
+                        new PatchInfoEditDTO("user1", "pass1", "status1", "email1"), false,
+                        new PatchInfoEditResultDTO(true, false, false, false, false, false)
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("비밀번호 수정 테스트")
+    @MethodSource("provideChangePw")
+    public void changePw(
+            String memberId,
+            ChangePwDTO dto,
+            ChangePwResultDTO expected
+    ) {
+        when(memberRepository.findById("user1")).thenReturn(Optional.of(new Member(
+                "user1",
+                "pass1",
+                "status1",
+                false,
+                "email1",
+                List.of("ADMIN")
+        )));
+        ChangePwResultDTO result = memberService.tryChangePw(memberId, dto);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> provideChangePw() {
+        return Stream.of(
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass2","pass2"),
+                        new ChangePwResultDTO(false, false, false, false, false)
+                ),
+                Arguments.of(
+                        "user2",
+                        new ChangePwDTO("pass1","pass2","pass2"),
+                        new ChangePwResultDTO(true, false, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass3","pass2","pass2"),
+                        new ChangePwResultDTO(false, true, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("","pass2","pass2"),
+                        new ChangePwResultDTO(false, true, false, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass1","pass1"),
+                        new ChangePwResultDTO(false, false, true, false, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","pass2","pass3"),
+                        new ChangePwResultDTO(false, false, false, true, false)
+                ),
+                Arguments.of(
+                        "user1",
+                        new ChangePwDTO("pass1","",""),
+                        new ChangePwResultDTO(false, false, false, false, true)
                 )
         );
     }
