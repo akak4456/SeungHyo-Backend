@@ -124,6 +124,20 @@ public class MemberController {
     }
 
     /**
+     * logout 을 처리하는 API
+     * logout 을 access token 을 redis black list 에 추가하는 방식으로 이루어진다.
+     * TODO redis 를 이용한 logout 구현하기
+     */
+    @PatchMapping("/auth/logout")
+    public ApiResult<Void> logout(@RequestBody LogoutDTO logoutDTO) {
+        refreshTokenService.deleteRefreshToken(logoutDTO.getRefreshToken());
+        return ApiResult.<Void>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("로그아웃 성공")
+                .build();
+    }
+
+    /**
      * 정보 수정에서 이용할 데이터를 조회한다
      * @return InfoEditResultDTO
      * <ul>
