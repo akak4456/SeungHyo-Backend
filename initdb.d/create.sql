@@ -52,7 +52,7 @@ CREATE TABLE problem_condition(
 );
 CREATE TABLE submit_list(
     submit_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    member_id VARCHAR(255) NOT NULL,
     problem_no BIGINT NOT NULL REFERENCES  problem(problem_no),
     submit_result VARCHAR(255) NOT NULL,
     max_memory DECIMAL(10,2) NOT NULL,
@@ -94,28 +94,28 @@ CREATE TABLE problem_algorithm_category_correlation(
     problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
     algorithm_no BIGINT NOT NULL REFERENCES algorithm_category(algorithm_no)
 );
+USE board_service;
 CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,
     category_name VARCHAR(255) NOT NULL,
     PRIMARY KEY (category_code)
 );
-USE board_service;
 CREATE TABLE board(
     board_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    member_id VARCHAR(255) NOT NULL,
     board_title VARCHAR(255) NOT NULL,
-    category_code VARCHAR(255) NOT NULL REFERENCES board_category(category_code),
-    lang_code VARCHAR(255) NOT NULL REFERENCES program_language(lang_code),
+    category_code VARCHAR(255) NOT NULL,
+    lang_code VARCHAR(255) NOT NULL,
     like_count BIGINT NOT NULL DEFAULT 0,
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    problem_no BIGINT NOT NULL REFERENCES problem(problem_no),
+    problem_no BIGINT NOT NULL,
     board_content LONGTEXT NOT NULL,
     source_code LONGTEXT NOT NULL
 );
 CREATE TABLE reply(
     reply_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     board_no BIGINT NOT NULL REFERENCES board(board_no),
-    member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),
+    member_id VARCHAR(255) NOT NULL,
     like_count BIGINT NOT NULL,
     reply_content LONGTEXT NOT NULL,
     source_code LONGTEXT NOT NULL
