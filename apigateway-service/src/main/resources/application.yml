@@ -38,6 +38,10 @@ spring:
           uri: lb://PROBLEM-SERVICE
           predicates:
             - Path=/api/v1/problem/**
+        - id: problem-service
+          uri: lb://PROBLEM-SERVICE
+          predicates:
+            - Path=/api/v1/programlanguage/**
 
 jwt:
   secret: ${JWT_SECRET}
