@@ -1,4 +1,4 @@
-USE member_service;
+USE problem_service;
 insert into problem_output (output_no, is_example, problem_no, output_source) values (1, 'Y', 1, '3');
 insert into problem_output (output_no, is_example, problem_no, output_source) values (2, 'Y', 2, '3');
 insert into problem_output (output_no, is_example, problem_no, output_source) values (3, 'Y', 3, '3');

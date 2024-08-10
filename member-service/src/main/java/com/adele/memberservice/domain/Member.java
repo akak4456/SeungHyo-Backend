@@ -1,5 +1,6 @@
 package com.adele.memberservice.domain;
 
+import com.adele.memberservice.BooleanToYNConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

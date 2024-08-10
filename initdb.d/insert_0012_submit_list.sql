@@ -1,4 +1,4 @@
-USE member_service;
+USE problem_service;
 INSERT INTO submit_list
 VALUES(1, 'user1', 1, 'WRONG', 100, 100, 'JAVA_11', DEFAULT, 'ALL', '');
 INSERT INTO submit_list

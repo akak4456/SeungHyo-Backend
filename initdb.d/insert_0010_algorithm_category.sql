@@ -1,4 +1,4 @@
-USE member_service;
+USE problem_service;
 INSERT INTO algorithm_category
 VALUES (1, '단순구현');
 INSERT INTO algorithm_category

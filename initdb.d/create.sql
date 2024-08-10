@@ -1,4 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `member_service`;
+CREATE DATABASE IF NOT EXISTS `problem_service`;
+CREATE DATABASE IF NOT EXISTS `board_service`;
 GRANT ALL PRIVILEGES on *.* TO 'adele'@'%' WITH GRANT OPTION;
 USE member_service;
 CREATE TABLE member (
@@ -14,7 +16,7 @@ CREATE TABLE member_roles (
     roles VARCHAR(255) NOT NULL,
     PRIMARY KEY(member_id, roles)
 );
-
+USE problem_service;
 CREATE TABLE problem(
     problem_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     problem_title VARCHAR(1000) NOT NULL,
@@ -97,6 +99,7 @@ CREATE TABLE board_category(
     category_name VARCHAR(255) NOT NULL,
     PRIMARY KEY (category_code)
 );
+USE board_service;
 CREATE TABLE board(
     board_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(255) NOT NULL REFERENCES member(member_id),

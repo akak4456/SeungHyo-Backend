@@ -1,4 +1,4 @@
-USE member_service;
+USE problem_service;
 insert into problem_condition (condition_no, condition_time, condition_memory, problem_no, lang_code) values (1, 2, 128, 1, 'JAVA_11');
 insert into problem_condition (condition_no, condition_time, condition_memory, problem_no, lang_code) values (2, 2, 128, 2, 'JAVA_11');
 insert into problem_condition (condition_no, condition_time, condition_memory, problem_no, lang_code) values (3, 2, 128, 3, 'JAVA_11');

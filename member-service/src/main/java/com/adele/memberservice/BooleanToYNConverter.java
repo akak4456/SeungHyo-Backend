@@ -1,4 +1,4 @@
-package com.adele.memberservice.domain;
+package com.adele.memberservice;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

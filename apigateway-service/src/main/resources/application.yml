@@ -34,6 +34,10 @@ spring:
             - Path=/api/v1/member/**
           filters:
             - AuthorizationHeaderFilter
+        - id: problem-service
+          uri: lb://PROBLEM-SERVICE
+          predicates:
+            - Path=/api/v1/problem/**
 
 jwt:
   secret: ${JWT_SECRET}

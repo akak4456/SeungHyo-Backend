@@ -1,4 +1,4 @@
-USE member_service;
+USE problem_service;
 INSERT problem_grade
 VALUES(1, 'WRONG', 1,1,1,1);
 INSERT problem_grade
