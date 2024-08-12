@@ -16,7 +16,12 @@ public interface CompileStrategy {
 
     void compile() throws IOException, InterruptedException;
 
-    List<CompileResultDTO> execute(List<String> input, Long timeoutInMillis, Long memoryLimitInMegabyte, ExecuteResultConsumer consumer);
+    List<CompileResultDTO> execute(
+            List<String> input,
+            List<String> outputs,
+            Long timeoutInMillis,
+            Long memoryLimitInMegabyte,
+            ExecuteResultConsumer consumer);
 
     void releaseResources();
 }

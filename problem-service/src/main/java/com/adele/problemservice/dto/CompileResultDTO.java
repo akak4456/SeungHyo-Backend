@@ -10,6 +10,8 @@ import lombok.*;
 @Setter
 public class CompileResultDTO {
     private CompileStatus status;
-    private String output;
+    private String expectedInput;
+    private String expectedOutput;
+    private String compileOutput;
     private Throwable error;
 }

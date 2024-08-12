@@ -68,6 +68,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 List.of(input),
+                List.of(expectedOutput),
                 1000L,
                 128L,
                 (idx, output) -> {
@@ -77,7 +78,8 @@ public class CompileServiceTest {
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.SUCCESS, result.getStatus());
-        assertEquals(expectedOutput, result.getOutput());
+        assertEquals(expectedOutput, result.getExpectedOutput());
+        assertEquals(expectedOutput, result.getCompileOutput());
         assertNull(result.getError());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -97,6 +99,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 List.of(input),
+                List.of(""),
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -125,6 +128,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 List.of(input),
+                List.of(""),
                 1000L,
                 128L,
                 (idx, output) -> {
@@ -165,6 +169,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 input,
+                List.of("3", "7"),
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -173,12 +178,12 @@ public class CompileServiceTest {
 
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.SUCCESS, result.getStatus());
-        assertEquals("3" + System.lineSeparator(), result.getOutput());
+        assertEquals("3" + System.lineSeparator(), result.getCompileOutput());
         assertNull(result.getError());
 
         CompileResultDTO result2 = futureResult.get().get(1);
         assertEquals(CompileStatus.SUCCESS, result2.getStatus());
-        assertEquals("7" + System.lineSeparator(), result2.getOutput());
+        assertEquals("7" + System.lineSeparator(), result2.getCompileOutput());
         assertNull(result2.getError());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -209,6 +214,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 input,
+                List.of(""),
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -248,6 +254,7 @@ public class CompileServiceTest {
                 java11CompileStrategy,
                 sourceCode,
                 input,
+                List.of(""),
                 10_000L,
                 10L,
                 (idx, output) -> {

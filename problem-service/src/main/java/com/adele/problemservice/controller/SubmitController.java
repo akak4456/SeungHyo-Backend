@@ -67,6 +67,7 @@ public class SubmitController {
                 strategy,
                 requestDTO.getSourceCode(),
                 conditionDTO.getInput(),
+                conditionDTO.getOutput(),
                 (long) (conditionDTO.getTimeCondition().doubleValue() * 1000),
                 conditionDTO.getMemoryCondition().longValue(),
                 (idx, compileResult) -> {

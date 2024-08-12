@@ -65,6 +65,7 @@ public class Java11CompileStrategy implements CompileStrategy {
     @Override
     public List<CompileResultDTO> execute(
             List<String> inputs,
+            List<String> outputs,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer
@@ -96,22 +97,22 @@ public class Java11CompileStrategy implements CompileStrategy {
                 if (exitCode != 0) {
                     throw new RuntimeException("Process exited with code " + exitCode + " and output: " + output);
                 }
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.SUCCESS, output, null);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.SUCCESS, input, outputs.get(idx),output, null);
                 results.add(result);
                 consumer.consume(idx, result);
             } catch (IOException e) {
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, "", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, input,outputs.get(idx),"", e);
                 results.add(result);
                 consumer.consume(idx, result);
             }
             catch (ProcessTimeoutException e) {
                 log.error("timeout occur", e);
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, "", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, input,outputs.get(idx),"", e);
                 results.add(result);
                 consumer.consume(idx, result);
             }
             catch (RuntimeException | InterruptedException e) {
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, "", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, input,outputs.get(idx),"", e);
                 results.add(result);
                 consumer.consume(idx, result);
             }

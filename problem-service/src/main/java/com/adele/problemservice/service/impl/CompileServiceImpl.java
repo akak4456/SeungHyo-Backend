@@ -31,6 +31,7 @@ public class CompileServiceImpl implements CompileService {
             CompileStrategy strategy,
             String sourceCode,
             List<String> input,
+            List<String> output,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer
@@ -43,7 +44,7 @@ public class CompileServiceImpl implements CompileService {
             } catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "","","", e));
             }
 
             try {
@@ -54,17 +55,17 @@ public class CompileServiceImpl implements CompileService {
             catch (InterruptedException | RuntimeException e) {
                 log.error("compile error", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, "", e));
+                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, "","","", e));
             }
             catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "","","", e));
             }
 
             try {
                 log.info("execute start");
-                return strategy.execute(input, timeoutInMillis, memoryLimitInMegabyte, consumer);
+                return strategy.execute(input, output,timeoutInMillis, memoryLimitInMegabyte, consumer);
             } finally {
                 strategy.releaseResources();
                 log.info("execute end");

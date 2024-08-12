@@ -17,6 +17,7 @@ public interface CompileService {
      * @param strategy 컴파일 전략
      * @param sourceCode 소스코드
      * @param input 들어갈 입력
+     * @param output 들어갈 출력
      * @param timeoutInMillis 타임아웃 시간(단위 밀리초)
      * @param memoryLimitInMegabyte 메모리제한(단위 MB)
      * @return CompileResultDTO 컴파일 결과
@@ -25,6 +26,7 @@ public interface CompileService {
             CompileStrategy strategy,
             String sourceCode,
             List<String> input,
+            List<String> output,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer
