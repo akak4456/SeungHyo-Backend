@@ -1,23 +1,45 @@
 package com.adele.problemservice.kafka;
 
 import com.adele.problemservice.DotenvTestExecutionListener;
+import com.adele.problemservice.kafka.dto.KafkaCompile;
+import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.listener.AbstractConsumerSeekAware;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ConsumerSeekAware;
+import org.springframework.kafka.listener.MessageListener;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+@Slf4j
+class MyListener extends AbstractConsumerSeekAware implements MessageListener<String, KafkaCompile> {
 
+    @Override
+    public void onMessage(ConsumerRecord<String, KafkaCompile> data) {
+        log.info(data.toString());
+    }
+
+    @Override
+    public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
+        callback.seekToBeginning(assignments.keySet());
+    }
+}
 @SpringBootTest
 @TestExecutionListeners(listeners = {
         DotenvTestExecutionListener.class,
@@ -29,22 +51,22 @@ public class TestProducerTest {
     @Autowired
     private TestProducer testProducer;
 
+    @Autowired
+    private ConcurrentKafkaListenerContainerFactory<String, KafkaCompile> kafkaListenerContainerFactory;
+
+
     @Test
     @Disabled
     void test() throws InterruptedException, ExecutionException {
         testProducer.create();
-        Properties props = new Properties();
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        try (AdminClient client = AdminClient.create(props)) {
-            ListTopicsOptions options = new ListTopicsOptions();
-            options.listInternal(true); // includes internal topics such as __consumer_offsets
-            ListTopicsResult topics = client.listTopics(options);
-            Set<String> currentTopicList = topics.names().get();
-            // do your filter logic here......
-            for(String topic : currentTopicList) {
-                log.info("current topic: {}", topic);
-            }
-        }
+        ConcurrentMessageListenerContainer<String, KafkaCompile> container
+                = kafkaListenerContainerFactory
+                .createContainer("topic");
+
+        container.getContainerProperties().setMessageListener(new MyListener());
+        container.getContainerProperties().setGroupId("problem_service_group_1");
+        container.setBeanName("problem_service_group_1");
+        container.start();
         Thread.sleep(20_000L);
     }
 }
