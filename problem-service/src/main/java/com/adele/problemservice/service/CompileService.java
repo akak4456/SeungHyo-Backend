@@ -3,6 +3,8 @@ package com.adele.problemservice.service;
 
 import com.adele.problemservice.ExecuteResultConsumer;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
+import com.adele.problemservice.domain.ProblemInput;
+import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
 import com.adele.problemservice.dto.ConditionDTO;
 
@@ -25,8 +27,8 @@ public interface CompileService {
     CompletableFuture<List<CompileResultDTO>> compileAndRun(
             CompileStrategy strategy,
             String sourceCode,
-            List<String> input,
-            List<String> output,
+            List<ProblemInput> input,
+            List<ProblemOutput> output,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer

@@ -4,6 +4,8 @@ import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.ExecuteResultConsumer;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
 import com.adele.problemservice.domain.ProblemCondition;
+import com.adele.problemservice.domain.ProblemInput;
+import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
 import com.adele.problemservice.dto.ConditionDTO;
 import com.adele.problemservice.repository.ProblemRepository;
@@ -30,8 +32,8 @@ public class CompileServiceImpl implements CompileService {
     public CompletableFuture<List<CompileResultDTO>> compileAndRun(
             CompileStrategy strategy,
             String sourceCode,
-            List<String> input,
-            List<String> output,
+            List<ProblemInput> input,
+            List<ProblemOutput> output,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer
@@ -44,7 +46,7 @@ public class CompileServiceImpl implements CompileService {
             } catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "","","", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e));
             }
 
             try {
@@ -55,12 +57,12 @@ public class CompileServiceImpl implements CompileService {
             catch (InterruptedException | RuntimeException e) {
                 log.error("compile error", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, "","","", e));
+                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, null,null,"", e));
             }
             catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, "","","", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e));
             }
 
             try {

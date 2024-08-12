@@ -3,6 +3,9 @@ package com.adele.problemservice.service;
 import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.DotenvTestExecutionListener;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
+import com.adele.problemservice.domain.Problem;
+import com.adele.problemservice.domain.ProblemInput;
+import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,8 +63,8 @@ public class CompileServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         // 테스트할 소스 코드
         String sourceCode = "public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\"); }}";
-        String input = "";
-        String expectedOutput = "Hello, World!" + System.lineSeparator();
+        ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"Hello, World!" + System.lineSeparator());
 
         // 비동기 메서드 호출
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
@@ -79,7 +82,7 @@ public class CompileServiceTest {
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.SUCCESS, result.getStatus());
         assertEquals(expectedOutput, result.getExpectedOutput());
-        assertEquals(expectedOutput, result.getCompileOutput());
+        assertEquals(expectedOutput.getOutputSource(), result.getCompileOutput());
         assertNull(result.getError());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -92,14 +95,15 @@ public class CompileServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         // 컴파일 오류를 발생시키는 소스 코드
         String sourceCode = "public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\" }"; // Syntax error
-        String input = "";
+        ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"");
 
         // 비동기 메서드 호출
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
                 java11CompileStrategy,
                 sourceCode,
                 List.of(input),
-                List.of(""),
+                List.of(expectedOutput),
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -121,14 +125,16 @@ public class CompileServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         // 런타임 오류를 발생시키는 소스 코드
         String sourceCode = "public class Main { public static void main(String[] args) { int x = 1 / 0; }}"; // Division by zero
-        String input = "";
+        ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"");
+
 
         // 비동기 메서드 호출
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
                 java11CompileStrategy,
                 sourceCode,
                 List.of(input),
-                List.of(""),
+                List.of(expectedOutput),
                 1000L,
                 128L,
                 (idx, output) -> {
@@ -163,13 +169,14 @@ public class CompileServiceTest {
                     }
                 }
                 """;
-        List<String> input = List.of("1 2", "3 4");
 
+        List<ProblemInput> input = List.of(new ProblemInput(1L, true, new Problem(), "1 2"), new ProblemInput(1L, true, new Problem(), "3 4"));
+        List<ProblemOutput> expectedOutput = List.of(new ProblemOutput(1L, true, new Problem(), "3"), new ProblemOutput(1L, true, new Problem(), "7"));
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
                 java11CompileStrategy,
                 sourceCode,
                 input,
-                List.of("3", "7"),
+                expectedOutput,
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -208,13 +215,14 @@ public class CompileServiceTest {
                     }
                 }
                 """;
-        List<String> input = List.of("");
+        ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"");
 
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
                 java11CompileStrategy,
                 sourceCode,
-                input,
-                List.of(""),
+                List.of(input),
+                List.of(expectedOutput),
                 1_000L,
                 128L,
                 (idx, output) -> {
@@ -248,13 +256,15 @@ public class CompileServiceTest {
                     }
                 }
                 """;
-        List<String> input = List.of("");
+        ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"");
+
 
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
                 java11CompileStrategy,
                 sourceCode,
-                input,
-                List.of(""),
+                List.of(input),
+                List.of(expectedOutput),
                 10_000L,
                 10L,
                 (idx, output) -> {

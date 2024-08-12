@@ -2,6 +2,8 @@ package com.adele.problemservice.compilestrategy;
 
 
 import com.adele.problemservice.ExecuteResultConsumer;
+import com.adele.problemservice.domain.ProblemInput;
+import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
 
 import java.io.IOException;
@@ -17,8 +19,8 @@ public interface CompileStrategy {
     void compile() throws IOException, InterruptedException;
 
     List<CompileResultDTO> execute(
-            List<String> input,
-            List<String> outputs,
+            List<ProblemInput> input,
+            List<ProblemOutput> outputs,
             Long timeoutInMillis,
             Long memoryLimitInMegabyte,
             ExecuteResultConsumer consumer);
