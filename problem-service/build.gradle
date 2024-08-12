@@ -60,6 +60,8 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     // kafka
     implementation 'org.springframework.kafka:spring-kafka'
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

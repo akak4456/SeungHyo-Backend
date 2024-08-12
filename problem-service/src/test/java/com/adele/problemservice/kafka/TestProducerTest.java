@@ -1,13 +1,8 @@
 package com.adele.problemservice.kafka;
 
 import com.adele.problemservice.DotenvTestExecutionListener;
-import com.adele.problemservice.kafka.dto.KafkaCompile;
-import com.netflix.discovery.converters.Auto;
+import com.adele.problemservice.dto.KafkaCompile;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.ListTopicsOptions;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.Disabled;
@@ -17,15 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.listener.AbstractConsumerSeekAware;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 @Slf4j
 class MyListener extends AbstractConsumerSeekAware implements MessageListener<String, KafkaCompile> {

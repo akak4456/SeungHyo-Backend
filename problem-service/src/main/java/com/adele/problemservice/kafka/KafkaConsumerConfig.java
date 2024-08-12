@@ -1,6 +1,6 @@
 package com.adele.problemservice.kafka;
 
-import com.adele.problemservice.kafka.dto.KafkaCompile;
+import com.adele.problemservice.dto.KafkaCompile;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
