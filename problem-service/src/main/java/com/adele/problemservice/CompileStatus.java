@@ -1,5 +1,5 @@
 package com.adele.problemservice;
 
 public enum CompileStatus {
-    SUCCESS, IO_ERROR, COMPILE_ERROR, RUNTIME_ERROR
+    CORRECT, WRONG, IO_ERROR, COMPILE_ERROR, RUNTIME_ERROR
 }

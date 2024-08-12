@@ -5,6 +5,7 @@ import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
+import com.adele.problemservice.domain.SubmitList;
 import com.adele.problemservice.dto.ConditionDTO;
 import com.adele.problemservice.dto.NewSubmitRequestDTO;
 import com.adele.problemservice.dto.NewSubmitResultDTO;
@@ -49,7 +50,7 @@ public class SubmitController {
     @PostMapping("")
     public ApiResult<NewSubmitResultDTO> newSubmit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody NewSubmitRequestDTO newSubmitRequestDTO) throws IOException, InterruptedException {
         NewSubmitResultDTO result = submitService.tryNewSubmit(memberId, newSubmitRequestDTO);
-        tryCompile(newSubmitRequestDTO);
+        tryCompile(result.getSubmit(), newSubmitRequestDTO);
         return ApiResult.<NewSubmitResultDTO>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("제출 시도 성공")
@@ -57,7 +58,7 @@ public class SubmitController {
                 .build();
     }
 
-    private void tryCompile(NewSubmitRequestDTO requestDTO) throws IOException, InterruptedException {
+    private void tryCompile(SubmitList submit, NewSubmitRequestDTO requestDTO) throws IOException, InterruptedException {
         CompileStrategy strategy = null;
         if(requestDTO.getLangCode().equals("JAVA_11")) {
             strategy = applicationContext.getBean(Java11CompileStrategy.class);
@@ -72,13 +73,13 @@ public class SubmitController {
                 conditionDTO.getMemoryCondition().longValue(),
                 (idx, compileResult) -> {
                     log.info("idx : {}, result : {}", idx, compileResult);
+                    // TODO kafka 연결
                 }).thenAccept(result -> {
-            // 전체 결과가 완료된 후 추가적인 처리 가능
-            // 예: 결과를 데이터베이스에 저장
-            log.info("All compile results processed");
+                    submitService.saveCompileResult(submit.getSubmitNo(), result);
         }).exceptionally(ex -> {
             // 예외 처리
             log.error("An error occurred during compilation: ", ex);
+            submitService.updateSubmitStatusWhenError(submit.getSubmitNo());
             throw new RuntimeException(ex);
         });;
     }

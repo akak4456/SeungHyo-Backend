@@ -1,9 +1,8 @@
 package com.adele.problemservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.adele.problemservice.domain.SubmitList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,4 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NewSubmitResultDTO {
     private boolean result;
+    @JsonIgnore
+    private SubmitList submit;
 }

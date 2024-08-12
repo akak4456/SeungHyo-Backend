@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"expectedInput", "expectedOutput"})
 @Setter
 public class CompileResultDTO {
     private CompileStatus status;

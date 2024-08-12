@@ -64,7 +64,7 @@ public class CompileServiceTest {
         // 테스트할 소스 코드
         String sourceCode = "public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\"); }}";
         ProblemInput input = new ProblemInput(1L, true, new Problem(), "");
-        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"Hello, World!" + System.lineSeparator());
+        ProblemOutput expectedOutput = new ProblemOutput(1L, true, new Problem(),"Hello, World!");
 
         // 비동기 메서드 호출
         CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
@@ -80,9 +80,8 @@ public class CompileServiceTest {
 
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
-        assertEquals(CompileStatus.SUCCESS, result.getStatus());
+        assertEquals(CompileStatus.CORRECT, result.getStatus());
         assertEquals(expectedOutput, result.getExpectedOutput());
-        assertEquals(expectedOutput.getOutputSource(), result.getCompileOutput());
         assertNull(result.getError());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -184,12 +183,12 @@ public class CompileServiceTest {
         });
 
         CompileResultDTO result = futureResult.get().get(0);
-        assertEquals(CompileStatus.SUCCESS, result.getStatus());
+        assertEquals(CompileStatus.CORRECT, result.getStatus());
         assertEquals("3" + System.lineSeparator(), result.getCompileOutput());
         assertNull(result.getError());
 
         CompileResultDTO result2 = futureResult.get().get(1);
-        assertEquals(CompileStatus.SUCCESS, result2.getStatus());
+        assertEquals(CompileStatus.CORRECT, result2.getStatus());
         assertEquals("7" + System.lineSeparator(), result2.getCompileOutput());
         assertNull(result2.getError());
 
@@ -278,5 +277,52 @@ public class CompileServiceTest {
         log.info(result.getError().getMessage());
 
         verify(java11CompileStrategy, times(1)).releaseResources();
+    }
+
+    @Test
+    @DisplayName("만약 output 이 여러줄이라면?")
+    public void multipleLineOutput() throws IOException, InterruptedException, ExecutionException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        String sourceCode = """
+                import java.io.*;
+                import java.util.*;
+                
+                public class Main {
+                    public static void main(String[] args) throws IOException {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                        StringTokenizer tokenizer = new StringTokenizer(reader.readLine(), " ");
+                        int a = Integer.parseInt(tokenizer.nextToken());
+                        int b = Integer.parseInt(tokenizer.nextToken());
+                        System.out.println(a + b);
+                        System.out.println(a * b);
+                    }
+                }
+                """;
+
+        List<ProblemInput> input = List.of(new ProblemInput(1L, true, new Problem(), "1 2"), new ProblemInput(1L, true, new Problem(), "3 4"));
+        List<ProblemOutput> expectedOutput = List.of(new ProblemOutput(1L, true, new Problem(), "3" + System.lineSeparator() +"2"), new ProblemOutput(1L, true, new Problem(), "7" + System.lineSeparator() + "12"));
+        CompletableFuture<List<CompileResultDTO>> futureResult = compileService.compileAndRun(
+                java11CompileStrategy,
+                sourceCode,
+                input,
+                expectedOutput,
+                1_000L,
+                128L,
+                (idx, output) -> {
+
+                });
+
+        CompileResultDTO result = futureResult.get().get(0);
+        assertEquals(CompileStatus.CORRECT, result.getStatus());
+        assertNull(result.getError());
+
+        CompileResultDTO result2 = futureResult.get().get(1);
+        assertEquals(CompileStatus.CORRECT, result2.getStatus());
+        assertNull(result2.getError());
+
+        verify(java11CompileStrategy, times(1)).releaseResources();
+
     }
 }

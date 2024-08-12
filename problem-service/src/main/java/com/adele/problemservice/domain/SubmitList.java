@@ -2,6 +2,7 @@ package com.adele.problemservice.domain;
 
 import com.adele.problemservice.SourceCodeDisclosureScope;
 import com.adele.problemservice.SubmitStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,6 +30,7 @@ public class SubmitList {
 
     @ManyToOne
     @JoinColumn(name = "problem_no")
+    @JsonIgnore
     private Problem problem;
 
     @Enumerated(EnumType.STRING)

@@ -99,7 +99,11 @@ public class Java11CompileStrategy implements CompileStrategy {
                 if (exitCode != 0) {
                     throw new RuntimeException("Process exited with code " + exitCode + " and output: " + output);
                 }
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.SUCCESS, inputs.get(idx), outputs.get(idx),output, null);
+                CompileStatus statusResult = CompileStatus.WRONG;
+                if(output.trim().equals(outputs.get(idx).getOutputSource())) {
+                    statusResult = CompileStatus.CORRECT;
+                }
+                CompileResultDTO result = new CompileResultDTO(statusResult, inputs.get(idx), outputs.get(idx),output, null);
                 results.add(result);
                 consumer.consume(idx, result);
             } catch (IOException e) {

@@ -1,5 +1,6 @@
 package com.adele.problemservice.domain;
 
+import com.adele.problemservice.CompileStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +18,9 @@ public class ProblemGrade {
     @Column(name = "grade_no")
     private Long gradeNo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="grade_result")
-    private String gradeResult;
+    private CompileStatus gradeResult;
 
     @ManyToOne
     @JoinColumn(name = "input_no")
