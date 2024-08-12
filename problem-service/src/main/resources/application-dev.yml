@@ -36,6 +36,7 @@ spring:
       host: ${REDIS_DEV_HOST}
       port: ${REDIS_DEV_PORT}
 
+
 eureka:
   instance:
     instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
@@ -47,3 +48,5 @@ eureka:
 
 compiler:
   java11-path: ${COMPILER_JAVA11_BIN_PATH}
+
+kafka-url: ${PROBLEM_SERVICE_KAFKA_URL}
