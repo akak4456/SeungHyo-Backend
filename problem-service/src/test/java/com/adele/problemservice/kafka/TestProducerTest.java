@@ -51,14 +51,14 @@ public class TestProducerTest {
     @Disabled
     void test() throws InterruptedException, ExecutionException {
         testProducer.create();
-        ConcurrentMessageListenerContainer<String, KafkaCompile> container
-                = kafkaListenerContainerFactory
-                .createContainer("topic");
-
-        container.getContainerProperties().setMessageListener(new MyListener());
-        container.getContainerProperties().setGroupId("problem_service_group_1");
-        container.setBeanName("problem_service_group_1");
-        container.start();
-        Thread.sleep(20_000L);
+//        ConcurrentMessageListenerContainer<String, KafkaCompile> container
+//                = kafkaListenerContainerFactory
+//                .createContainer("topic");
+//
+//        container.getContainerProperties().setMessageListener(new MyListener());
+//        container.getContainerProperties().setGroupId("problem_service_group_1");
+//        container.setBeanName("problem_service_group_1");
+//        container.start();
+//        Thread.sleep(20_000L);
     }
 }

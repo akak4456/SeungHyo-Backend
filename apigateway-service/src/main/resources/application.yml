@@ -61,7 +61,7 @@ spring:
         - id: compile-socket-service
           uri: lb:ws://PROBLEM-SERVICE
           predicates:
-            - Path=/compile/**
+            - Path=/submit/**
 
 jwt:
   secret: ${JWT_SECRET}
