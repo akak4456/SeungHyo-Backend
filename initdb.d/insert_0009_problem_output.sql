@@ -1,5 +1,10 @@
 USE problem_service;
 insert into problem_output (output_no, is_example, problem_no, output_source) values (1, 'Y', 1, '3');
+insert into problem_output (output_no, is_example, problem_no, output_source) values (106, 'Y', 1, '7');
+insert into problem_output (output_no, is_example, problem_no, output_source) values (107, 'Y', 1, '11');
+insert into problem_output (output_no, is_example, problem_no, output_source) values (108, 'Y', 1, '15');
+insert into problem_output (output_no, is_example, problem_no, output_source) values (109, 'Y', 1, '0');
+insert into problem_output (output_no, is_example, problem_no, output_source) values (110, 'Y', 1, '18');
 insert into problem_output (output_no, is_example, problem_no, output_source) values (2, 'Y', 2, '3');
 insert into problem_output (output_no, is_example, problem_no, output_source) values (3, 'Y', 3, '3');
 insert into problem_output (output_no, is_example, problem_no, output_source) values (4, 'Y', 4, '3');
