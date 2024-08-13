@@ -66,6 +66,14 @@ public class SubmitController {
             strategy = applicationContext.getBean(Java11CompileStrategy.class);
         }
         ConditionDTO conditionDTO = compileService.getCondition(requestDTO.getProblemNo(), requestDTO.getLangCode());
+        kafkaTemplate.send("submit." + submitNo, new KafkaCompile(
+                CompileStatus.START_FOR_KAFKA,
+                -1L,
+                "",
+                "",
+                null,
+                null
+        ));
         compileService.compileAndRun(
                 strategy,
                 requestDTO.getSourceCode(),
