@@ -51,7 +51,7 @@ public class SubmitServiceImpl implements SubmitService {
                 .sourceCode(newSubmitRequestDTO.getSourceCode())
                 .build();
         submitRepository.save(submit);
-        return new NewSubmitResultDTO(true, submit);
+        return new NewSubmitResultDTO(true, submit.getSubmitNo());
     }
 
     @Override

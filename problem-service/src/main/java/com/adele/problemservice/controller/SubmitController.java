@@ -52,7 +52,7 @@ public class SubmitController {
     @PostMapping("")
     public ApiResult<NewSubmitResultDTO> newSubmit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody NewSubmitRequestDTO newSubmitRequestDTO) throws IOException, InterruptedException {
         NewSubmitResultDTO result = submitService.tryNewSubmit(memberId, newSubmitRequestDTO);
-        tryCompile(result.getSubmit(), newSubmitRequestDTO);
+        tryCompile(result.getSubmitNo(), newSubmitRequestDTO);
         return ApiResult.<NewSubmitResultDTO>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("제출 시도 성공")
@@ -60,7 +60,7 @@ public class SubmitController {
                 .build();
     }
 
-    private void tryCompile(SubmitList submit, NewSubmitRequestDTO requestDTO) throws IOException, InterruptedException {
+    private void tryCompile(Long submitNo, NewSubmitRequestDTO requestDTO) throws IOException, InterruptedException {
         CompileStrategy strategy = null;
         if(requestDTO.getLangCode().equals("JAVA_11")) {
             strategy = applicationContext.getBean(Java11CompileStrategy.class);
@@ -74,8 +74,8 @@ public class SubmitController {
                 (long) (conditionDTO.getTimeCondition().doubleValue() * 1000),
                 conditionDTO.getMemoryCondition().longValue(),
                 (idx, compileResult) -> {
-                    log.info("submitNo: {}, idx : {}, result : {}", submit.getSubmitNo(), idx, compileResult);
-                    kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+                    log.info("submitNo: {}, idx : {}, result : {}", submitNo, idx, compileResult);
+                    kafkaTemplate.send("submit." + submitNo, new KafkaCompile(
                             compileResult.getStatus(),
                             (long)idx + 1,
                             compileResult.getExpectedInput().getInputSource(),
@@ -84,8 +84,8 @@ public class SubmitController {
                             compileResult.getRuntimeErrorReason()
                     ));
                 }).thenAccept(result -> {
-                    submitService.saveCompileResult(submit.getSubmitNo(), result);
-                    kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+                    submitService.saveCompileResult(submitNo, result);
+                    kafkaTemplate.send("submit." + submitNo, new KafkaCompile(
                             CompileStatus.EXIT_FOR_KAFKA,
                             -1L,
                             "",
@@ -96,8 +96,8 @@ public class SubmitController {
         }).exceptionally(ex -> {
             // 예외 처리
             log.error("An error occurred during compilation: ", ex);
-            submitService.updateSubmitStatusWhenError(submit.getSubmitNo());
-            kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+            submitService.updateSubmitStatusWhenError(submitNo);
+            kafkaTemplate.send("submit." + submitNo, new KafkaCompile(
                     CompileStatus.EXIT_FOR_KAFKA,
                     -1L,
                     "",

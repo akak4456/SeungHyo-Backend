@@ -10,6 +10,5 @@ import lombok.*;
 @AllArgsConstructor
 public class NewSubmitResultDTO {
     private boolean result;
-    @JsonIgnore
-    private SubmitList submit;
+    private Long submitNo;
 }
