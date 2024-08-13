@@ -19,8 +19,8 @@ public interface ProblemGradeRepository extends JpaRepository<ProblemGrade, Long
             p.runtimeErrorReason
         )
         FROM ProblemGrade p
-        JOIN p.input pIn
-        JOIN p.output pOut
+        LEFT JOIN p.input pIn
+        LEFT JOIN p.output pOut
         WHERE p.submit.submitNo = :no
     """)
     List<KafkaCompile> findBySubmitNo(@Param("no") Long no);

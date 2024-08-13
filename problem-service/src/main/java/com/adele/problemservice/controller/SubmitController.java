@@ -127,7 +127,7 @@ public class SubmitController {
         List<KafkaCompile> kafkaCompiles = submitService.getKafkaCompiles(submitNo);
         return ApiResult.<ProblemGradeResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
-                .message("제출 시도 성공")
+                .message("문제 채점 정보 얻기 성공")
                 .data(new ProblemGradeResponse(kafkaCompiles))
                 .build();
     }
