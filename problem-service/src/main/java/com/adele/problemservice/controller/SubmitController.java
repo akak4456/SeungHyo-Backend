@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -139,6 +142,40 @@ public class SubmitController {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("문제 채점 정보 얻기 성공")
                 .data(result)
+                .build();
+    }
+
+    /**
+     * problem list 를 조회한다.
+     * @param pageable
+     * page: 조회할 page number. 0부터 시작한다
+     * size: 한 페이지당 들어갈 content 갯수
+     * @return Page&lt;ProblemListDTO&gt;
+     * <ul>
+     *     <li><b>totalElements<b/> 조회된 elements 수</li>
+     *     <li><b>totalPages</b> 조회된 총 page 숫자</li>
+     *     <li>
+     *         <p>content(ReflectionNoteListDTO)</p>
+     *         <ul>
+     *             <li><b>submitNo</b> 제출 번호</li>
+     *             <li><b>problemTitle</b> 문제 제목</li>
+     *             <li><b>submitStatus</b> 제출 상태</li>
+     *             <li><b>langName</b> 언어이름</li>
+     *             <li><b>submitDate</b> 제출일자</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     */
+    @GetMapping({""})
+    public ApiResult<Page<ReflectionNoteListDTO>> getSearch(
+            @PageableDefault
+            Pageable pageable
+    ) {
+        Page<ReflectionNoteListDTO> page = submitService.searchReflectionNotePage(pageable);
+        return ApiResult.<Page<ReflectionNoteListDTO>>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("리스트 조회 성공")
+                .data(page)
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.adele.problemservice.service;
 import com.adele.problemservice.DotenvTestExecutionListener;
 import com.adele.problemservice.dto.ProblemListDTO;
 import com.adele.problemservice.dto.ProblemOneDTO;
+import com.adele.problemservice.dto.ReflectionNoteListDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 })
 @ActiveProfiles("dev")
 @Slf4j
-public class ProblemServiceIntegratedTest {
+public class ServiceIntegratedTest {
     @Autowired
     private ProblemService problemService;
+    @Autowired
+    private SubmitService submitService;
 
     @Test
     @DisplayName("page 가 정상 작동하는지 확인해본다.")
@@ -41,5 +44,12 @@ public class ProblemServiceIntegratedTest {
     public void getOneTest() {
         ProblemOneDTO one = problemService.problemOne(1L);
         log.info(one.toString());
+    }
+
+    @Test
+    @DisplayName("searchReflectionNote 가 정상작동하는지 확인해본다")
+    public void pageReflectionTest() {
+        Pageable pageable = PageRequest.of(0 ,10);
+        Page<ReflectionNoteListDTO> res = submitService.searchReflectionNotePage(pageable);
     }
 }

@@ -1,6 +1,8 @@
 package com.adele.problemservice.service;
 
 import com.adele.problemservice.dto.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -37,4 +39,11 @@ public interface SubmitService {
      * @return ProblemGradeResponse 채점 결과
      */
     ProblemGradeResponse getKafkaCompiles(Long submitNo);
+
+    /**
+     * 오답노트 list 조회 서비스
+     * @param pageable 조회할 페이지
+     * @return Page&lt;ProblemListDTO&gt; 페이지 객체
+     */
+    Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable);
 }

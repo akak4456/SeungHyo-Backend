@@ -91,7 +91,7 @@ public class SubmitControllerTest {
         NewSubmitRequestDTO dto = new NewSubmitRequestDTO(1L,"JAVA_11", "ALL", "sourcecode");
         String content = gson.toJson(dto);
         when(problemRepository.getReferenceById(any())).thenReturn(new Problem());
-        when(submitService.tryNewSubmit("user1",dto)).thenReturn(new NewSubmitResultDTO(true, new SubmitList()));
+        when(submitService.tryNewSubmit("user1",dto)).thenReturn(new NewSubmitResultDTO(true, 1L));
         when(compileService.getCondition(dto.getProblemNo(), dto.getLangCode())).thenReturn(new ConditionDTO(List.of(), List.of(), BigDecimal.ONE, BigDecimal.ONE));
         Executor executor = Executors.newFixedThreadPool(10);  // Executor 생성
 
@@ -126,6 +126,20 @@ public class SubmitControllerTest {
         ResultActions actions =
                 mockMvc.perform(
                         get("/api/v1/submit/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
+
+    @Test
+    @DisplayName("오답노트 결과들을 얻어오는지 확인한다")
+    public void getReflectionNoteList() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/submit")
                                 .contentType(MediaType.APPLICATION_JSON)
                 );
 

@@ -15,6 +15,8 @@ import com.adele.problemservice.repository.SubmitRepository;
 import com.adele.problemservice.service.SubmitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -130,5 +132,10 @@ public class SubmitServiceImpl implements SubmitService {
             response.setProblemNo(problem.getProblemNo());
         }
         return response;
+    }
+
+    @Override
+    public Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable) {
+        return submitRepository.searchPage(pageable);
     }
 }
