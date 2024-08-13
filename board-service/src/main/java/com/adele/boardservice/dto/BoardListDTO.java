@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class BoardListDTO {
     private Long boardNo;
     private String boardTitle;
+    private String categoryCode;
     private String categoryName;
     private String langName;
     private String memberId;

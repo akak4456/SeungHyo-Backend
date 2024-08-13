@@ -36,6 +36,7 @@ public class BoardController {
      *         <ul>
      *             <li><b>boardNo</b> 게시판 번호</li>
      *             <li><b>boardTitle</b> 게시판 제목</li>
+     *             <li><b>categoryCode</b> 게시판 카테고리 코드</li>
      *             <li><b>categoryName</b> 게시판 카테고리</li>
      *             <li><b>langName</b> 언어</li>
      *             <li><b>memberId</b> 글쓴이</li>
