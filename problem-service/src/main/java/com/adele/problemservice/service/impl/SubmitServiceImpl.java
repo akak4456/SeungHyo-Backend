@@ -120,7 +120,15 @@ public class SubmitServiceImpl implements SubmitService {
     }
 
     @Override
-    public List<KafkaCompile> getKafkaCompiles(Long submitNo) {
-        return problemGradeRepository.findBySubmitNo(submitNo);
+    public ProblemGradeResponse getKafkaCompiles(Long submitNo) {
+        ProblemGradeResponse response = new ProblemGradeResponse();
+        SubmitList submit = submitRepository.findById(submitNo).orElse(null);
+        if(submit != null) {
+            response.setKafkaCompiles(problemGradeRepository.findBySubmitNo(submitNo));
+            Problem problem = submit.getProblem();
+            response.setProblemTitle(problem.getProblemTitle());
+            response.setProblemNo(problem.getProblemNo());
+        }
+        return response;
     }
 }

@@ -34,7 +34,7 @@ public interface SubmitService {
     /**
      * 제출번호에 해당하는 채점 결과를 리턴한다.
      * @param submitNo 제출번호
-     * @return KafkaCompile 채점 결과
+     * @return ProblemGradeResponse 채점 결과
      */
-    List<KafkaCompile> getKafkaCompiles(Long submitNo);
+    ProblemGradeResponse getKafkaCompiles(Long submitNo);
 }

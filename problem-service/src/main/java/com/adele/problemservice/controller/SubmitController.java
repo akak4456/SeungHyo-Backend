@@ -114,6 +114,8 @@ public class SubmitController {
      * @param submitNo 제출번호
      * @return ProblemGradeResponse 문제 채점 결과들
      * <ul>
+     *     <li><b>problemNo</b> 문제 번호</li>
+     *     <li><b>problemTitle</b> 문제 제목</li>
      *     <li><b>compileStatus</b> 컴파일 결과</li>
      *     <li><b>caseNo</b> 케이스 순번</li>
      *     <li><b>inputSource</b> 케이스 입력</li>
@@ -124,11 +126,11 @@ public class SubmitController {
      */
     @GetMapping("{submitNo}")
     public ApiResult<ProblemGradeResponse> getProblemGrade(@PathVariable("submitNo") Long submitNo) {
-        List<KafkaCompile> kafkaCompiles = submitService.getKafkaCompiles(submitNo);
+        ProblemGradeResponse result = submitService.getKafkaCompiles(submitNo);
         return ApiResult.<ProblemGradeResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("문제 채점 정보 얻기 성공")
-                .data(new ProblemGradeResponse(kafkaCompiles))
+                .data(result)
                 .build();
     }
 }
