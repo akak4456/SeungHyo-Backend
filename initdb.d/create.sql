@@ -113,6 +113,7 @@ CREATE TABLE board(
     like_count BIGINT NOT NULL DEFAULT 0,
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     problem_no BIGINT NOT NULL,
+    problem_title VARCHAR(1000) NOT NULL,
     board_content LONGTEXT NOT NULL,
     source_code LONGTEXT NOT NULL
 );
@@ -122,5 +123,6 @@ CREATE TABLE reply(
     member_id VARCHAR(255) NOT NULL,
     like_count BIGINT NOT NULL,
     reply_content LONGTEXT NOT NULL,
-    source_code LONGTEXT NOT NULL
+    source_code LONGTEXT NOT NULL,
+    reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

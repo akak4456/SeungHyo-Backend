@@ -20,7 +20,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 
 /**
- * QuerydslConfig 가 필요하다
+ * Querydsl config 가 필요함
  */
 @RequiredArgsConstructor
 public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
@@ -40,10 +40,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         List<BoardListDTO> fetch = queryFactory
                 .select(Projections.bean(
                         BoardListDTO.class,
-                        board.boardNo,
                         board.boardTitle,
-                        board.boardCategory.categoryCode,
-                        board.boardCategory.categoryName,
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(boardCategory.categoryName)
+                                        .from(boardCategory)
+                                        .where(boardCategory.eq(board.boardCategory)),
+                                "categoryName"
+                        ),
                         board.langName,
                         board.memberId,
                         ExpressionUtils.as(

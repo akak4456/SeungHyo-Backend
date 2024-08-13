@@ -3,6 +3,8 @@ package com.adele.boardservice.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "reply")
 @Getter
@@ -32,4 +34,7 @@ public class Reply {
 
     @Column(name="source_code")
     private String sourceCode;
+
+    @Column(name="reg_date")
+    private LocalDateTime regDate;
 }

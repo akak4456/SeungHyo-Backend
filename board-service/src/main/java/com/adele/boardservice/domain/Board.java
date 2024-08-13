@@ -49,6 +49,14 @@ public class Board {
     @Column(name = "problem_no")
     private Long problemNo;
 
+    /**
+     * 원래는 program 이랑 problem_no 로 join 을 해야 한다. 하지만
+     * problem_no 에 따른 problem_title 이 변할 일이 많지 않으므로
+     * 중복 데이터를 담도록 한다.
+     */
+    @Column(name="problem_title")
+    private String problemTitle;
+
     @Column(name="board_content")
     private String boardContent;
 

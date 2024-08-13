@@ -60,4 +60,18 @@ public class BoardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("0"));
     }
+
+    @Test
+    @DisplayName("하나 조회 가 정상 작동하는지 확인해본다")
+    public void getOne() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/board/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
 }

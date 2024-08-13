@@ -3,6 +3,7 @@ package com.adele.boardservice.service;
 import com.adele.boardservice.DotenvTestExecutionListener;
 import com.adele.boardservice.domain.Board;
 import com.adele.boardservice.dto.BoardListDTO;
+import com.adele.boardservice.dto.BoardOneDTO;
 import com.adele.boardservice.dto.BoardSearchCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
