@@ -62,6 +62,8 @@ spring:
           uri: lb:ws://PROBLEM-SERVICE
           predicates:
             - Path=/submit/**
+          filters:
+            - AuthorizationHeaderFilter
 
 jwt:
   secret: ${JWT_SECRET}

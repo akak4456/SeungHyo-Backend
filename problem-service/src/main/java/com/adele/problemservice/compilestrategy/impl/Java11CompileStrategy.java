@@ -1,6 +1,7 @@
 package com.adele.problemservice.compilestrategy.impl;
 import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.ExecuteResultConsumer;
+import com.adele.problemservice.RuntimeErrorReason;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
 import com.adele.problemservice.compilestrategy.timeoutprocess.ProcessTimeoutException;
 import com.adele.problemservice.compilestrategy.timeoutprocess.TimeoutProcess;
@@ -100,25 +101,30 @@ public class Java11CompileStrategy implements CompileStrategy {
                     throw new RuntimeException("Process exited with code " + exitCode + " and output: " + output);
                 }
                 CompileStatus statusResult = CompileStatus.WRONG;
-                if(output.trim().equals(outputs.get(idx).getOutputSource())) {
+                if(output.trim().equals(outputs.get(idx).getOutputSource().trim())) {
                     statusResult = CompileStatus.CORRECT;
                 }
-                CompileResultDTO result = new CompileResultDTO(statusResult, inputs.get(idx), outputs.get(idx),output, null);
+                CompileResultDTO result = new CompileResultDTO(statusResult, inputs.get(idx), outputs.get(idx),output, null, null, null);
                 results.add(result);
                 consumer.consume(idx, result);
             } catch (IOException e) {
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, inputs.get(idx),outputs.get(idx),"", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, null);
                 results.add(result);
                 consumer.consume(idx, result);
             }
             catch (ProcessTimeoutException e) {
                 log.error("timeout occur", e);
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, inputs.get(idx),outputs.get(idx),"", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, RuntimeErrorReason.TIMEOUT);
                 results.add(result);
                 consumer.consume(idx, result);
             }
             catch (RuntimeException | InterruptedException e) {
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, inputs.get(idx),outputs.get(idx),"", e);
+                log.info("runtime error occur {}", e.getMessage());
+                RuntimeErrorReason reason = RuntimeErrorReason.ETC;
+                if(e.getMessage().contains("java.lang.OutOfMemoryError")) {
+                    reason = RuntimeErrorReason.MEMORY_EXCEED;
+                }
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, reason);
                 results.add(result);
                 consumer.consume(idx, result);
             }

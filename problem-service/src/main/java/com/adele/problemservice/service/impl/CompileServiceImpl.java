@@ -1,5 +1,6 @@
 package com.adele.problemservice.service.impl;
 
+import com.adele.problemservice.CompileErrorReason;
 import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.ExecuteResultConsumer;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
@@ -46,7 +47,7 @@ public class CompileServiceImpl implements CompileService {
             } catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e, null, null));
             }
 
             try {
@@ -57,12 +58,12 @@ public class CompileServiceImpl implements CompileService {
             catch (InterruptedException | RuntimeException e) {
                 log.error("compile error", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, null,null,"", e));
+                return List.of(new CompileResultDTO(CompileStatus.COMPILE_ERROR, null,null,"", e, CompileErrorReason.ETC, null));
             }
             catch (IOException e) {
                 log.error("application.yml COMPILER_JAVA11_PATH 확인해볼것", e);
                 strategy.releaseResources();
-                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e));
+                return List.of(new CompileResultDTO(CompileStatus.IO_ERROR, null,null,"", e, null, null));
             }
 
             try {

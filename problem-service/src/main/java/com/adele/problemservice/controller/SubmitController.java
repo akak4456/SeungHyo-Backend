@@ -81,7 +81,9 @@ public class SubmitController {
                             compileResult.getStatus(),
                             idx + 1,
                             compileResult.getExpectedInput().getInputSource(),
-                            compileResult.getExpectedOutput().getOutputSource()
+                            compileResult.getExpectedOutput().getOutputSource(),
+                            compileResult.getCompileErrorReason(),
+                            compileResult.getRuntimeErrorReason()
                     ));
                 }).thenAccept(result -> {
                     submitService.saveCompileResult(submit.getSubmitNo(), result);
@@ -89,7 +91,9 @@ public class SubmitController {
                             CompileStatus.EXIT_FOR_KAFKA,
                             -1,
                             "",
-                            ""
+                            "",
+                            null,
+                            null
                     ));
         }).exceptionally(ex -> {
             // 예외 처리
@@ -99,7 +103,9 @@ public class SubmitController {
                     CompileStatus.EXIT_FOR_KAFKA,
                     -1,
                     "",
-                    ""
+                    "",
+                    null,
+                    null
             ));
             throw new RuntimeException(ex);
         });;

@@ -6,10 +6,7 @@ import com.adele.problemservice.TestConfig;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.Problem;
 import com.adele.problemservice.domain.SubmitList;
-import com.adele.problemservice.dto.CompileResultDTO;
-import com.adele.problemservice.dto.ConditionDTO;
-import com.adele.problemservice.dto.NewSubmitRequestDTO;
-import com.adele.problemservice.dto.NewSubmitResultDTO;
+import com.adele.problemservice.dto.*;
 import com.adele.problemservice.repository.ProblemGradeRepository;
 import com.adele.problemservice.repository.ProblemRepository;
 import com.adele.problemservice.repository.ProgramLanguageRepository;
@@ -31,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -82,6 +80,9 @@ public class SubmitControllerTest {
 
     @MockBean
     private Java11CompileStrategy java11CompileStrategy;
+
+    @MockBean
+    private KafkaTemplate<String, KafkaCompile> kafkaTemplate;
 
     @Test
     @DisplayName("새로운 submit이 정상 실행되는지 확인한다.")

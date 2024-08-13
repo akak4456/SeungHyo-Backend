@@ -1,7 +1,9 @@
 package com.adele.problemservice.service;
 
+import com.adele.problemservice.CompileErrorReason;
 import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.DotenvTestExecutionListener;
+import com.adele.problemservice.RuntimeErrorReason;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.Problem;
 import com.adele.problemservice.domain.ProblemInput;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -112,6 +115,7 @@ public class CompileServiceTest {
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.COMPILE_ERROR, result.getStatus());
+        assertThat(result.getCompileErrorReason()).isEqualTo(result.getCompileErrorReason());
         assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -143,6 +147,7 @@ public class CompileServiceTest {
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
+        assertEquals(RuntimeErrorReason.ETC, result.getRuntimeErrorReason());
         assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -231,6 +236,7 @@ public class CompileServiceTest {
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
+        assertEquals(RuntimeErrorReason.TIMEOUT, result.getRuntimeErrorReason());
         assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
 
         verify(java11CompileStrategy, times(1)).releaseResources();
@@ -273,6 +279,7 @@ public class CompileServiceTest {
         // 결과 검증
         CompileResultDTO result = futureResult.get().get(0);
         assertEquals(CompileStatus.RUNTIME_ERROR, result.getStatus());
+        assertEquals(RuntimeErrorReason.MEMORY_EXCEED, result.getRuntimeErrorReason());
         assertNotNull(result.getError()); // 에러 메시지가 비어 있지 않음을 확인
         log.info(result.getError().getMessage());
 

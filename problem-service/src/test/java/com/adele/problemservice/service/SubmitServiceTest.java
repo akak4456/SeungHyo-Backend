@@ -38,6 +38,7 @@ public class SubmitServiceTest {
     @Mock
     private JdbcTemplate jdbcTemplate;
 
+
     @ParameterizedTest
     @DisplayName("update submit status test")
     @MethodSource("provideUpdateStatus")
@@ -61,7 +62,9 @@ public class SubmitServiceTest {
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 )
                         ),
                         true,
@@ -74,28 +77,36 @@ public class SubmitServiceTest {
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.WRONG,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 )
                         ),
                         true,
@@ -108,28 +119,36 @@ public class SubmitServiceTest {
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.WRONG,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.RUNTIME_ERROR,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 )
                         ),
                         true,
@@ -142,28 +161,36 @@ public class SubmitServiceTest {
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 ),
                                 new CompileResultDTO(
                                         CompileStatus.CORRECT,
                                         null,
                                         null,
                                         "",
-                                        new Exception()
+                                        new Exception(),
+                                        null,
+                                        null
                                 )
                         ),
                         true,

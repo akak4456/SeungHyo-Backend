@@ -12,6 +12,6 @@ public class TestProducer {
     private final KafkaTemplate<String, KafkaCompile> kafkaTemplate;
 
     public void create() {
-        kafkaTemplate.send("submit.1", new KafkaCompile(CompileStatus.CORRECT, 2, "", ""));
+        kafkaTemplate.send("submit.1", new KafkaCompile(CompileStatus.CORRECT, 2, "", "", null,null));
     }
 }
