@@ -40,6 +40,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         List<BoardListDTO> fetch = queryFactory
                 .select(Projections.bean(
                         BoardListDTO.class,
+                        board.boardNo,
                         board.boardTitle,
                         ExpressionUtils.as(
                                 JPAExpressions
