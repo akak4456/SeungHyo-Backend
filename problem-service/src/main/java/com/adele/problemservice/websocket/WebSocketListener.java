@@ -1,5 +1,6 @@
 package com.adele.problemservice.websocket;
 
+import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.dto.KafkaCompile;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.net.http.WebSocket;
 import java.util.Map;
 
 @Slf4j
@@ -23,13 +23,22 @@ public class WebSocketListener extends AbstractConsumerSeekAware implements Mess
 
     @Override
     public void onMessage(ConsumerRecord<String, KafkaCompile> data) {
-        log.info(data.toString());
-        Gson gson = new Gson();
-        String jsonStr = gson.toJson(data.value());
-        try {
-            session.sendMessage(new TextMessage(jsonStr));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        KafkaCompile kafkaCompile = data.value();
+        log.info("compile : {}", kafkaCompile);
+        if(kafkaCompile.getCompileStatus() == CompileStatus.EXIT_FOR_KAFKA) {
+            try {
+                session.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Gson gson = new Gson();
+            String jsonStr = gson.toJson(kafkaCompile);
+            try {
+                session.sendMessage(new TextMessage(jsonStr));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

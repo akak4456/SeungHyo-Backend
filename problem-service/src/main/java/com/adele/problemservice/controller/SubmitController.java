@@ -3,10 +3,12 @@ package com.adele.problemservice.controller;
 import com.adele.common.ApiResult;
 import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
+import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.SubmitList;
 import com.adele.problemservice.dto.ConditionDTO;
+import com.adele.problemservice.dto.KafkaCompile;
 import com.adele.problemservice.dto.NewSubmitRequestDTO;
 import com.adele.problemservice.dto.NewSubmitResultDTO;
 import com.adele.problemservice.service.CompileService;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class SubmitController {
 
     private final CompileService compileService;
 
+    private final KafkaTemplate<String, KafkaCompile> kafkaTemplate;
 
     private ApplicationContext applicationContext;
 
@@ -72,14 +76,31 @@ public class SubmitController {
                 (long) (conditionDTO.getTimeCondition().doubleValue() * 1000),
                 conditionDTO.getMemoryCondition().longValue(),
                 (idx, compileResult) -> {
-                    log.info("idx : {}, result : {}", idx, compileResult);
-                    // TODO kafka 연결
+                    log.info("submitNo: {}, idx : {}, result : {}", submit.getSubmitNo(), idx, compileResult);
+                    kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+                            compileResult.getStatus(),
+                            idx + 1,
+                            compileResult.getExpectedInput().getInputSource(),
+                            compileResult.getExpectedOutput().getOutputSource()
+                    ));
                 }).thenAccept(result -> {
                     submitService.saveCompileResult(submit.getSubmitNo(), result);
+                    kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+                            CompileStatus.EXIT_FOR_KAFKA,
+                            -1,
+                            "",
+                            ""
+                    ));
         }).exceptionally(ex -> {
             // 예외 처리
             log.error("An error occurred during compilation: ", ex);
             submitService.updateSubmitStatusWhenError(submit.getSubmitNo());
+            kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
+                    CompileStatus.EXIT_FOR_KAFKA,
+                    -1,
+                    "",
+                    ""
+            ));
             throw new RuntimeException(ex);
         });;
     }
