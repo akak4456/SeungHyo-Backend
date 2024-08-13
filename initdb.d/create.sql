@@ -115,7 +115,7 @@ CREATE TABLE board(
     problem_no BIGINT NOT NULL,
     problem_title VARCHAR(1000) NOT NULL,
     board_content LONGTEXT NOT NULL,
-    source_code LONGTEXT NOT NULL
+    source_code LONGTEXT
 );
 CREATE TABLE reply(
     reply_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -123,6 +123,6 @@ CREATE TABLE reply(
     member_id VARCHAR(255) NOT NULL,
     like_count BIGINT NOT NULL,
     reply_content LONGTEXT NOT NULL,
-    source_code LONGTEXT NOT NULL,
+    source_code LONGTEXT,
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

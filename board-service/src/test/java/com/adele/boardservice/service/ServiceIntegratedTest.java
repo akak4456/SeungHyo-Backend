@@ -5,6 +5,7 @@ import com.adele.boardservice.domain.Board;
 import com.adele.boardservice.dto.BoardListDTO;
 import com.adele.boardservice.dto.BoardOneDTO;
 import com.adele.boardservice.dto.BoardSearchCondition;
+import com.adele.boardservice.dto.ReplyDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ public class ServiceIntegratedTest {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private ReplyService replyService;
+
     @Test
     @DisplayName("page 가 정상 작동하는지 확인해본다.")
     public void pageTest() {
@@ -37,6 +41,16 @@ public class ServiceIntegratedTest {
         Page<BoardListDTO> result = boardService.searchPage(condition, pageable);
         for (BoardListDTO problem : result.getContent()) {
             log.info(problem.toString());
+        }
+    }
+
+    @Test
+    @DisplayName("reply page가 정상작동하는지 확인해본다")
+    public void pageReplyTest() {
+        Pageable pageable = PageRequest.of(2,10);
+        Page<ReplyDTO> result = replyService.searchPage(1L,pageable);
+        for (ReplyDTO reply : result.getContent()) {
+            log.info(reply.toString());
         }
     }
 }
