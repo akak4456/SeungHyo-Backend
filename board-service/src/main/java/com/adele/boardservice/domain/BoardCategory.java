@@ -1,10 +1,9 @@
 package com.adele.boardservice.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.adele.boardservice.BooleanToYNConverter;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "board_category")
@@ -21,4 +20,9 @@ public class BoardCategory {
 
     @Column(name="category_name")
     private String categoryName;
+
+    @Column(name="is_for_admin")
+    @ColumnDefault("N")
+    @Convert(converter = BooleanToYNConverter.class)
+    private boolean isForAdmin;
 }

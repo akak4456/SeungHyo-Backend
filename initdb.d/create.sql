@@ -100,14 +100,16 @@ USE board_service;
 CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,
     category_name VARCHAR(255) NOT NULL,
+    is_for_admin VARCHAR(255) NOT NULL,
     PRIMARY KEY (category_code)
 );
 CREATE TABLE board(
     board_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(255) NOT NULL,
-    board_title VARCHAR(255) NOT NULL,
+    board_title VARCHAR(1000) NOT NULL,
     category_code VARCHAR(255) NOT NULL,
     lang_code VARCHAR(255) NOT NULL,
+    lang_name VARCHAR(255) NOT NULL,
     like_count BIGINT NOT NULL DEFAULT 0,
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     problem_no BIGINT NOT NULL,

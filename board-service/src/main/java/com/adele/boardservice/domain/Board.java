@@ -32,6 +32,14 @@ public class Board {
     @Column(name="lang_code")
     private String langCode;
 
+    /**
+     * 원래는 program_language 랑 lang_code 로 join 을 해야 한다. 하지만
+     * lang_code 에 따른 lang_name 이 변할 일이 많지 않으므로
+     * 중복 데이터를 담도록 한다.
+     */
+    @Column(name="lang_name")
+    private String langName;
+
     @Column(name="like_count")
     private Long likeCount;
 

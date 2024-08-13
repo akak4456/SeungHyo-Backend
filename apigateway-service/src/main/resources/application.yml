@@ -67,6 +67,11 @@ spring:
           uri: lb:ws://PROBLEM-SERVICE
           predicates:
             - Path=/submit/**
+        - id: board-service
+          uri: lb://BOARD-SERVICE
+          predicates:
+            - Path=/api/v1/board/**
+            - Method=GET
 
 jwt:
   secret: ${JWT_SECRET}
