@@ -68,6 +68,8 @@ CREATE TABLE problem_grade(
     input_no BIGINT NOT NULL REFERENCES problem_input(input_no),
     output_no BIGINT NOT NULL REFERENCES problem_output(output_no),
     submit_no BIGINT NOT NULL REFERENCES  submit_list(submit_no),
+    compile_error_reason VARCHAR(255),
+    runtime_error_reason VARCHAR(255),
     grade_case_no BIGINT NOT NULL
 );
 CREATE TABLE problem_program_language_correlation(

@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -112,6 +113,20 @@ public class SubmitControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
                                 .header(AuthHeaderConstant.AUTH_USER, "user1")
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
+
+    @Test
+    @DisplayName("문제 채점 결과를 얻어오는지 확인한다")
+    public void getProblemGradeOne() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/submit/1")
+                                .contentType(MediaType.APPLICATION_JSON)
                 );
 
         actions

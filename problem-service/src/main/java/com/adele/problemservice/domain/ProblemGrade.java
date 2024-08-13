@@ -1,6 +1,8 @@
 package com.adele.problemservice.domain;
 
+import com.adele.problemservice.CompileErrorReason;
 import com.adele.problemservice.CompileStatus;
+import com.adele.problemservice.RuntimeErrorReason;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,4 +38,12 @@ public class ProblemGrade {
 
     @Column(name="grade_case_no")
     private Long gradeCaseNo;
+
+    @Column(name="compile_error_reason")
+    @Enumerated(EnumType.STRING)
+    private CompileErrorReason compileErrorReason;
+
+    @Column(name="runtime_error_reason")
+    @Enumerated(EnumType.STRING)
+    private RuntimeErrorReason runtimeErrorReason;
 }

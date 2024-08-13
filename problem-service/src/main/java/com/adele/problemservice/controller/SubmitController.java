@@ -7,10 +7,7 @@ import com.adele.problemservice.CompileStatus;
 import com.adele.problemservice.compilestrategy.CompileStrategy;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.SubmitList;
-import com.adele.problemservice.dto.ConditionDTO;
-import com.adele.problemservice.dto.KafkaCompile;
-import com.adele.problemservice.dto.NewSubmitRequestDTO;
-import com.adele.problemservice.dto.NewSubmitResultDTO;
+import com.adele.problemservice.dto.*;
 import com.adele.problemservice.service.CompileService;
 import com.adele.problemservice.service.SubmitService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +18,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/submit")
@@ -79,7 +77,7 @@ public class SubmitController {
                     log.info("submitNo: {}, idx : {}, result : {}", submit.getSubmitNo(), idx, compileResult);
                     kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
                             compileResult.getStatus(),
-                            idx + 1,
+                            (long)idx + 1,
                             compileResult.getExpectedInput().getInputSource(),
                             compileResult.getExpectedOutput().getOutputSource(),
                             compileResult.getCompileErrorReason(),
@@ -89,7 +87,7 @@ public class SubmitController {
                     submitService.saveCompileResult(submit.getSubmitNo(), result);
                     kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
                             CompileStatus.EXIT_FOR_KAFKA,
-                            -1,
+                            -1L,
                             "",
                             "",
                             null,
@@ -101,7 +99,7 @@ public class SubmitController {
             submitService.updateSubmitStatusWhenError(submit.getSubmitNo());
             kafkaTemplate.send("submit." + submit.getSubmitNo(), new KafkaCompile(
                     CompileStatus.EXIT_FOR_KAFKA,
-                    -1,
+                    -1L,
                     "",
                     "",
                     null,
@@ -109,5 +107,28 @@ public class SubmitController {
             ));
             throw new RuntimeException(ex);
         });;
+    }
+
+    /**
+     * 제출번호에 해당하는 문제 채점 결과를 얻어온다
+     * @param submitNo 제출번호
+     * @return ProblemGradeResponse 문제 채점 결과들
+     * <ul>
+     *     <li><b>compileStatus</b> 컴파일 결과</li>
+     *     <li><b>caseNo</b> 케이스 순번</li>
+     *     <li><b>inputSource</b> 케이스 입력</li>
+     *     <li><b>outputSource</b> 케이스 출력</li>
+     *     <li><b>compileErrorReason</b> 컴파일 오류 이유</li>
+     *     <li><b>runtimeErrorReason</b> 런타임 오류 이유</li>
+     * </ul>
+     */
+    @GetMapping("{submitNo}")
+    public ApiResult<ProblemGradeResponse> getProblemGrade(@PathVariable("submitNo") Long submitNo) {
+        List<KafkaCompile> kafkaCompiles = submitService.getKafkaCompiles(submitNo);
+        return ApiResult.<ProblemGradeResponse>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("제출 시도 성공")
+                .data(new ProblemGradeResponse(kafkaCompiles))
+                .build();
     }
 }

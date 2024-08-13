@@ -14,7 +14,7 @@ import java.io.Serializable;
 @ToString
 public class KafkaCompile implements Serializable {
     private CompileStatus compileStatus;
-    private int caseNo;
+    private Long caseNo;
     private String inputSource;
     private String outputSource;
     private CompileErrorReason compileErrorReason;

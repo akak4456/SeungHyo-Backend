@@ -71,7 +71,7 @@ public class SubmitServiceImpl implements SubmitService {
             return new UpdateSubmitResponse(false, SubmitStatus.ETC_ERROR);
         }
         originSubmit.setSubmitResult(status);
-        String sql = "INSERT INTO problem_grade(grade_result, input_no, output_no, submit_no, grade_case_no) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO problem_grade(grade_result, input_no, output_no, submit_no, grade_case_no, compile_error_reason, runtime_error_reason) VALUES(?,?,?,?,?,?,?)";
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -89,6 +89,16 @@ public class SubmitServiceImpl implements SubmitService {
                 }
                 ps.setLong(4, submitNo);
                 ps.setInt(5, i + 1);
+                if(compileResult.getCompileErrorReason() != null) {
+                    ps.setString(6, compileResult.getCompileErrorReason().toString());
+                } else {
+                    ps.setString(6, null);
+                }
+                if(compileResult.getRuntimeErrorReason() != null) {
+                    ps.setString(7, compileResult.getRuntimeErrorReason().toString());
+                } else {
+                    ps.setString(7, null);
+                }
             }
 
             @Override
@@ -107,5 +117,10 @@ public class SubmitServiceImpl implements SubmitService {
         }
         originSubmit.setSubmitResult(SubmitStatus.ETC_ERROR);
         return new UpdateSubmitResponse(true, SubmitStatus.ETC_ERROR);
+    }
+
+    @Override
+    public List<KafkaCompile> getKafkaCompiles(Long submitNo) {
+        return problemGradeRepository.findBySubmitNo(submitNo);
     }
 }
