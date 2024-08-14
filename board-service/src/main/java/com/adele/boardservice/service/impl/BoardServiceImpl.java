@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardCategoryDTO> getCategories() {
-        return boardCategoryRepository.findAll()
+        return boardCategoryRepository.findAll(Sort.by(Sort.Direction.ASC, "orderNum"))
                 .stream()
                 .filter((category) -> !category.isForAdmin())
                 .map((category) ->

@@ -101,6 +101,7 @@ CREATE TABLE board_category(
     category_code VARCHAR(255) NOT NULL,
     category_name VARCHAR(255) NOT NULL,
     is_for_admin VARCHAR(255) NOT NULL,
+    order_num INT NOT NULL,
     PRIMARY KEY (category_code)
 );
 CREATE TABLE board(

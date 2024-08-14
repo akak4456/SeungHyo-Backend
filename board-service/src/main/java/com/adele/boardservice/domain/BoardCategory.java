@@ -25,4 +25,7 @@ public class BoardCategory {
     @ColumnDefault("N")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isForAdmin;
+
+    @Column(name="order_num")
+    private int orderNum;
 }
