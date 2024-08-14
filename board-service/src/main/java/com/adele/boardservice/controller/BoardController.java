@@ -1,5 +1,6 @@
 package com.adele.boardservice.controller;
 
+import com.adele.boardservice.dto.BoardCategoryResponse;
 import com.adele.boardservice.dto.BoardListDTO;
 import com.adele.boardservice.dto.BoardOneDTO;
 import com.adele.boardservice.dto.BoardSearchCondition;
@@ -83,6 +84,19 @@ public class BoardController {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("하나 조회 성공")
                 .data(boardOneDTO)
+                .build();
+    }
+
+    /**
+     * 게시판 카테고리 종류를 얻어온다
+     * @return BoardCategoryResponse 카테고리 종류 응답
+     */
+    @GetMapping("/categories")
+    public ApiResult<BoardCategoryResponse> getCategories() {
+        return ApiResult.<BoardCategoryResponse>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("카테고리 조회 성공")
+                .data(new BoardCategoryResponse(boardService.getCategories()))
                 .build();
     }
 }
