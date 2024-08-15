@@ -13,9 +13,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "conditionNo")
+@SequenceGenerator(name = "seq_problem_condition", sequenceName = "seq_problem_condition", initialValue = 1, allocationSize = 1)
 public class ProblemCondition {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_problem_condition")
     @Column(name = "condition_no")
     private Long conditionNo;
 

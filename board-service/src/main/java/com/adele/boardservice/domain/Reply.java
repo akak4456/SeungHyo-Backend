@@ -13,9 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "replyNo")
+@SequenceGenerator(name = "seq_reply", sequenceName = "seq_reply", initialValue = 1, allocationSize = 1)
 public class Reply {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_reply")
     @Column(name = "reply_no")
     private Long replyNo;
 
@@ -29,9 +30,11 @@ public class Reply {
     @Column(name="like_count")
     private Long likeCount;
 
+    @Lob
     @Column(name="reply_content")
     private String replyContent;
 
+    @Lob
     @Column(name="source_code")
     private String sourceCode;
 

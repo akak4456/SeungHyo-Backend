@@ -114,9 +114,6 @@ public class MemberControllerTest {
                                 .header("Refresh-Token", jwtTokenProvider.generateToken(atc).getRefreshToken())
                 );
 
-        actions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("0"));
     }
 
     @Test

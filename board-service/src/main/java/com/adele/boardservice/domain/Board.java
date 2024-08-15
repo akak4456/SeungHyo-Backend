@@ -13,9 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "boardNo")
+@SequenceGenerator(name = "seq_board", sequenceName = "seq_board", initialValue = 1, allocationSize = 1)
 public class Board {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_board")
     @Column(name = "board_no")
     private Long boardNo;
 
@@ -57,9 +58,11 @@ public class Board {
     @Column(name="problem_title")
     private String problemTitle;
 
+    @Lob
     @Column(name="board_content")
     private String boardContent;
 
+    @Lob
     @Column(name="source_code")
     private String sourceCode;
 }

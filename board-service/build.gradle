@@ -30,10 +30,12 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    // Mysql Connector
-    runtimeOnly 'com.mysql:mysql-connector-j'
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Oracle Connector
+    runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
+    // hibernate-core
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.3.0.Final'
     // QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"

@@ -17,13 +17,13 @@ spring:
           starttls:
             enable: true
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${PROBLEM_SERVICE_DEV_DB_URL}:${PROBLEM_SERVICE_DEV_DB_PORT}/${PROBLEM_SERVICE_DEV_DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: ${PROBLEM_SERVICE_DEV_DB_URL}
     username: ${SEUNGHYO_DEV_DB_USERNAME}
     password: ${SEUNGHYO_DEV_DB_PASSWORD}
   jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database: oracle
+    database-platform: org.hibernate.community.dialect.Oracle10gDialect
     hibernate:
       ddl-auto: validate
     generate-ddl: false
@@ -35,6 +35,10 @@ spring:
     redis:
       host: ${REDIS_DEV_HOST}
       port: ${REDIS_DEV_PORT}
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
 
 
 eureka:

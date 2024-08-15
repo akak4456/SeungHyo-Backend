@@ -1,26 +1,17 @@
 version: '3'
 services:
-  seunghyo-mysql:
-    image: mysql:8.0
-    container_name: mysql
+  seunghyo-oracle:
+    image: gvenzl/oracle-xe:11
+    container_name: oracle
     environment:
-      MYSQL_ROOT_PASSWORD: ${ROOT_DEV_PASSWORD}
-      MYSQL_USER: ${SEUNGHYO_DEV_DB_USERNAME}
-      MYSQL_PASSWORD: ${SEUNGHYO_DEV_DB_PASSWORD}
-      TZ: Asia/Seoul
+      ORACLE_PASSWORD: ${ROOT_DEV_PASSWORD}
+      APP_USER: ${SEUNGHYO_DEV_DB_USERNAME}
+      APP_USER_PASSWORD: ${SEUNGHYO_DEV_DB_PASSWORD}
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./initdb.d:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 10s
-      retries: 10
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
+      - oracle-volume:/u01/app/oracle/oradata
     ports:
-      - "3307:3306"
+      - "1522:1521"
+
   seunghyo-redis:
     image: redis:latest
     container_name: redis
@@ -47,7 +38,7 @@ services:
 
 
 volumes:
-  mysql-data:
+  oracle-volume:
     driver: local
   redis_data:
     driver: local

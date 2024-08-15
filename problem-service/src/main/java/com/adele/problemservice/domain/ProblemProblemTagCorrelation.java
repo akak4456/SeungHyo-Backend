@@ -4,16 +4,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "problem_problem_tag_correlation")
+@Table(name = "p_pt_correlation")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "correlationId")
+@SequenceGenerator(name = "seq_p_pt_correlation", sequenceName = "seq_p_pt_correlation", initialValue = 1, allocationSize = 1)
 public class ProblemProblemTagCorrelation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_p_pt_correlation")
     @Column(name = "correlation_id")
     private Long correlationId;
 
