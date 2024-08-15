@@ -74,4 +74,18 @@ public class BoardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("0"));
     }
+
+    @Test
+    @DisplayName("게시판 카테고리 조회 가 정상 작동하는지 확인해본다")
+    public void getCategories() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/board/categories")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
 }

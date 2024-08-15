@@ -8,6 +8,7 @@ CREATE TABLE board_category(
     category_code VARCHAR2(255) NOT NULL,
     category_name VARCHAR2(255) NOT NULL,
     is_for_admin VARCHAR2(255) NOT NULL,
+    order_num NUMBER NOT NULL,
     PRIMARY KEY (category_code)
 );
 

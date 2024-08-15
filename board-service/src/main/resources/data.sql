@@ -1,11 +1,13 @@
 INSERT INTO board_category
-VALUES ('NOTICE', '공지', 'Y');
+VALUES ('NOTICE', '공지', 'Y', 0);
 INSERT INTO board_category
-VALUES ('FREE', '자유', 'N');
+VALUES ('FREE', '자유', 'N', 1);
 INSERT INTO board_category
-VALUES ('QNA', '질문', 'N');
+VALUES ('QNA', '질문', 'N', 2);
 INSERT INTO board_category
-VALUES ('AD', '홍보', 'N');
+VALUES ('AD', '홍보', 'N', 3);
+INSERT INTO board_category
+VALUES ('ETC', '기타', 'N', 4);
 
 insert into board (board_no, member_id, board_title, category_code, lang_code, lang_name, like_count, problem_no, board_content, source_code, problem_title) values (1, 'user2', 'Donec odio justo, sollicitudin ut, suscipit a, feugiat et, eros.', 'QNA', 'JAVA_11', 'JAVA_11', 39, 1, 'Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem. Integer tincidunt ante vel ipsum.', 'Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui.', 'A+B');
 insert into board (board_no, member_id, board_title, category_code, lang_code, lang_name, like_count, problem_no, board_content, source_code, problem_title) values (2, 'user4', 'Aliquam sit amet diam in magna bibendum imperdiet.', 'AD', 'JAVA_11', 'JAVA_11', 81, 1, 'Proin risus. Praesent lectus. Vestibulum quam sapien, varius ut, blandit non, interdum in, ante. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis faucibus accumsan odio. Curabitur convallis.', 'Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam. Nam tristique tortor eu pede.', 'A+B');
