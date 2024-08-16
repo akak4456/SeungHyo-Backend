@@ -41,4 +41,18 @@ public class ProgramLanguageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("0"));
     }
+
+    @Test
+    @DisplayName("모든 언어들 잘 얻어오는지 테스트")
+    public void getAllLanguages() throws Exception {
+        ResultActions actions =
+                mockMvc.perform(
+                        get("/api/v1/programlanguage")
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0"));
+    }
 }

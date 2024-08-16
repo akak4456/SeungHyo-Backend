@@ -19,4 +19,9 @@ public class ProgramLanguageServiceImpl implements ProgramLanguageService {
     public NewSubmitOneDTO findAll(Long problemNo) {
         return new NewSubmitOneDTO(programLanguageRepository.findByIdWithProblemNo(problemNo));
     }
+
+    @Override
+    public NewSubmitOneDTO findAll() {
+        return new NewSubmitOneDTO(programLanguageRepository.findAll());
+    }
 }

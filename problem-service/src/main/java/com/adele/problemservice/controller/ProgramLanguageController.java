@@ -35,4 +35,20 @@ public class ProgramLanguageController {
                 .data(programLanguageService.findAll(problemNo))
                 .build();
     }
+
+    /**
+     * 게시판 화면에 진입할 때 필요한 데이터를 보내준다
+     * @return NewSubmitOneDTO
+     * <ul>
+     *     <li><b>languageList</b> 지원하는 모든 언어들</li>
+     * </ul>
+     */
+    @GetMapping("")
+    public ApiResult<NewSubmitOneDTO> getAllLanguages() {
+        return ApiResult.<NewSubmitOneDTO>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("리스트 조회 성공")
+                .data(programLanguageService.findAll())
+                .build();
+    }
 }
