@@ -42,13 +42,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                         BoardListDTO.class,
                         board.boardNo,
                         board.boardTitle,
-                        ExpressionUtils.as(
-                                JPAExpressions
-                                        .select(boardCategory.categoryName)
-                                        .from(boardCategory)
-                                        .where(boardCategory.eq(board.boardCategory)),
-                                "categoryName"
-                        ),
+                        board.boardCategory.categoryCode,
+                        board.boardCategory.categoryName,
                         board.langName,
                         board.memberId,
                         ExpressionUtils.as(

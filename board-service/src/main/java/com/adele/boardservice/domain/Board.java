@@ -2,6 +2,7 @@ package com.adele.boardservice.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "boardNo")
+@DynamicInsert
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

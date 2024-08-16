@@ -1,6 +1,7 @@
 package com.adele.boardservice.service.impl;
 
 import com.adele.boardservice.domain.Board;
+import com.adele.boardservice.domain.BoardCategory;
 import com.adele.boardservice.dto.*;
 import com.adele.boardservice.repository.BoardCategoryRepository;
 import com.adele.boardservice.repository.BoardRepository;
@@ -8,6 +9,9 @@ import com.adele.boardservice.repository.ProblemClient;
 import com.adele.boardservice.service.BoardService;
 import com.adele.common.ApiResult;
 import feign.Response;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,5 +68,21 @@ public class BoardServiceImpl implements BoardService {
         ApiResult<ProblemDTO> body = problemClient.getProblemOne(problemNo).getBody();
         assert body != null;
         return body.getData();
+    }
+
+    @Override
+    public void saveBoard(String memberId, BoardWriteDTO boardDTO, ProblemDTO problemDTO) {
+        Board board = new Board();
+        board.setMemberId(memberId);
+        board.setBoardTitle(boardDTO.getBoardTitle());
+        board.setBoardCategory(boardCategoryRepository.getReferenceById(boardDTO.getCategoryCode()));
+        board.setLangCode(boardDTO.getLangCode());
+        board.setLangName(boardDTO.getLangName());
+        board.setProblemNo(Long.parseLong(boardDTO.getProblemNo()));
+        board.setProblemTitle(problemDTO.getProblemTitle());
+        board.setProblemTitle(board.getProblemTitle());
+        board.setBoardContent(boardDTO.getNormalHTMLContent());
+        board.setSourceCode(boardDTO.getSourceCode());
+        boardRepository.save(board);
     }
 }

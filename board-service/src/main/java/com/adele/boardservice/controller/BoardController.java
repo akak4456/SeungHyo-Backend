@@ -1,6 +1,7 @@
 package com.adele.boardservice.controller;
 
 import com.adele.boardservice.dto.*;
+import com.adele.boardservice.repository.BoardRepository;
 import com.adele.boardservice.repository.ProblemClient;
 import com.adele.boardservice.service.BoardService;
 import com.adele.common.ApiResult;
@@ -135,9 +136,7 @@ public class BoardController {
     @PostMapping("")
     public ApiResult<BoardWriteResultDTO> addBoard(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid BoardWriteDTO board, Errors errors){
         BoardWriteResultDTO result = new BoardWriteResultDTO();
-        boolean isValid = true;
         if(errors.hasErrors()) {
-            isValid = false;
             for(FieldError error : errors.getFieldErrors()) {
                 String fieldName = error.getField();
                 String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "Error";
@@ -148,18 +147,14 @@ public class BoardController {
                     log.error("error occur but not handle because this error is tiny", e);
                 }
             }
-        }
-        if(!errors.hasErrors()) {
+        } else {
             ProblemDTO problemResponse = boardService.getProblemOne(board.getProblemNo());
             if(problemResponse.getProblemTitle() == null) {
-                isValid = false;
                 result.setIsProblemNoValid(false);
             } else {
                 result.setIsProblemNoValid(true);
+                boardService.saveBoard(memberId, board, problemResponse);
             }
-        }
-        if(isValid) {
-
         }
         return ApiResult.<BoardWriteResultDTO>builder()
                 .code(ResponseCode.SUCCESS.getCode())

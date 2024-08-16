@@ -35,4 +35,12 @@ public interface BoardService {
      * @return Response
      */
     ProblemDTO getProblemOne(String problemNo);
+
+    /**
+     * 게시판 저장 서비스
+     * @param memberId 게시판 등록자 아이디
+     * @param boardDTO board
+     * @param problemDTO problem
+     */
+    void saveBoard(String memberId, BoardWriteDTO boardDTO, ProblemDTO problemDTO);
 }
