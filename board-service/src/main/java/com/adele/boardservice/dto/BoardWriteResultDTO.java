@@ -20,5 +20,5 @@ public class BoardWriteResultDTO {
     private String problemNoError = "";
     private String normalHTMLContentError = "";
     private String sourceCodeError = "";
-    private Boolean isProblemNoValid = false;
+    private Boolean isProblemNoValid = true;
 }

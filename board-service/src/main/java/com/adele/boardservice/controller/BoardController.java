@@ -152,7 +152,6 @@ public class BoardController {
             if(problemResponse.getProblemTitle() == null) {
                 result.setIsProblemNoValid(false);
             } else {
-                result.setIsProblemNoValid(true);
                 boardService.saveBoard(memberId, board, problemResponse);
             }
         }
