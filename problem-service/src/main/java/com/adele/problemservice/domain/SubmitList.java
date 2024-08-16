@@ -19,10 +19,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "submitNo")
 @Builder
-@SequenceGenerator(name = "seq_submt_list", sequenceName = "seq_submt_list", initialValue = 1, allocationSize = 1)
 public class SubmitList {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_submt_list")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "submit_no")
     private Long submitNo;
 
@@ -56,7 +55,6 @@ public class SubmitList {
     @Column(name="open_range")
     private SourceCodeDisclosureScope openRange;
 
-    @Lob
     @Column(name="source_code")
     private String sourceCode;
 }

@@ -14,10 +14,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "gradeNo")
-@SequenceGenerator(name = "seq_problem_grade", sequenceName = "seq_problem_grade", initialValue = 1, allocationSize = 1)
 public class ProblemGrade {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_problem_grade")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "grade_no")
     private Long gradeNo;
 

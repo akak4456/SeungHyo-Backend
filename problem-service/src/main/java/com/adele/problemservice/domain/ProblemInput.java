@@ -13,10 +13,9 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "inputNo")
-@SequenceGenerator(name = "seq_problem_input", sequenceName = "seq_problem_input", initialValue = 1, allocationSize = 1)
 public class ProblemInput {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_problem_input")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "input_no")
     private Long inputNo;
 
@@ -29,7 +28,6 @@ public class ProblemInput {
     @JoinColumn(name = "problem_no")
     private Problem problem;
 
-    @Lob
     @Column(name="input_source")
     private String inputSource;
 }

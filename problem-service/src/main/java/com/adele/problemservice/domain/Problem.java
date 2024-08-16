@@ -14,24 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "problemNo")
-@SequenceGenerator(name="seq_problem", sequenceName = "seq_problem", initialValue = 1, allocationSize = 1)
 public class Problem {
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_problem")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "problem_no")
     private Long problemNo;
 
     @Column(name = "problem_title")
     private String problemTitle;
 
-    @Lob
     @Column(name = "problem_explain")
     private String problemExplain;
 
-    @Lob
     @Column(name = "problem_input_explain")
     private String problemInputExplain;
 
-    @Lob
     @Column(name = "problem_output_explain")
     private String problemOutputExplain;
 
