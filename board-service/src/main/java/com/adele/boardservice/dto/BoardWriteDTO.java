@@ -27,6 +27,6 @@ public class BoardWriteDTO {
     private String problemNo;
     @NotBlank(message = FormErrorCode.NOT_BLANK)
     private String normalHTMLContent;
-    @NotBlank(message = FormErrorCode.NOT_BLANK)
+
     private String sourceCode;
 }
