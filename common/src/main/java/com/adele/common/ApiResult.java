@@ -5,8 +5,11 @@ public class ApiResult<T> {
     private String message;
     private T data;
 
-    // private constructor for builder
-    private ApiResult(String code, String message, T data) {
+    public ApiResult() {
+
+    }
+
+    public ApiResult(String code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;

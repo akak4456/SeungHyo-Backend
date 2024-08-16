@@ -77,6 +77,13 @@ spring:
           predicates:
             - Path=/api/v1/reply/**
             - Method=GET
+        - id: board-service
+          uri: lb://BOARD-SERVICE
+          predicates:
+            - Path=/api/v1/board
+            - Method=POST
+          filters:
+            - AuthorizationHeaderFilter
 
 jwt:
   secret: ${JWT_SECRET}

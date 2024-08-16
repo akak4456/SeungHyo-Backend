@@ -60,6 +60,8 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // feign client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -67,6 +69,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'it.ozimov:embedded-redis:0.7.2'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.30.1'
 }
 
 dependencyManagement {

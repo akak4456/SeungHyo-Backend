@@ -1,18 +1,23 @@
 package com.adele.boardservice.controller;
 
-import com.adele.boardservice.dto.BoardCategoryResponse;
-import com.adele.boardservice.dto.BoardListDTO;
-import com.adele.boardservice.dto.BoardOneDTO;
-import com.adele.boardservice.dto.BoardSearchCondition;
+import com.adele.boardservice.dto.*;
+import com.adele.boardservice.repository.ProblemClient;
 import com.adele.boardservice.service.BoardService;
 import com.adele.common.ApiResult;
+import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
+import feign.Response;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import java.lang.reflect.Method;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -97,6 +102,69 @@ public class BoardController {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("카테고리 조회 성공")
                 .data(new BoardCategoryResponse(boardService.getCategories()))
+                .build();
+    }
+
+    /**
+     * 게시판 글쓰기 추가한다. form 도 확인하도록 한다.
+     * @param memberId 글쓰기한 사람 id
+     * @param board 글쓰기한 form data
+     * <ul>
+     *     <li><b>boardTitle</b> 게시글 제목</li>
+     *     <li><b>categoryCode</b> 카테고리 코드</li>
+     *     <li><b>categoryName</b> 카테고리 이름</li>
+     *     <li><b>langCode</b> 언어 코드</li>
+     *     <li><b>langName</b> 언어명</li>
+     *     <li><b>problemNo</b> 문제 번호</li>
+     *     <li><b>normalHTMLContent</b> 일반 글 내용</li>
+     *     <li><b>sourceCode</b> 소스 코드 글 내용</li>
+     * </ul>
+     * @param errors 글쓰기한 form error 들
+     * @return BoardWriteResultDTO
+     * <ul>
+     *     <li><b>boardTitleError</b> 글 제목에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
+     *     <li><b>categoryCodeError</b> 카테고리 코드에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
+     *     <li><b>categoryNameError</b> 카테고리 이름에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
+     *     <li><b>langCodeError</b> 언어 코드에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
+     *     <li><b>langNameError</b> 언어명에 문제가 있는지 없으면 빈칸 있으면 문제코드</li>
+     *     <li><b>problemNoError</b> 문제 번호에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
+     *     <li><b>normalHTMLContentError</b> 일반 글 내용에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
+     *     <li><b>sourceCodeError</b> 소스 코드 글 내용에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
+     * </ul>
+     */
+    @PostMapping("")
+    public ApiResult<BoardWriteResultDTO> addBoard(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid BoardWriteDTO board, Errors errors){
+        BoardWriteResultDTO result = new BoardWriteResultDTO();
+        boolean isValid = true;
+        if(errors.hasErrors()) {
+            isValid = false;
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "Error";
+                try {
+                    Method setter = BoardWriteResultDTO.class.getMethod(setterName, String.class);
+                    setter.invoke(result, error.getDefaultMessage());
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        }
+        if(!errors.hasErrors()) {
+            ProblemDTO problemResponse = boardService.getProblemOne(board.getProblemNo());
+            if(problemResponse.getProblemTitle() == null) {
+                isValid = false;
+                result.setIsProblemNoValid(false);
+            } else {
+                result.setIsProblemNoValid(true);
+            }
+        }
+        if(isValid) {
+
+        }
+        return ApiResult.<BoardWriteResultDTO>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message("게시판 추가 성공")
+                .data(result)
                 .build();
     }
 }

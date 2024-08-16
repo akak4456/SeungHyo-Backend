@@ -1,9 +1,7 @@
 package com.adele.boardservice.service;
 
-import com.adele.boardservice.dto.BoardCategoryDTO;
-import com.adele.boardservice.dto.BoardListDTO;
-import com.adele.boardservice.dto.BoardOneDTO;
-import com.adele.boardservice.dto.BoardSearchCondition;
+import com.adele.boardservice.dto.*;
+import feign.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -30,4 +28,11 @@ public interface BoardService {
      * @return List BoardCategoryDTO 게시판 카테고리들 단 admin을 위한 것은 얻어오지 않는다.
      */
     List<BoardCategoryDTO> getCategories();
+
+    /**
+     * problem 을 얻어오는 서비스
+     * @param problemNo 문제 번호
+     * @return Response
+     */
+    ProblemDTO getProblemOne(String problemNo);
 }

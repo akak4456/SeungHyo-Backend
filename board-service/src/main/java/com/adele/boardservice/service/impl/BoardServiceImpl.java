@@ -1,13 +1,13 @@
 package com.adele.boardservice.service.impl;
 
 import com.adele.boardservice.domain.Board;
-import com.adele.boardservice.dto.BoardCategoryDTO;
-import com.adele.boardservice.dto.BoardListDTO;
-import com.adele.boardservice.dto.BoardOneDTO;
-import com.adele.boardservice.dto.BoardSearchCondition;
+import com.adele.boardservice.dto.*;
 import com.adele.boardservice.repository.BoardCategoryRepository;
 import com.adele.boardservice.repository.BoardRepository;
+import com.adele.boardservice.repository.ProblemClient;
 import com.adele.boardservice.service.BoardService;
+import com.adele.common.ApiResult;
+import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardCategoryRepository boardCategoryRepository;
+    private final ProblemClient problemClient;
 
     @Override
     public Page<BoardListDTO> searchPage(BoardSearchCondition condition, Pageable pageable) {
@@ -55,5 +56,12 @@ public class BoardServiceImpl implements BoardService {
                 .map((category) ->
                         new BoardCategoryDTO(category.getCategoryCode(), category.getCategoryName())
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public ProblemDTO getProblemOne(String problemNo) {
+        ApiResult<ProblemDTO> body = problemClient.getProblemOne(problemNo).getBody();
+        assert body != null;
+        return body.getData();
     }
 }
