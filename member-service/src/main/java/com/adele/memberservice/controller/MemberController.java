@@ -188,6 +188,7 @@ public class MemberController {
         refreshTokenService.saveRefreshToken(memberId, token.getRefreshToken());
         response.addHeader("Authorization", "Bearer " + token.getAccessToken());
         response.addHeader("Refresh-Token", refreshToken);
+        response.addHeader("new-refresh-token", token.getRefreshToken());
         return token.getAccessToken();
     }
 
