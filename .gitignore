@@ -38,3 +38,6 @@ out/
 
 # ignore .env for security
 .env
+
+# secret folder
+secret

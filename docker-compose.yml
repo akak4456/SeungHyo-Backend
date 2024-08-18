@@ -1,16 +1,17 @@
-version: '3'
+version: '3.7'
 services:
   seunghyo-mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: seunghyo-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${ROOT_DEV_PASSWORD}
-      MYSQL_USER: ${SEUNGHYO_DEV_DB_USERNAME}
-      MYSQL_PASSWORD: ${SEUNGHYO_DEV_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/root_password
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_USER: adele
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
       TZ: Asia/Seoul
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./initdb.d:/docker-entrypoint-initdb.d
+    secrets:
+      - root_password
+      - db_password
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 10s
@@ -19,35 +20,89 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
-    ports:
-      - "3307:3306"
+      - --bind-address=0.0.0.0
   seunghyo-redis:
     image: redis:latest
-    container_name: redis
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6399:6379"
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-  kafka:
-    image: wurstmeister/kafka:2.12-2.5.0
-    container_name: kafka
-    ports:
-      - "9092:9092"
+    container_name: seunghyo-redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      timeout: 10s
+      retries: 10
+  seunghyo-zookeeper:
+    image: bitnami/zookeeper:3.7.1
+    container_name: seunghyo-zookeeper
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LOG_RETENTION_HOURS: 24  # 메시지 보유 기간을 1일로 설정
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "unset" , "JMX_PORT" ,";" ,"kafka-topics.sh","--zookeeper","zookeeper:2181","--list" ]
+      timeout: 10s
+      retries: 10
+  seunghyo-kafka:
+    image: bitnami/kafka:3.4.0
+    container_name: seunghyo-kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ZOOKEEPER_CONNECT=seunghyo-zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    healthcheck:
+      test: /opt/bitnami/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      timeout: 10s
+      retries: 10
+    depends_on:
+      seunghyo-zookeeper:
+        condition: service_healthy
+  seunghyo-eureka:
+    build:
+      context: ./eureka
+      dockerfile: ./Dockerfile.dev
+    container_name: seunghyo-eureka
+    ports:
+      - "8761:8761"
+    restart: on-failure
+  seunghyo-apigateway:
+    build:
+      context: ./apigateway-service
+      dockerfile: ./Dockerfile.dev
+    container_name: seunghyo-apigateway
+    ports:
+      - "8999:8999"
+    # restart: on-failure
+    environment:
+      REDIS_DEV_HOST: seunghyo-redis
+      REDIS_DEV_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      ACCESS_TOKEN_VALIDITY_IN_SECONDS: 86400
+      REFRESH_TOKEN_VALIDITY_IN_SECONDS: 604800
+      EUREKA_SERVER_DEFAULT_ZONE: http://seunghyo-eureka:8761/eureka
+  seunghyo-member:
+    build:
+      context: ./member-service
+      dockerfile: ./Dockerfile.dev
+    container_name: seunghyo-member
+    # restart: on-failure
+    environment:
+      EMAIL_USERNAME: seunghyoalgorithm
+      EMAIL_PASSWORD: /run/secrets/email_password.txt
+      JWT_SECRET: ${JWT_SECRET}
+      ACCESS_TOKEN_VALIDITY_IN_SECONDS: 86400
+      REFRESH_TOKEN_VALIDITY_IN_SECONDS: 604800
+      MEMBER_SERVICE_DEV_DB_URL: seunghyo-mysql
+      MEMBER_SERVICE_DEV_DB_PORT: 3306
+      MEMBER_SERVICE_DEV_DB_NAME: member_service
+      SEUNGHYO_DEV_DB_USERNAME: adele
+      REDIS_DEV_HOST: seunghyo-redis
+      REDIS_DEV_PORT: 6379
+      EUREKA_SERVER_DEFAULT_ZONE: http://seunghyo-eureka:8761/eureka
+    secrets:
+      - email_password
+      - db_password
 
-
-volumes:
-  mysql-data:
-    driver: local
-  redis_data:
-    driver: local
+secrets:
+  root_password:
+    file: secret/root_dev_db_password.txt
+  db_password:
+    file: secret/seunghyo_dev_db_password.txt
+  email_password:
+    file: secret/email_password.txt

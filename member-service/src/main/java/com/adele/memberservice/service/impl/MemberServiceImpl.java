@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.adele.common.ValidFormUtil.*;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -68,36 +66,36 @@ public class MemberServiceImpl implements MemberService {
     public JoinResultDTO tryJoin(JoinDTO joinDTO, boolean isEmailValid) {
         boolean joinAvailable = true;
         JoinResultDTO joinResultDTO = new JoinResultDTO();
-        if(!validateIdForm(joinDTO.getMemberId())) {
-            // 아이디가 올바른 형태가 아니냐?
-            joinAvailable = false;
-            joinResultDTO.setIdNotValidForm(true);
-        }
+//        if(!validateIdForm(joinDTO.getMemberId())) {
+//            // 아이디가 올바른 형태가 아니냐?
+//            joinAvailable = false;
+//            joinResultDTO.setIdNotValidForm(true);
+//        }
         if(memberRepository.findById(joinDTO.getMemberId()).isPresent()) {
             // 아이디가 존재하냐?
             joinAvailable = false;
             joinResultDTO.setIdDuplicate(true);
         }
-        if(!validateStatusMessageForm(joinDTO.getStatusMessage())) {
-            // 상태 메시지가 올바른 형태가 아닌가?
-            joinAvailable = false;
-            joinResultDTO.setStatusNotValidForm(true);
-        }
-        if(!validatePwForm(joinDTO.getMemberPw())) {
-            // 비밀번호가 올바른 형태가 아닌가?
-            joinAvailable = false;
-            joinResultDTO.setPwNotValidForm(true);
-        }
+//        if(!validateStatusMessageForm(joinDTO.getStatusMessage())) {
+//            // 상태 메시지가 올바른 형태가 아닌가?
+//            joinAvailable = false;
+//            joinResultDTO.setStatusNotValidForm(true);
+//        }
+//        if(!validatePwForm(joinDTO.getMemberPw())) {
+//            // 비밀번호가 올바른 형태가 아닌가?
+//            joinAvailable = false;
+//            joinResultDTO.setPwNotValidForm(true);
+//        }
         if(!joinDTO.getMemberPw().equals(joinDTO.getMemberPwCheck())) {
             // 비밀번호와 비밀번호 확인이 다르나?
             joinAvailable = false;
             joinResultDTO.setPwAndPwCheckDifferent(true);
         }
-        if(!validateEmailForm(joinDTO.getEmail())) {
-            // 이메일이 올바른 형태가 아닌가?
-            joinAvailable = false;
-            joinResultDTO.setEmailNotValidForm(true);
-        }
+//        if(!validateEmailForm(joinDTO.getEmail())) {
+//            // 이메일이 올바른 형태가 아닌가?
+//            joinAvailable = false;
+//            joinResultDTO.setEmailNotValidForm(true);
+//        }
         if(memberRepository.findByEmail(joinDTO.getEmail()).isPresent()) {
             // 이메일이 존재 하나?
             joinAvailable = false;
@@ -140,22 +138,22 @@ public class MemberServiceImpl implements MemberService {
             available = false;
             result.setIdNotMatch(true);
         }
-        if(!validateIdForm(dto.getMemberId())) {
-            available = false;
-            result.setIdNotValidForm(true);
-        }
-        if(!validatePwForm(dto.getMemberPw())) {
-            available = false;
-            result.setPwNotValidForm(true);
-        }
-        if(!validateEmailForm(dto.getEmail())) {
-            available = false;
-            result.setEmailNotValidForm(true);
-        }
-        if(!validateStatusMessageForm(dto.getStatusMessage())) {
-            available = false;
-            result.setStatusMessageNotValidForm(true);
-        }
+//        if(!validateIdForm(dto.getMemberId())) {
+//            available = false;
+//            result.setIdNotValidForm(true);
+//        }
+//        if(!validatePwForm(dto.getMemberPw())) {
+//            available = false;
+//            result.setPwNotValidForm(true);
+//        }
+//        if(!validateEmailForm(dto.getEmail())) {
+//            available = false;
+//            result.setEmailNotValidForm(true);
+//        }
+//        if(!validateStatusMessageForm(dto.getStatusMessage())) {
+//            available = false;
+//            result.setStatusMessageNotValidForm(true);
+//        }
         Member member = memberRepository.findById(dto.getMemberId()).orElse(null);
         if(member == null || !member.getMemberPw().equals(dto.getMemberPw())) {
             available = false;
@@ -188,10 +186,10 @@ public class MemberServiceImpl implements MemberService {
                 available = false;
                 result.setNewPwNotMatch(true);
             }
-            if(!validatePwForm(dto.getNewPw())) {
-                available = false;
-                result.setNewPwNotValidForm(true);
-            }
+//            if(!validatePwForm(dto.getNewPw())) {
+//                available = false;
+//                result.setNewPwNotValidForm(true);
+//            }
         }
         if(available) {
             member.setMemberPw(dto.getNewPw());

@@ -1,0 +1,41 @@
+services:
+  seunghyo-mysql:
+    volumes:
+      - dev-mysql-data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - dev-net
+  seunghyo-redis:
+    volumes:
+      - dev-redis-data:/data
+    networks:
+      - dev-net
+  seunghyo-zookeeper:
+    networks:
+      - dev-net
+  seunghyo-kafka:
+    volumes:
+      - dev-kafka-data:/bitnami/kafka
+    networks:
+      - dev-net
+  seunghyo-eureka:
+    networks:
+      - dev-net
+  seunghyo-apigateway:
+    networks:
+      - dev-net
+  seunghyo-member:
+    networks:
+      - dev-net
+
+volumes:
+  dev-mysql-data:
+    driver: local
+  dev-redis-data:
+    driver: local
+  dev-kafka-data:
+    driver: local
+
+networks:
+  dev-net:
+    driver: bridge
