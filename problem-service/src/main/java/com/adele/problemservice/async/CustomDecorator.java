@@ -1,14 +1,12 @@
 package com.adele.problemservice.async;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 public class CustomDecorator implements TaskDecorator {
-    @NotNull
     @Override
-    public Runnable decorate(@NotNull Runnable runnable){
+    public Runnable decorate(Runnable runnable){
         //현재 요청의 RequestAttribute를 가져옴
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
 

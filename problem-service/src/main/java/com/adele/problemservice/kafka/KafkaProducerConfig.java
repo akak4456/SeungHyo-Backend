@@ -1,8 +1,10 @@
 package com.adele.problemservice.kafka;
 
 import com.adele.problemservice.dto.KafkaCompile;
+import com.adele.problemservice.properties.KafkaConfigProperties;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +18,10 @@ import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
-    @Value("${kafka-url}")
-    private String kafkaUrl;
+    private final String kafkaUrl;
+    public KafkaProducerConfig(@Autowired KafkaConfigProperties kafkaConfigProperties) {
+        this.kafkaUrl = kafkaConfigProperties.getUrl();
+    }
     @Bean
     public ProducerFactory<String, KafkaCompile> producerFactory() {
         Map<String, Object> config = new HashMap<>();

@@ -1,9 +1,8 @@
 package com.adele.problemservice.service;
 
-import com.adele.problemservice.CompileErrorReason;
 import com.adele.problemservice.CompileStatus;
-import com.adele.problemservice.DotenvTestExecutionListener;
 import com.adele.problemservice.RuntimeErrorReason;
+import com.adele.problemservice.TestConfig;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.Problem;
 import com.adele.problemservice.domain.ProblemInput;
@@ -12,7 +11,6 @@ import com.adele.problemservice.dto.CompileResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -40,15 +39,11 @@ import static org.mockito.Mockito.verify;
  * 환경변수 COMPILER_JAVA11_PATH 확인할것
  */
 @Slf4j
-@SpringBootTest
-@TestExecutionListeners(listeners = {
-        DotenvTestExecutionListener.class,
-        DependencyInjectionTestExecutionListener.class
-})
-@ActiveProfiles("dev")
+@SpringJUnitConfig(TestConfig.class)
 public class CompileServiceTest {
     @Autowired
     private CompileService compileService;
+    
     @Autowired
     private ApplicationContext applicationContext;
 

@@ -3,7 +3,6 @@ package com.adele.problemservice.repository;
 import com.adele.problemservice.domain.*;
 import com.adele.problemservice.repository.custom.ProblemRepositoryCustom;
 import io.lettuce.core.dynamic.annotation.Param;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,36 +14,36 @@ public interface ProblemRepository extends JpaRepository<Problem, Long>, Problem
             "JOIN p.tagCorrelations tpc " +
             "JOIN tpc.tag t " +
             "WHERE p.problemNo = :id")
-    List<ProblemTag> findByIdWithTag(@NotNull @Param("id") Long id);
+    List<ProblemTag> findByIdWithTag( @Param("id") Long id);
 
     @Query("SELECT a FROM Problem p " +
             "JOIN p.algorithmCategoryCorrelations ac " +
             "JOIN ac.algorithmCategory a " +
             "WHERE p.problemNo = :id")
-    List<AlgorithmCategory> findByIdWithAlgorithmCategory(@NotNull @Param("id") Long id);
+    List<AlgorithmCategory> findByIdWithAlgorithmCategory(@Param("id") Long id);
 
     @Query("SELECT inputs.inputSource FROM Problem p " +
             "JOIN p.problemInputs inputs " +
             "WHERE p.problemNo = :id AND inputs.isExample = true")
-    List<String> findByIdWithInputExampleOnly(@NotNull @Param("id") Long id);
+    List<String> findByIdWithInputExampleOnly(@Param("id") Long id);
 
     @Query("SELECT outputs.outputSource FROM Problem p " +
             "JOIN p.problemOutputs outputs " +
             "WHERE p.problemNo = :id AND outputs.isExample = true")
-    List<String> findByIdWithOutputExampleOnly(@NotNull @Param("id") Long id);
+    List<String> findByIdWithOutputExampleOnly(@Param("id") Long id);
 
     @Query("SELECT inputs FROM Problem p " +
             "JOIN p.problemInputs inputs " +
             "WHERE p.problemNo = :id")
-    List<ProblemInput> findByIdWithInput(@NotNull @Param("id") Long id);
+    List<ProblemInput> findByIdWithInput(@Param("id") Long id);
 
     @Query("SELECT outputs FROM Problem p " +
             "JOIN p.problemOutputs outputs " +
             "WHERE p.problemNo = :id")
-    List<ProblemOutput> findByIdWithOutput(@NotNull @Param("id") Long id);
+    List<ProblemOutput> findByIdWithOutput(@Param("id") Long id);
 
     @Query("SELECT con FROM Problem p " +
             "JOIN p.problemConditions con " +
             "WHERE p.problemNo = :id")
-    List<ProblemCondition> findByIdWithCondition(@NotNull @Param("id") Long id);
+    List<ProblemCondition> findByIdWithCondition(@Param("id") Long id);
 }

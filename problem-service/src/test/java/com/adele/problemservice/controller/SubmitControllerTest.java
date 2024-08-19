@@ -1,11 +1,9 @@
 package com.adele.problemservice.controller;
 
 import com.adele.common.AuthHeaderConstant;
-import com.adele.problemservice.DotenvTestExecutionListener;
 import com.adele.problemservice.TestConfig;
 import com.adele.problemservice.compilestrategy.impl.Java11CompileStrategy;
 import com.adele.problemservice.domain.Problem;
-import com.adele.problemservice.domain.SubmitList;
 import com.adele.problemservice.dto.*;
 import com.adele.problemservice.repository.ProblemGradeRepository;
 import com.adele.problemservice.repository.ProblemRepository;
@@ -15,24 +13,16 @@ import com.adele.problemservice.service.CompileService;
 import com.adele.problemservice.service.impl.SubmitServiceImpl;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 

@@ -9,7 +9,9 @@ import com.adele.problemservice.compilestrategy.timeoutprocess.TimeoutProcessBui
 import com.adele.problemservice.domain.ProblemInput;
 import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
+import com.adele.problemservice.properties.CompilerConfigProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,8 @@ public class Java11CompileStrategy implements CompileStrategy {
     private File tempDir;
     private File sourceFile;
 
-    public Java11CompileStrategy(@Value("${compiler.java11-path}") String java11Path) {
-        this.java11Path = java11Path;
+    public Java11CompileStrategy(@Autowired CompilerConfigProperties compilerConfigProperties) {
+        this.java11Path = compilerConfigProperties.getJava11Path();
     }
     @Override
     public void writeSourceCode(String sourceCode) throws IOException {

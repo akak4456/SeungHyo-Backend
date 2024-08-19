@@ -1,7 +1,6 @@
 package com.adele.problemservice.async;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
 import java.lang.reflect.Method;
@@ -10,7 +9,7 @@ import java.lang.reflect.Method;
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
     @Override
-    public void handleUncaughtException(@NotNull Throwable ex, @NotNull Method method, @NotNull Object... params){
+    public void handleUncaughtException(Throwable ex, Method method, Object... params){
         log.error( ex.getMessage(), ex);
     }
 }
