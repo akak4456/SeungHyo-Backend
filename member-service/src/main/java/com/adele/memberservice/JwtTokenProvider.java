@@ -1,11 +1,13 @@
 package com.adele.memberservice;
 
 import com.adele.memberservice.dto.JwtToken;
+import com.adele.memberservice.properties.JwtConfigProperties;
 import com.adele.memberservice.service.RefreshTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,14 +38,12 @@ public class JwtTokenProvider {
     private final RefreshTokenService refreshTokenService;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
-            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            @Autowired JwtConfigProperties jwtConfigProperties,
             RefreshTokenService refreshTokenService) {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtConfigProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
-        this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
+        this.accessTokenValidityInSeconds = jwtConfigProperties.getRefreshTokenValidityInSeconds();
+        this.refreshTokenValidityInSeconds = jwtConfigProperties.getRefreshTokenValidityInSeconds();
         this.refreshTokenService = refreshTokenService;
     }
 

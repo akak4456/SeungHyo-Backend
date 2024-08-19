@@ -5,17 +5,20 @@ import com.adele.common.AuthHeaderConstant;
 import com.adele.common.ResponseCode;
 import com.adele.memberservice.JwtTokenProvider;
 import com.adele.memberservice.dto.*;
+import com.adele.memberservice.properties.EmailConfigProperties;
 import com.adele.memberservice.service.EmailCheckCodeService;
 import com.adele.memberservice.service.EmailService;
 import com.adele.memberservice.service.MemberService;
 import com.adele.memberservice.service.RefreshTokenService;
-import com.adele.memberservice.service.impl.EmailCheckCodeServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Method;
 import java.util.Random;
 
 @Slf4j
@@ -28,6 +31,7 @@ public class MemberController {
     private final EmailService emailService;
     private final EmailCheckCodeService emailCheckCodeService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailConfigProperties emailConfigProperties;
 
     /**
      * login 을 처리하는 API
@@ -40,51 +44,83 @@ public class MemberController {
      * </ul>
      * @return JwtToken
      * <ul>
+     *     <li><b>memberIdValidForm</b> id가 유효한 폼인지 여부</li>
+     *     <li><b>memberPwValidForm</b> pw가 유효한 폼인지 여부</li>
      *     <li><b>grantType</b> grant type</li>
      *     <li><b>accessToken</b> access token</li>
      *     <li><b>refreshToken</b> refresh token</li>
      * </ul>
      */
     @PostMapping("/auth/login")
-    public ApiResult<JwtToken> login(@RequestBody LoginRequest loginRequest) {
-        JwtToken response = memberService.login(loginRequest);
-        refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), response.getRefreshToken());
-        log.info("response: {}", response);
-        // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
-        ApiResult<JwtToken> res = ApiResult.<JwtToken>builder()
+    public ApiResult<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest, Errors errors) {
+        LoginResponse result = new LoginResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = LoginResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
+            JwtToken token = memberService.login(loginRequest);
+            refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), token.getRefreshToken());
+            result.setGrantType(token.getGrantType());
+            result.setAccessToken(token.getAccessToken());
+            result.setRefreshToken(token.getRefreshToken());
+        }
+        return ApiResult.<LoginResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그인 성공")
-                .data(response)
-                .build();
-        return ApiResult.<JwtToken>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("로그인 성공")
-                .data(response)
+                .data(result)
                 .build();
     }
 
     /**
      * 이메일 체크코드를 보낸다
-     * @param emailDTO
+     * @param sendCheckCodeEmailRequest
      * <ul>
      *  <li><b>toEmail</b>: 인증코드를 보낼 이메일</li>
      * </ul>
-     * @return 이메일 인증 코드 유효 시간(단위 초)
+     * @return SendCheckCodeEmailResponse
+     * <ul>
+     *     <li><b>emailValidForm</b> 이메일이 유효한 폼인지</li>
+     *     <li><b>validDuration</b> 이메일 인증 코드 유효 시간(단위 초)</li>
+     * </ul>
      */
     @PostMapping("/auth/send-email-check-code")
-    public ApiResult<Long> sendEmailCheckCode(@RequestBody EmailDTO emailDTO) {
-        String code = createCode();
-        emailCheckCodeService.saveEmailCheckCode(emailDTO.getToEmail(), code);
-        // TODO 예쁜 이메일 보내기
-        emailService.sendMail(new EmailMessage(
-                emailDTO.getToEmail(),
-                "인증번호",
-                code
-        ));
-        return ApiResult.<Long>builder()
+    public ApiResult<SendCheckCodeEmailResponse> sendEmailCheckCode(@RequestBody @Valid SendCheckCodeEmailRequest sendCheckCodeEmailRequest, Errors errors) {
+        SendCheckCodeEmailResponse result = new SendCheckCodeEmailResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = SendCheckCodeEmailResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            String code = createCode();
+            emailCheckCodeService.saveEmailCheckCode(sendCheckCodeEmailRequest.getToEmail(), code, emailConfigProperties.getEmailCheckCodeValidInSeconds());
+            // TODO 예쁜 이메일 보내기
+            emailService.sendMail(new EmailMessage(
+                    sendCheckCodeEmailRequest.getToEmail(),
+                    "인증번호",
+                    code
+            ));
+            result.setValidDuration(emailConfigProperties.getEmailCheckCodeValidInSeconds());
+        }
+        return ApiResult.<SendCheckCodeEmailResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("이메일 전송 성공")
-                .data(((EmailCheckCodeServiceImpl)emailCheckCodeService).getEmailCheckCodeValidTimeInSeconds()) // TODO 더 좋은 방법 찾아보기
+                .data(result)
                 .build();
     }
 
@@ -112,19 +148,38 @@ public class MemberController {
      *  <li><b>email</b>: 인증코드 확인할 이메일</li>
      *  <li><b>code</b>: 인증코드</li>
      * </ul>
-     * @return
-     * 이메일 인증이 성공했는지 여부
+     * @return ValidEmailResponse
+     * <ul>
+     *     <li><b>emailValidForm</b> 이메일이 유효한 폼인지</li>
+     *     <li><b>codeValidForm</b> 코드가 유효한 폼인지</li>
+     *     <li><b>isEmailValid</b> 이메일이 유효한 주소인지</li>
+     * </ul>
      */
     @PostMapping("/auth/valid-email")
-    public ApiResult<Boolean> validEmail(@RequestBody ValidEmailDTO validEmailDTO) {
-        boolean isValidEmail = emailCheckCodeService.isCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
-        if(isValidEmail) {
-            emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
+    public ApiResult<ValidEmailResponse> validEmail(@RequestBody @Valid ValidEmailRequest validEmailDTO, Errors errors) {
+        ValidEmailResponse result = new ValidEmailResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = ValidEmailResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            boolean isValidEmail = emailCheckCodeService.isCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
+            result.setIsEmailValid(isValidEmail);
+            if (isValidEmail) {
+                emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
+            }
         }
-        return ApiResult.<Boolean>builder()
+        return ApiResult.<ValidEmailResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("이메일 체크 확인 성공")
-                .data(isValidEmail)
+                .data(result)
                 .build();
     }
 
@@ -133,8 +188,8 @@ public class MemberController {
      * logout 을 access token 을 redis black list 에 추가하는 방식으로 이루어진다.
      */
     @PatchMapping("/auth/logout")
-    public ApiResult<Void> logout(@RequestBody LogoutDTO logoutDTO) {
-        refreshTokenService.deleteRefreshToken(logoutDTO.getRefreshToken());
+    public ApiResult<Void> logout(@RequestBody LogoutRequest logoutRequest) {
+        refreshTokenService.deleteRefreshToken(logoutRequest.getRefreshToken());
         return ApiResult.<Void>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그아웃 성공")
@@ -144,7 +199,7 @@ public class MemberController {
     /**
      * 회원가입 시도
      * 회원가입 시도 성공, 실패 여부를 반환한다.
-     * @param joinDTO
+     * @param joinRequest
      * <ul>
      *     <li><b>memberId</b> 회원가입 시도할 아이디</li>
      *     <li><b>memberPw</b> 회원가입 시도할 비밀번호</li>
@@ -165,12 +220,45 @@ public class MemberController {
      * </ul>
      */
     @PostMapping("/auth/join")
-    public ApiResult<JoinResultDTO> join(@RequestBody JoinDTO joinDTO) {
-        JoinResultDTO joinResultDTO = memberService.tryJoin(joinDTO, emailCheckCodeService.isValidEmail(joinDTO.getEmail()));
-        return ApiResult.<JoinResultDTO>builder()
+    public ApiResult<JoinResponse> join(@RequestBody @Valid JoinRequest joinRequest, Errors errors) {
+        JoinResponse result = new JoinResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = JoinResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            boolean isAvailable = true;
+            if(joinRequest.getMemberPw() == null || !joinRequest.getMemberPw().equals(joinRequest.getMemberPwCheck())) {
+                isAvailable = false;
+                result.setPwAndPwCheckSame(false);
+            }
+            if(memberService.isIdExist(joinRequest.getMemberId())) {
+                isAvailable = false;
+                result.setIdNotDuplicate(false);
+            }
+            if(memberService.isEmailExist(joinRequest.getEmail())) {
+                isAvailable = false;
+                result.setEmailNotDuplicate(false);
+            }
+            if(!emailCheckCodeService.isValidEmail(joinRequest.getEmail())) {
+                isAvailable = false;
+                result.setEmailValidate(false);
+            }
+            if(isAvailable) {
+                memberService.join(joinRequest);
+            }
+        }
+        return ApiResult.<JoinResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("회원가입 시도 성공")
-                .data(joinResultDTO)
+                .data(result)
                 .build();
     }
 
@@ -202,9 +290,9 @@ public class MemberController {
      * </ul>
      */
     @GetMapping("/my/info-edit")
-    public ApiResult<InfoEditResultDTO> getInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId) {
-        InfoEditResultDTO result = memberService.getInfoEdit(memberId);
-        return ApiResult.<InfoEditResultDTO>builder()
+    public ApiResult<GetInfoEditResponse> getInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId) {
+        GetInfoEditResponse result = memberService.getInfoEdit(memberId);
+        return ApiResult.<GetInfoEditResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("info edit 정보 조회 성공")
                 .data(result)
@@ -220,20 +308,37 @@ public class MemberController {
      *     <li><b>statusMessage</b> 정보 수정할 상태 메시지</li>
      *     <li><b>email</b> 정보 수정할 email</li>
      * </ul>
-     * @return PatchInfoEditResultDTO
+     * @return PatchInfoEditResponse
      * <ul>
-     *     <li><b>idNotMatch</b> 입력한 id 랑 실제 아이디랑 다른지 여부</li>
-     *     <li><b>idNotValidForm</b> id form 이 올바르지 않은지 여부</li>
-     *     <li><b>statusMessageNotValidForm</b> status message form 이 올바르지 않은지 여부</li>
-     *     <li><b>pwNotValidForm</b> 비밀번호가 올바르지 않은지 여부</li>
-     *     <li><b>emailNotValidForm</b> 이메일이 올바르지 않은지 여부</li>
-     *     <li><b>pwNotMatch</b> 입력한 pw 랑 실제 pw 랑 다른지 여부</li>
+     *     <li><b>memberIdValidForm</b> id 가 유효한 폼인지</li>
+     *     <li><b>memberPwValidForm</b> pw 가 유효한 폼인지</li>
+     *     <li><b>statusMessageValidForm</b> status 가 유효한 폼인지</li>
+     *     <li><b>emailValidForm</b> email 이 유효한 폼인지</li>
+     *     <li><b>pwMatch</b> pw 가 일치하는지</li>
      * </ul>
      */
     @PatchMapping("/my/info-edit")
-    public ApiResult<PatchInfoEditResultDTO> patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody PatchInfoEditDTO dto) {
-        PatchInfoEditResultDTO result = memberService.patchInfoEdit(dto, memberId.equals(dto.getMemberId()));
-        return ApiResult.<PatchInfoEditResultDTO>builder()
+    public ApiResult<PatchInfoEditResponse> patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid PatchInfoEditRequest dto, Errors errors) {
+        PatchInfoEditResponse result = new PatchInfoEditResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = PatchInfoEditResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            boolean isPwMatch = memberService.isPwMatch(dto.getMemberId(), dto.getMemberPw());
+            result.setPwMatch(isPwMatch);
+            if(isPwMatch) {
+                memberService.patchInfoEdit(dto);
+            }
+        }
+        return ApiResult.<PatchInfoEditResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("info edit 정보 수정 시도 성공")
                 .data(result)
@@ -250,17 +355,40 @@ public class MemberController {
      * </ul>
      * @return ChangePwResultDTO
      * <ul>
-     *     <li><b>notExistUser</b> 존재하지 않는 유저로 시도하고자 하는 여부</li>
-     *     <li><b>currentPwNotMatch</b> 실제 유저 비밀번호와 입력한 비밀번호가 다른지 여부</li>
-     *     <li><b>currentPwAndNewPwMatch</b> 입력한 비밀번호와 새로 입력한 비밀번호가 같은지 여부</li>
-     *     <li><b>newPwNotMatch</b> 새로 입력한 비밀번호와 비밀번호 확인이 같지 않은지 여부</li>
-     *     <li><b>newPwNotValidForm</b> 새로 입력한 비밀번호의 폼이 맞지 않는지 여부</li>
+     *     <li><b>currentPwValidForm</b> 현재 비밀번호가 유효한 폼인지</li>
+     *     <li><b>newPwValidForm</b> 새로운 비밀번호가 유효한 폼인지</li>
+     *     <li><b>newPwCheckValidForm</b> 새로운 비밀번호 확인이 유효한 폼인지</li>
+     *     <li><b>currentPwMatch</b> 현재 비밀번호와 유저 비밀번호가 일치하는지</li>
+     *     <li><b>currentPwAndNewPwNotMatch</b> 현재 비밀번호와 새 비밀번호가 일치하지 않는지</li>
+     *     <li><b>newPwMatch</b> 새 비밀번호와 새비밀번호 확인이 일치하는지</li>
      * </ul>
      */
     @PatchMapping("/my/change-pw")
-    public ApiResult<ChangePwResultDTO> changePw(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody ChangePwDTO dto) {
-        ChangePwResultDTO result = memberService.tryChangePw(memberId, dto);
-        return ApiResult.<ChangePwResultDTO>builder()
+    public ApiResult<ChangePwResponse> changePw(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid ChangePwRequest dto, Errors errors) {
+        ChangePwResponse result = new ChangePwResponse();
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = ChangePwResponse.class.getMethod(setterName, Boolean.class);
+                    setter.invoke(result, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+        } else {
+            boolean isCurrentPwMatch = memberService.isPwMatch(memberId, dto.getCurrentPw());
+            result.setCurrentPwMatch(isCurrentPwMatch);
+            boolean isCurrentPwAndNewPwNotMatch = dto.getCurrentPw() != null && !dto.getCurrentPw().equals(dto.getNewPw());
+            result.setCurrentPwAndNewPwNotMatch(isCurrentPwAndNewPwNotMatch);
+            boolean isNewPwMatch = dto.getNewPw() != null && dto.getNewPw().equals(dto.getNewPwCheck());
+            result.setNewPwMatch(isNewPwMatch);
+            if(isCurrentPwMatch && isCurrentPwAndNewPwNotMatch && isNewPwMatch) {
+                memberService.changePw(memberId, dto.getNewPw());
+            }
+        }
+        return ApiResult.<ChangePwResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("비밀번호 수정 시도 성공")
                 .data(result)

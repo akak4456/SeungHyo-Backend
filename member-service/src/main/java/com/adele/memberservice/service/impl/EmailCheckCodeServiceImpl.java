@@ -1,7 +1,9 @@
 package com.adele.memberservice.service.impl;
 
+import com.adele.memberservice.properties.EmailConfigProperties;
 import com.adele.memberservice.service.EmailCheckCodeService;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,22 +14,18 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class EmailCheckCodeServiceImpl implements EmailCheckCodeService {
     private final RedisTemplate<String, Object> redisTemplate;
-    @Getter
-    private final long emailCheckCodeValidTimeInSeconds;
     private final long validEmailTimeInSeconds;
 
     public EmailCheckCodeServiceImpl(
             RedisTemplate<String, Object> redisTemplate,
-            @Value("${email-check-code-valid-in-seconds}") long emailCheckCodeValidTimeInSeconds,
-            @Value("${valid-email-time-in-seconds}") long validEmailTimeInSeconds
+            @Autowired EmailConfigProperties emailConfigProperties
     ) {
         this.redisTemplate = redisTemplate;
-        this.emailCheckCodeValidTimeInSeconds = emailCheckCodeValidTimeInSeconds;
-        this.validEmailTimeInSeconds = validEmailTimeInSeconds;
+        this.validEmailTimeInSeconds = emailConfigProperties.getValidEmailTimeInSeconds();
     }
 
     @Override
-    public void saveEmailCheckCode(String memberEmail, String checkCode) {
+    public void saveEmailCheckCode(String memberEmail, String checkCode, long emailCheckCodeValidTimeInSeconds) {
         redisTemplate.opsForValue().set("CK:"+memberEmail, checkCode, emailCheckCodeValidTimeInSeconds, TimeUnit.SECONDS);
     }
 

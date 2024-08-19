@@ -10,7 +10,9 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD}
+    password: ${email_password}
+    email-check-code-valid-in-seconds: 180 # 3분
+    valid-email-time-in-seconds: 1800 # 30분
     properties:
       mail:
         smtp:
@@ -51,6 +53,3 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_SERVER_DEFAULT_ZONE}
-
-email-check-code-valid-in-seconds: 180 # 3분
-valid-email-time-in-seconds: 1800 # 30분

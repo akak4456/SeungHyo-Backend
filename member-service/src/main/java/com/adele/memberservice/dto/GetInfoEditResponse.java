@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Setter
-public class InfoEditResultDTO {
+public class GetInfoEditResponse {
     private String memberId;
     private String statusMessage;
     private String email;

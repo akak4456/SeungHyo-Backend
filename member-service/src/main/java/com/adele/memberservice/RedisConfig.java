@@ -1,5 +1,8 @@
 package com.adele.memberservice;
 
+import com.adele.memberservice.properties.RedisConfigProperties;
+import com.netflix.discovery.converters.Auto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +15,19 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 // @EnableCaching
 @Configuration
 public class RedisConfig {
-    @Value("${spring.data.redis.host}")
-    private String host;
 
-    @Value("${spring.data.redis.port}")
-    private String port;
+    private final RedisConfigProperties redisConfigProperties;
+
+    @Autowired
+    public RedisConfig(RedisConfigProperties redisConfigProperties) {
+        this.redisConfigProperties = redisConfigProperties;
+    }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(host);
-        redisStandaloneConfiguration.setPort(Integer.parseInt(port));
+        redisStandaloneConfiguration.setHostName(redisConfigProperties.getHost());
+        redisStandaloneConfiguration.setPort(Integer.parseInt(redisConfigProperties.getPort()));
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
         return lettuceConnectionFactory;
     }

@@ -1,7 +1,11 @@
 package com.adele.memberservice;
 
+import com.adele.memberservice.properties.EmailConfigProperties;
+import com.adele.memberservice.properties.JwtConfigProperties;
+import com.adele.memberservice.properties.RedisConfigProperties;
 import com.adele.memberservice.service.RefreshTokenService;
 import com.adele.memberservice.service.impl.RefreshTokenServiceImpl;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -19,6 +23,7 @@ import redis.embedded.RedisServer;
 
 @TestConfiguration
 @EnableWebSecurity
+@EnableConfigurationProperties({JwtConfigProperties.class, EmailConfigProperties.class, RedisConfigProperties.class})
 public class TestConfig {
     private String redisHost = "localhost";
     private int redisPort = 6380;
@@ -62,10 +67,10 @@ public class TestConfig {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider(
+        return new JwtTokenProvider(new JwtConfigProperties(
                 "405212aeecd7145fcb537f236f338c99b0418dba1d1f7e0109d5f9acc267c7be", // 환경 변수에 있는 값과 다르다는 점에 유의
-                60,
-                86400,
+                60L,
+                86400L),
                 refreshTokenService()
         );
     }

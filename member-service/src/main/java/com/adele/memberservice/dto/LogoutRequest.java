@@ -7,6 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailDTO {
-    private String toEmail;
+public class LogoutRequest {
+    private String accessToken;
+    private String refreshToken;
 }
