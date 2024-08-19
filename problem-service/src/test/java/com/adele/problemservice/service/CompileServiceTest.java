@@ -8,6 +8,9 @@ import com.adele.problemservice.domain.Problem;
 import com.adele.problemservice.domain.ProblemInput;
 import com.adele.problemservice.domain.ProblemOutput;
 import com.adele.problemservice.dto.CompileResultDTO;
+import com.adele.problemservice.properties.CompilerConfigProperties;
+import com.adele.problemservice.repository.ProblemRepository;
+import com.adele.problemservice.service.impl.CompileServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
@@ -41,7 +45,6 @@ import static org.mockito.Mockito.verify;
 @Slf4j
 @SpringJUnitConfig(TestConfig.class)
 public class CompileServiceTest {
-    @Autowired
     private CompileService compileService;
     
     @Autowired
@@ -49,9 +52,13 @@ public class CompileServiceTest {
 
     private Java11CompileStrategy java11CompileStrategy;
 
+    @MockBean
+    private ProblemRepository problemRepository;
+
     @BeforeEach
     public void setUp() {
-        java11CompileStrategy = Mockito.spy(applicationContext.getBean(Java11CompileStrategy.class));
+        java11CompileStrategy = Mockito.spy(new Java11CompileStrategy(new CompilerConfigProperties("C:\\tools\\jdk-11\\bin")));
+        compileService = new CompileServiceImpl(problemRepository);
     }
 
     @Test
