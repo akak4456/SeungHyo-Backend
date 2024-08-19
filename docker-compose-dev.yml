@@ -2,7 +2,7 @@ services:
   seunghyo-mysql:
     volumes:
       - dev-mysql-data:/var/lib/mysql
-      - ./initdb.d:/docker-entrypoint-initdb.d
+      - ./initdb.dev:/docker-entrypoint-initdb.d
     networks:
       - dev-net
   seunghyo-redis:
@@ -25,6 +25,12 @@ services:
     networks:
       - dev-net
   seunghyo-member:
+    networks:
+      - dev-net
+  seunghyo-problem:
+    networks:
+      - dev-net
+  seunghyo-board:
     networks:
       - dev-net
 

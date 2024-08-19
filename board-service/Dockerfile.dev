@@ -22,8 +22,8 @@ FROM openjdk:17.0.1
 WORKDIR /app
 
 # 빌드 이미지에서 생성된 JAR 파일을 런타임 이미지로 복사
-COPY --from=build /app/build/libs/*.jar /app/seunghyo-backend.jar
+COPY --from=build /app/build/libs/*.jar /app/board-service.jar
 
-EXPOSE 8999
+EXPOSE 8761
 ENTRYPOINT ["java"]
-CMD ["-jar", "seunghyo-backend.jar","--spring.profiles.active=dev"]
+CMD ["-jar", "board-service.jar","--spring.profiles.active=dev"]

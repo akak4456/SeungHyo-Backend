@@ -1,8 +1,0 @@
-rootProject.name = 'SeungHyo-Backend'
-
-include "common"
-include "eureka"
-include "member-service"
-include "apigateway-service"
-include "problem-service"
-include "board-service"

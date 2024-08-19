@@ -9,6 +9,8 @@ eureka:
       defaultZone: ${EUREKA_SERVER_DEFAULT_ZONE}
 
 spring:
+  config:
+    import: optional:configtree:/run/secrets/
   application:
     name: apigateway-service
   data:
@@ -86,6 +88,6 @@ spring:
             - AuthorizationHeaderFilter
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${jwt_secret}
   access-token-validity-in-seconds: ${ACCESS_TOKEN_VALIDITY_IN_SECONDS}
   refresh-token-validity-in-seconds: ${REFRESH_TOKEN_VALIDITY_IN_SECONDS}

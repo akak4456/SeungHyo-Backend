@@ -12,14 +12,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class BoardServiceApplication {
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure()
-                .directory(System.getProperty("user.dir"))
-                .load();
-
-        // 시스템 환경 변수로 설정
-        dotenv.entries().forEach(entry -> {
-            System.setProperty(entry.getKey(), entry.getValue());
-        });
         SpringApplication.run(BoardServiceApplication.class, args);
     }
 
