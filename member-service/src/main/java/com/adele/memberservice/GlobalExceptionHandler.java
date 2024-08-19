@@ -2,6 +2,7 @@ package com.adele.memberservice;
 
 import com.adele.common.ApiResult;
 import com.adele.common.ResponseCode;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,14 @@ public class GlobalExceptionHandler {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그인 실패")
                 .build(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResult<Void>> handleConstraintViolationException(ConstraintViolationException e) {
+        return new ResponseEntity<>(ApiResult.<Void>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message(e.getMessage())
+                .build(), HttpStatus.BAD_REQUEST);
     }
 
 }

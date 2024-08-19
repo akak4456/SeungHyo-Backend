@@ -11,15 +11,18 @@ import com.adele.memberservice.service.EmailService;
 import com.adele.memberservice.service.MemberService;
 import com.adele.memberservice.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import java.lang.reflect.Method;
 import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -32,6 +35,7 @@ public class MemberController {
     private final EmailCheckCodeService emailCheckCodeService;
     private final JwtTokenProvider jwtTokenProvider;
     private final EmailConfigProperties emailConfigProperties;
+    private final Validator validator;
 
     /**
      * login 을 처리하는 API
@@ -54,18 +58,7 @@ public class MemberController {
     @PostMapping("/auth/login")
     public ApiResult<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest, Errors errors) {
         LoginResponse result = new LoginResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = LoginResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)){
             // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
             JwtToken token = memberService.login(loginRequest);
             refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), token.getRefreshToken());
@@ -73,6 +66,7 @@ public class MemberController {
             result.setAccessToken(token.getAccessToken());
             result.setRefreshToken(token.getRefreshToken());
         }
+        validResponseBody(result);
         return ApiResult.<LoginResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("로그인 성공")
@@ -95,18 +89,7 @@ public class MemberController {
     @PostMapping("/auth/send-email-check-code")
     public ApiResult<SendCheckCodeEmailResponse> sendEmailCheckCode(@RequestBody @Valid SendCheckCodeEmailRequest sendCheckCodeEmailRequest, Errors errors) {
         SendCheckCodeEmailResponse result = new SendCheckCodeEmailResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = SendCheckCodeEmailResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)) {
             String code = createCode();
             emailCheckCodeService.saveEmailCheckCode(sendCheckCodeEmailRequest.getToEmail(), code, emailConfigProperties.getEmailCheckCodeValidInSeconds());
             // TODO 예쁜 이메일 보내기
@@ -117,6 +100,7 @@ public class MemberController {
             ));
             result.setValidDuration(emailConfigProperties.getEmailCheckCodeValidInSeconds());
         }
+        validResponseBody(result);
         return ApiResult.<SendCheckCodeEmailResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("이메일 전송 성공")
@@ -158,24 +142,14 @@ public class MemberController {
     @PostMapping("/auth/valid-email")
     public ApiResult<ValidEmailResponse> validEmail(@RequestBody @Valid ValidEmailRequest validEmailDTO, Errors errors) {
         ValidEmailResponse result = new ValidEmailResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = ValidEmailResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)) {
             boolean isValidEmail = emailCheckCodeService.isCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
             result.setIsEmailValid(isValidEmail);
             if (isValidEmail) {
                 emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
             }
         }
+        validResponseBody(result);
         return ApiResult.<ValidEmailResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("이메일 체크 확인 성공")
@@ -222,18 +196,7 @@ public class MemberController {
     @PostMapping("/auth/join")
     public ApiResult<JoinResponse> join(@RequestBody @Valid JoinRequest joinRequest, Errors errors) {
         JoinResponse result = new JoinResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = JoinResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)) {
             boolean isAvailable = true;
             if(joinRequest.getMemberPw() == null || !joinRequest.getMemberPw().equals(joinRequest.getMemberPwCheck())) {
                 isAvailable = false;
@@ -255,6 +218,7 @@ public class MemberController {
                 memberService.join(joinRequest);
             }
         }
+        validResponseBody(result);
         return ApiResult.<JoinResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("회원가입 시도 성공")
@@ -292,6 +256,7 @@ public class MemberController {
     @GetMapping("/my/info-edit")
     public ApiResult<GetInfoEditResponse> getInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId) {
         GetInfoEditResponse result = memberService.getInfoEdit(memberId);
+        validResponseBody(result);
         return ApiResult.<GetInfoEditResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("info edit 정보 조회 성공")
@@ -320,24 +285,14 @@ public class MemberController {
     @PatchMapping("/my/info-edit")
     public ApiResult<PatchInfoEditResponse> patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid PatchInfoEditRequest dto, Errors errors) {
         PatchInfoEditResponse result = new PatchInfoEditResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = PatchInfoEditResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)) {
             boolean isPwMatch = memberService.isPwMatch(dto.getMemberId(), dto.getMemberPw());
             result.setPwMatch(isPwMatch);
             if(isPwMatch) {
                 memberService.patchInfoEdit(dto);
             }
         }
+        validResponseBody(result);
         return ApiResult.<PatchInfoEditResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("info edit 정보 수정 시도 성공")
@@ -366,18 +321,7 @@ public class MemberController {
     @PatchMapping("/my/change-pw")
     public ApiResult<ChangePwResponse> changePw(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid ChangePwRequest dto, Errors errors) {
         ChangePwResponse result = new ChangePwResponse();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
-                try {
-                    Method setter = ChangePwResponse.class.getMethod(setterName, Boolean.class);
-                    setter.invoke(result, false);
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
-        } else {
+        if(validRequestBody(result, errors)) {
             boolean isCurrentPwMatch = memberService.isPwMatch(memberId, dto.getCurrentPw());
             result.setCurrentPwMatch(isCurrentPwMatch);
             boolean isCurrentPwAndNewPwNotMatch = dto.getCurrentPw() != null && !dto.getCurrentPw().equals(dto.getNewPw());
@@ -388,6 +332,7 @@ public class MemberController {
                 memberService.changePw(memberId, dto.getNewPw());
             }
         }
+        validResponseBody(result);
         return ApiResult.<ChangePwResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message("비밀번호 수정 시도 성공")
@@ -407,5 +352,54 @@ public class MemberController {
                 .message("비밀번호 수정 시도 성공")
                 .data(result)
                 .build();
+    }
+    private boolean validRequestBody(Object res, Errors errors) {
+        if(errors.hasErrors()) {
+            for(FieldError error : errors.getFieldErrors()) {
+                String fieldName = error.getField();
+                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "ValidForm";
+                try {
+                    Method setter = res.getClass().getMethod(setterName, Boolean.class);
+                    setter.invoke(res, false);
+                } catch (Exception e) {
+                    log.error("error occur but not handle because this error is tiny", e);
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private <Res> void validResponseBody(Res res) {
+        Set<ConstraintViolation<Res>> constraintViolations = validator.validate(res);
+        if(!constraintViolations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for(ConstraintViolation<Res> constraintViolation : constraintViolations) {
+                // 필드 이름 얻기
+                String fieldName = getFieldName(constraintViolation.getPropertyPath());
+                // 메시지 얻기
+                String message = constraintViolation.getMessage();
+                sb.append(fieldName);
+                sb.append(":");
+                sb.append(message);
+                sb.append(System.lineSeparator());
+            }
+            throw new ConstraintViolationException(sb.toString(), constraintViolations);
+        }
+    }
+
+    private String getFieldName(Path propertyPath) {
+        // Path에서 필드 이름을 추출
+        if (propertyPath != null) {
+            StringBuilder fieldName = new StringBuilder();
+            for (Path.Node node : propertyPath) {
+                if (!fieldName.isEmpty()) {
+                    fieldName.append('.');
+                }
+                fieldName.append(node.getName());
+            }
+            return fieldName.toString();
+        }
+        return "unknown";
     }
 }

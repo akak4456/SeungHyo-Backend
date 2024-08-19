@@ -1,5 +1,6 @@
 package com.adele.memberservice.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -9,6 +10,8 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 public class SendCheckCodeEmailResponse {
+    @NotNull
     Boolean toEmailValidForm = true;
-    private Long validDuration;
+    @NotNull
+    private Long validDuration = 0L;
 }

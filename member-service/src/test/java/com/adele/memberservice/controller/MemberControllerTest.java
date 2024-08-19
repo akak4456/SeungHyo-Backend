@@ -156,7 +156,7 @@ public class MemberControllerTest {
         return Stream.of(
                 Arguments.of(
                         new SendCheckCodeEmailRequest(""),
-                        new SendCheckCodeEmailResponse(false, null)
+                        new SendCheckCodeEmailResponse(false, 0L)
                 ),
                 Arguments.of(
                         new SendCheckCodeEmailRequest("akak4456@naver.com"),
@@ -353,6 +353,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("info-edit 조회가 성공하는지 확인해본다")
     public void getInfoEdit() throws Exception {
+        when(memberService.getInfoEdit(any())).thenReturn(new GetInfoEditResponse("user1", "status1", "email1"));
         ResultActions actions =
                 mockMvc.perform(
                         get("/api/v1/member/my/info-edit")
