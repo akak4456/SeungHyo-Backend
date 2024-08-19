@@ -109,14 +109,16 @@ public class Java11CompileStrategy implements CompileStrategy {
                 CompileResultDTO result = new CompileResultDTO(statusResult, inputs.get(idx), outputs.get(idx),output, null, null, null);
                 results.add(result);
                 consumer.consume(idx, result);
-            } catch (IOException e) {
-                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, null);
-                results.add(result);
-                consumer.consume(idx, result);
             }
             catch (ProcessTimeoutException e) {
                 log.error("timeout occur", e);
                 CompileResultDTO result = new CompileResultDTO(CompileStatus.RUNTIME_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, RuntimeErrorReason.TIMEOUT);
+                results.add(result);
+                consumer.consume(idx, result);
+            }
+            catch (IOException e) {
+                log.error("ioexception occur", e);
+                CompileResultDTO result = new CompileResultDTO(CompileStatus.IO_ERROR, inputs.get(idx),outputs.get(idx),"", e, null, null);
                 results.add(result);
                 consumer.consume(idx, result);
             }
@@ -134,17 +136,26 @@ public class Java11CompileStrategy implements CompileStrategy {
         return results;
     }
 
-    private String getProcessOutput(InputStream input) throws IOException {
-        String output;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-            StringBuilder outputBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                outputBuilder.append(line).append(System.lineSeparator());
+    private String getProcessOutput(InputStream input) {
+        try {
+            String output;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                StringBuilder outputBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    outputBuilder.append(line).append(System.lineSeparator());
+                }
+                output = outputBuilder.toString();
             }
-            output = outputBuilder.toString();
+            return output;
+        } catch (IOException e) {
+            // fedora(linux) jdk 는 윈도우 jdk 랑 다르게 동작해서
+            // timeout 시에 process 가 종료 되면 (line = reader.readLine()) != null
+            // 에 io exception 이 발생함. 그래서 하게 된 조치임
+            // TODO 이 부분에 대해서 생각해보기
+            log.error("ioexception occur maybe process closed", e);
+            return "";
         }
-        return output;
     }
 
     @Override

@@ -43,7 +43,7 @@ services:
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://seunghyo-kafka:9092
       - KAFKA_ZOOKEEPER_CONNECT=seunghyo-zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     healthcheck:
@@ -113,7 +113,7 @@ services:
       REDIS_DEV_HOST: seunghyo-redis
       REDIS_DEV_PORT: 6379
       EUREKA_SERVER_DEFAULT_ZONE: http://seunghyo-eureka:8761/eureka
-      COMPILER_JAVA11_BIN_PATH: C:\tools\jdk-11\bin
+      COMPILER_JAVA11_BIN_PATH: /app/compiler-tools/jdk-11/bin
       PROBLEM_SERVICE_KAFKA_URL: seunghyo-kafka:9092
     secrets:
       - email_password
