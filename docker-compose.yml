@@ -55,7 +55,7 @@ services:
         condition: service_healthy
   seunghyo-eureka:
     build:
-      context: ./eureka
+      context: ./app-eureka
       dockerfile: ./Dockerfile.dev
     container_name: seunghyo-eureka
     ports:
@@ -63,7 +63,7 @@ services:
     restart: on-failure
   seunghyo-apigateway:
     build:
-      context: ./apigateway-service
+      context: ./app-apigateway
       dockerfile: ./Dockerfile.dev
     container_name: seunghyo-apigateway
     ports:
@@ -79,8 +79,8 @@ services:
       - jwt_secret
   seunghyo-member:
     build:
-      context: ./member-service
-      dockerfile: ./Dockerfile.dev
+      context: .
+      dockerfile: ./Dockerfile-app-member.dev
     container_name: seunghyo-member
     # restart: on-failure
     environment:
@@ -100,7 +100,7 @@ services:
       - jwt_secret
   seunghyo-problem:
     build:
-      context: ./problem-service
+      context: ./app-problem
       dockerfile: ./Dockerfile.dev
     container_name: seunghyo-problem
     # restart: on-failure
@@ -120,7 +120,7 @@ services:
       - db_password
   seunghyo-board:
     build:
-      context: ./board-service
+      context: ./app-board
       dockerfile: ./Dockerfile.dev
     container_name: seunghyo-board
     # restart: on-failure

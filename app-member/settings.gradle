@@ -1,0 +1,4 @@
+rootProject.name = 'app-member'
+
+include ':internal-common'
+project(':internal-common').projectDir = new File(settingsDir, '../internal-common')

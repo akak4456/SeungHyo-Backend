@@ -1,0 +1,8 @@
+rootProject.name = 'Seunghyo-Backend'
+
+include "app-apigateway"
+include "app-board"
+include "app-eureka"
+include "app-member"
+include "app-problem"
+include "internal-common"

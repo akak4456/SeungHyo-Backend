@@ -35,12 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-# ignore .env for security
-.env
-
-# secret folder
-secret
-
-# problem-service/compiler-tools
-app-problem/compiler-tools
