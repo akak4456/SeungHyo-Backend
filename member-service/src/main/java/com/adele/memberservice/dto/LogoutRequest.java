@@ -1,5 +1,6 @@
 package com.adele.memberservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -8,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogoutRequest {
+    @NotBlank
     private String accessToken;
+    @NotBlank
     private String refreshToken;
 }

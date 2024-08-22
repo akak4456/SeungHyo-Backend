@@ -11,7 +11,5 @@ import lombok.*;
 @ToString
 public class SendCheckCodeEmailResponse {
     @NotNull
-    Boolean toEmailValidForm = true;
-    @NotNull
     private Long validDuration = 0L;
 }

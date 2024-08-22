@@ -1,5 +1,7 @@
 package com.adele.memberservice.service.impl;
 
+import com.adele.memberservice.common.ErrorCode;
+import com.adele.memberservice.common.exception.BadTokenException;
 import com.adele.memberservice.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,9 +25,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public boolean validateRefreshToken(String memberId, String refreshToken) {
+    public void validateRefreshToken(String memberId, String refreshToken) {
         String storedRefreshToken = (String)redisTemplate.opsForValue().get(memberId);
-        return refreshToken.equals(storedRefreshToken);
+        if(!refreshToken.equals(storedRefreshToken)) {
+            throw new BadTokenException(ErrorCode.BAD_TOKEN.getMessage());
+        }
     }
 
     @Override

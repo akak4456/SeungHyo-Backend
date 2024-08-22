@@ -1,5 +1,8 @@
 package com.adele.memberservice.service.impl;
 
+import com.adele.memberservice.common.ErrorCode;
+import com.adele.memberservice.common.exception.business.EmailCheckCodeNotCorrectException;
+import com.adele.memberservice.common.exception.business.EmailNotValidException;
 import com.adele.memberservice.properties.EmailConfigProperties;
 import com.adele.memberservice.service.EmailCheckCodeService;
 import lombok.Getter;
@@ -30,9 +33,11 @@ public class EmailCheckCodeServiceImpl implements EmailCheckCodeService {
     }
 
     @Override
-    public boolean isCheckCodeCorrect(String memberEmail, String checkCode) {
+    public void testCheckCodeCorrect(String memberEmail, String checkCode) {
         String storedCheckCode = (String)redisTemplate.opsForValue().get("CK:"+memberEmail);
-        return checkCode.equals(storedCheckCode);
+        if(!checkCode.equals(storedCheckCode)) {
+            throw new EmailCheckCodeNotCorrectException(ErrorCode.EMAIL_CHECK_CODE_NOT_COORECT);
+        }
     }
 
     @Override
@@ -41,8 +46,10 @@ public class EmailCheckCodeServiceImpl implements EmailCheckCodeService {
     }
 
     @Override
-    public boolean isValidEmail(String memberEmail) {
-        return Objects.equals(redisTemplate.opsForValue().get("VALID:" + memberEmail), "VALID");
+    public void testValidEmail(String memberEmail) {
+        if(!Objects.equals(redisTemplate.opsForValue().get("VALID:" + memberEmail), "VALID")) {
+            throw new EmailNotValidException(ErrorCode.EMAIL_NOT_VALID);
+        }
     }
 
 }

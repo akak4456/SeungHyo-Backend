@@ -1,5 +1,6 @@
 package com.adele.memberservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -7,14 +8,14 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@Builder
 @ToString
+@EqualsAndHashCode
 public class LoginResponse {
-    @NotNull
-    private Boolean memberIdValidForm = true;
-    @NotNull
-    private Boolean memberPwValidForm = true;
+    @NotBlank
     private String grantType;
+    @NotBlank
     private String accessToken;
+    @NotBlank
     private String refreshToken;
 }

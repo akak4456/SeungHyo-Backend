@@ -1,6 +1,8 @@
 package com.adele.memberservice.service.impl;
 
 import com.adele.memberservice.JwtTokenProvider;
+import com.adele.memberservice.common.ErrorCode;
+import com.adele.memberservice.common.exception.business.*;
 import com.adele.memberservice.domain.Member;
 import com.adele.memberservice.dto.*;
 import com.adele.memberservice.repository.MemberRepository;
@@ -29,7 +31,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public JwtToken login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPw());
@@ -62,6 +64,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void join(JoinRequest joinRequest) {
+        if(joinRequest.getMemberPw() == null || !joinRequest.getMemberPw().equals(joinRequest.getMemberPwCheck())) {
+            throw new PwAndPwCheckDoesNotSameException(ErrorCode.PW_AND_PW_CHECK_DOES_NOT_SAME);
+        }
+        if(memberRepository.findById(joinRequest.getMemberId()).isPresent()) {
+            throw new IdDuplicateException(ErrorCode.ID_DUPLICATE);
+        }
+        if(memberRepository.findByEmail(joinRequest.getEmail()).isPresent()) {
+            throw new EmailDuplicateException(ErrorCode.EMAIL_DUPLICATE);
+        }
         Member member = new Member();
         member.setMemberId(joinRequest.getMemberId());
         member.setMemberPw(joinRequest.getMemberPw());
@@ -96,7 +107,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void patchInfoEdit(PatchInfoEditRequest dto) {
         Member member = memberRepository.findById(dto.getMemberId()).orElse(null);
-        assert member != null;
+        if(member == null || !member.getMemberPw().equals(dto.getMemberPw())) {
+            throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
+        }
         member.setStatusMessage(dto.getStatusMessage());
     }
 
@@ -107,10 +120,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changePw(String memberId, String memberPw) {
+    public void changePw(String memberId, ChangePwRequest request) {
         Member member = memberRepository.findById(memberId).orElse(null);
-        assert member != null;
-        member.setMemberPw(memberPw);
+        if(member == null || request.getCurrentPw() == null || !member.getMemberPw().equals(request.getCurrentPw())) {
+            throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
+        }
+        if(request.getCurrentPw().equals(request.getNewPw())) {
+            throw new CurrentPwAndNewPwMatchException(ErrorCode.CURRENT_PW_AND_NEW_PW_MATCH_EXCEPTION);
+        }
+        if(request.getNewPw() == null || !request.getNewPw().equals(request.getNewPwCheck())) {
+            throw new NewPwAndNewPwCheckDoesNotMatchException(ErrorCode.NEW_PW_AND_NEW_PW_CHECK_DOES_NOT_MATCH);
+        }
+        member.setMemberPw(request.getNewPw());
     }
 
     @Override
@@ -124,10 +145,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public JwtToken reissue(String refreshToken) {
-        if(!jwtTokenProvider.refreshTokenValidation(refreshToken)) {
-            throw new IllegalArgumentException("refresh token is not valid");
-        }
+    public LoginResponse reissue(String refreshToken) {
+        jwtTokenProvider.validateRefreshToken(refreshToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         return jwtTokenProvider.generateToken(authentication);
     }

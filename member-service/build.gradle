@@ -23,7 +23,6 @@ ext {
 }
 
 dependencies {
-    implementation 'com.github.akak4456:SeungHyo-Common:+'
     // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // eureka-client

@@ -7,9 +7,9 @@ public interface MemberService extends UserDetailsService {
     /**
      * 로그인 AuthService
      * @param loginRequest member 아이디, pw
-     * @return LoginResponse 검증 성공 시 JWT 토큰
+     * @return JwtToken 검증 성공 시 JWT 토큰
      */
-    JwtToken login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest loginRequest);
 
     /**
      * 회원가입 시도 AuthService
@@ -21,7 +21,6 @@ public interface MemberService extends UserDetailsService {
      *     <li><b>statusMessage</b> 회원가입 시도할 상태 메시지</li>
      *     <li><b>email</b> 회원가입 시도할 이메일</li>
      * </ul>
-     * @param isEmailValid email 인증했는지 여부
      */
     void join(JoinRequest joinRequest);
 
@@ -63,9 +62,9 @@ public interface MemberService extends UserDetailsService {
     /**
      * 비밀번호 변경 서비스
      * @param memberId 비밀번호 변경하고자 하는 member id 
-     * @param memberPw 변경하고자 하는 비밀번호
+     * @param request request
      */
-    void changePw(String memberId, String memberPw);
+    void changePw(String memberId, ChangePwRequest request);
 
     /**
      * 회원탈퇴 service
@@ -74,5 +73,5 @@ public interface MemberService extends UserDetailsService {
      */
     boolean withdraw(String memberId);
 
-    JwtToken reissue(String refreshToken);
+    LoginResponse reissue(String refreshToken);
 }

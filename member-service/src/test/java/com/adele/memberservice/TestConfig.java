@@ -8,6 +8,7 @@ import com.adele.memberservice.service.impl.RefreshTokenServiceImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -24,6 +25,7 @@ import redis.embedded.RedisServer;
 @TestConfiguration
 @EnableWebSecurity
 @EnableConfigurationProperties({JwtConfigProperties.class, EmailConfigProperties.class, RedisConfigProperties.class})
+@EnableAspectJAutoProxy(exposeProxy = true)
 public class TestConfig {
     private String redisHost = "localhost";
     private int redisPort = 6380;
