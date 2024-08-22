@@ -1,18 +1,14 @@
 package com.adele.memberservice;
 
-import com.adele.memberservice.properties.EmailConfigProperties;
-import com.adele.memberservice.properties.JwtConfigProperties;
-import com.adele.memberservice.properties.RedisConfigProperties;
-import com.adele.memberservice.service.RefreshTokenService;
-import com.adele.memberservice.service.impl.RefreshTokenServiceImpl;
+import com.adele.domainemail.EmailConfigProperties;
+import com.adele.domainmember.jwt.JwtConfigProperties;
+import com.adele.domainmember.jwt.JwtTokenProvider;
+import com.adele.domainmember.service.RefreshTokenService;
+import com.adele.domainmember.service.impl.RefreshTokenServiceImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,7 +20,7 @@ import redis.embedded.RedisServer;
 
 @TestConfiguration
 @EnableWebSecurity
-@EnableConfigurationProperties({JwtConfigProperties.class, EmailConfigProperties.class, RedisConfigProperties.class})
+@EnableConfigurationProperties({JwtConfigProperties.class, EmailConfigProperties.class})
 @EnableAspectJAutoProxy(exposeProxy = true)
 public class TestConfig {
     private String redisHost = "localhost";
@@ -47,24 +43,23 @@ public class TestConfig {
     }
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(this.redisHost);
-        redisConfiguration.setPort(this.redisPort);
-        redisConfiguration.setDatabase(0);
-        return new LettuceConnectionFactory(redisConfiguration);
-    }
-
-    @Bean(name = "redisTemplate")
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return redisTemplate;
-    }
-
-    @Bean
     public RefreshTokenService refreshTokenService() {
-        return new RefreshTokenServiceImpl(redisTemplate(), 86400);
+        return new RefreshTokenService() {
+            @Override
+            public void saveRefreshToken(String memberId, String refreshToken) {
+
+            }
+
+            @Override
+            public void validateRefreshToken(String memberId, String refreshToken) {
+
+            }
+
+            @Override
+            public void deleteRefreshToken(String memberId) {
+
+            }
+        };
     }
 
     @Bean
@@ -100,17 +95,5 @@ public class TestConfig {
                 .port(redisPort)
                 .setting("maxmemory 10M").build();
     }
-
-//    @Bean
-//    public EmailService mockEmailService() {
-//        return emailMessage -> {
-//
-//        };
-//    }
-//
-//    @Bean
-//    public EmailCheckCodeService emailCheckCodeService() {
-//        return new EmailCheckCodeService(redisTemplate(), 180, 1800);
-//    }
 
 }

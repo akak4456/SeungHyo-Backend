@@ -2,3 +2,12 @@ rootProject.name = 'app-member'
 
 include ':internal-common'
 project(':internal-common').projectDir = new File(settingsDir, '../internal-common')
+
+include ':domain-member'
+project(':domain-member').projectDir = new File(settingsDir, '../domain-member')
+
+include ':domain-email'
+project(':domain-email').projectDir = new File(settingsDir, '../domain-email')
+
+include ':domain-redis'
+project(':domain-redis').projectDir = new File(settingsDir, '../domain-redis')

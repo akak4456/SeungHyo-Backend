@@ -1,13 +1,14 @@
 package com.adele.memberservice.controller;
 
-import com.adele.memberservice.JwtTokenProvider;
-import com.adele.memberservice.common.AuthHeaderConstant;
-import com.adele.memberservice.dto.*;
-import com.adele.memberservice.properties.EmailConfigProperties;
-import com.adele.memberservice.service.EmailCheckCodeService;
-import com.adele.memberservice.service.EmailService;
-import com.adele.memberservice.service.MemberService;
-import com.adele.memberservice.service.RefreshTokenService;
+import com.adele.domainemail.EmailConfigProperties;
+import com.adele.domainemail.dto.EmailMessage;
+import com.adele.domainemail.service.EmailCheckCodeService;
+import com.adele.domainemail.service.EmailService;
+import com.adele.domainmember.dto.*;
+import com.adele.domainmember.jwt.JwtTokenProvider;
+import com.adele.domainmember.service.MemberService;
+import com.adele.domainmember.service.RefreshTokenService;
+import com.adele.internalcommon.request.AuthHeaderConstant;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;

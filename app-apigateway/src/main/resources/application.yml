@@ -30,18 +30,18 @@ spring:
             allowedHeaders: '*' # 허용하려는 헤더
             allowedMethods: '*' # 허용하려는 HTTP 메서드
       routes:
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
+        - id: app-member-logout
+          uri: lb://APP-MEMBER
           predicates:
             - Path=/api/v1/member/auth/logout
           filters:
             - CustomLogoutFilter
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
+        - id: app-member-auth
+          uri: lb://APP-MEMBER
           predicates:
             - Path=/api/v1/member/auth/**
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
+        - id: app-member-my
+          uri: lb://APP-MEMBER
           predicates:
             - Path=/api/v1/member/**
           filters:

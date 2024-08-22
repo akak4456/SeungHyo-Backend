@@ -4,7 +4,10 @@ FROM gradle:7.6.1-jdk17 AS build
 # 소스코드를 복사할 작업 디렉토리를 생성
 WORKDIR /app
 
-# internal-common과 app-member 모듈만 복사
+# app-member 및 그와 관련된 의존성 파일들, yml 복사
+COPY domain-email /app/domain-email
+COPY domain-member /app/domain-member
+COPY domain-redis /app/domain-redis
 COPY internal-common /app/internal-common
 COPY app-member /app/app-member
 
@@ -19,8 +22,8 @@ FROM openjdk:17.0.1
 WORKDIR /app
 
 # 빌드 이미지에서 생성된 JAR 파일을 런타임 이미지로 복사
-COPY --from=build /app/app-member/build/libs/*.jar /app/member-service.jar
+COPY --from=build /app/app-member/build/libs/*.jar /app/app-member.jar
 
 EXPOSE 8761
 ENTRYPOINT ["java"]
-CMD ["-jar", "member-service.jar", "--spring.profiles.active=dev"]
+CMD ["-jar", "app-member.jar", "--spring.profiles.active=dev"]

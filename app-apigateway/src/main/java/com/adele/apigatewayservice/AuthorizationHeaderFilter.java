@@ -76,7 +76,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         WebClient webClient = webClientBuilder.build();
 
         return webClient.post()
-                .uri( "lb://MEMBER-SERVICE/api/v1/member/auth/reissue")
+                .uri( "lb://APP-MEMBER/api/v1/member/auth/reissue")
                 .header("Refresh-Token", refreshToken)
                 .exchangeToMono((response) -> {
                     String newAccessToken = Objects.requireNonNull(response.headers().asHttpHeaders().get("Authorization")).get(0).substring("Bearer ".length());
