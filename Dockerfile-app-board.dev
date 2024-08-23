@@ -1,0 +1,27 @@
+# 빌드 이미지로 OpenJDK 17 & Gradle을 지정
+FROM gradle:7.6.1-jdk17 AS build
+
+# 소스코드를 복사할 작업 디렉토리를 생성
+WORKDIR /app
+
+# app-board 및 그와 관련된 의존성 파일들, yml 복사
+COPY domain-board /app/domain-board
+COPY internal-common /app/internal-common
+COPY app-board /app/app-board
+
+# Gradle 빌드를 실행하여 JAR 파일 생성
+WORKDIR /app/app-board
+RUN gradle build -x test
+
+# 런타임 이미지로 OpenJDK 17 지정
+FROM openjdk:17.0.1
+
+# 애플리케이션을 실행할 작업 디렉토리를 생성
+WORKDIR /app
+
+# 빌드 이미지에서 생성된 JAR 파일을 런타임 이미지로 복사
+COPY --from=build /app/app-board/build/libs/*.jar /app/app-board.jar
+
+EXPOSE 8761
+ENTRYPOINT ["java"]
+CMD ["-jar", "app-board.jar", "--spring.profiles.active=dev"]

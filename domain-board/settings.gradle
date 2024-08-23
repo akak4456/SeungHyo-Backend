@@ -1,0 +1,4 @@
+rootProject.name = 'domain-board'
+
+include ':internal-common'
+project(':internal-common').projectDir = new File(settingsDir, '../internal-common')

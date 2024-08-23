@@ -75,18 +75,18 @@ spring:
           uri: lb:ws://PROBLEM-SERVICE
           predicates:
             - Path=/submit/**
-        - id: board-service
-          uri: lb://BOARD-SERVICE
+        - id: app-board-get-board
+          uri: lb://APP-BOARD
           predicates:
             - Path=/api/v1/board/**
             - Method=GET
-        - id: board-service
-          uri: lb://BOARD-SERVICE
+        - id: app-board-get-reply
+          uri: lb://APP-BOARD
           predicates:
             - Path=/api/v1/reply/**
             - Method=GET
-        - id: board-service
-          uri: lb://BOARD-SERVICE
+        - id: app-board-post-board
+          uri: lb://APP-BOARD
           predicates:
             - Path=/api/v1/board
             - Method=POST

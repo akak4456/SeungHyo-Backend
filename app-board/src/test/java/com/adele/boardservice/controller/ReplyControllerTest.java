@@ -1,8 +1,7 @@
 package com.adele.boardservice.controller;
 
 import com.adele.boardservice.TestConfig;
-import com.adele.boardservice.service.BoardService;
-import com.adele.boardservice.service.ReplyService;
+import com.adele.domainboard.service.ReplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -30,6 +30,7 @@ public class ReplyControllerTest {
 
     @Test
     @DisplayName("list api 가 정상 작동하는지 확인해본다")
+    @WithMockUser
     public void getPageTest() throws Exception {
         ResultActions actions =
                 mockMvc.perform(
@@ -38,8 +39,7 @@ public class ReplyControllerTest {
                 );
 
         actions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("0"));
+                .andExpect(status().isOk());
 
         ResultActions actions2 =
                 mockMvc.perform(
@@ -48,8 +48,7 @@ public class ReplyControllerTest {
                 );
 
         actions2
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("0"));
+                .andExpect(status().isOk());
 
         ResultActions actions3 =
                 mockMvc.perform(
@@ -58,8 +57,7 @@ public class ReplyControllerTest {
                 );
 
         actions3
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("0"));
+                .andExpect(status().isOk());
     }
 
 }

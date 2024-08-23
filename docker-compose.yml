@@ -120,8 +120,8 @@ services:
       - db_password
   seunghyo-board:
     build:
-      context: ./app-board
-      dockerfile: ./Dockerfile.dev
+      context: .
+      dockerfile: ./Dockerfile-app-board.dev
     container_name: seunghyo-board
     # restart: on-failure
     environment:

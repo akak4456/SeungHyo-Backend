@@ -7,7 +7,7 @@ import com.adele.domainredis.dto.JwtToken;
 import com.adele.domainredis.jwt.JwtTokenProvider;
 import com.adele.domainredis.service.EmailCheckCodeService;
 import com.adele.domainredis.service.RefreshTokenService;
-import com.adele.internalcommon.exception.business.*;
+import com.adele.internalcommon.exception.business.member.*;
 import com.adele.internalcommon.request.AuthHeaderConstant;
 import com.adele.internalcommon.response.ApiResponse;
 import com.adele.internalcommon.response.ErrorCode;

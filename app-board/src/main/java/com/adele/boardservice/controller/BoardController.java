@@ -1,13 +1,11 @@
 package com.adele.boardservice.controller;
 
-import com.adele.boardservice.dto.*;
-import com.adele.boardservice.repository.BoardRepository;
-import com.adele.boardservice.repository.ProblemClient;
-import com.adele.boardservice.service.BoardService;
-import com.adele.common.ApiResult;
-import com.adele.common.AuthHeaderConstant;
-import com.adele.common.ResponseCode;
-import feign.Response;
+import com.adele.domainboard.dto.*;
+import com.adele.domainboard.service.BoardService;
+import com.adele.internalcommon.exception.business.board.ProblemNoNotFoundException;
+import com.adele.internalcommon.request.AuthHeaderConstant;
+import com.adele.internalcommon.response.EmptyResponse;
+import com.adele.internalcommon.response.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,17 +51,12 @@ public class BoardController {
      * </ul>
      */
     @GetMapping({""})
-    public ApiResult<Page<BoardListDTO>> getSearch(
+    public Page<BoardListDTO> getSearch(
             @ModelAttribute BoardSearchCondition condition,
             @PageableDefault
             Pageable pageable
     ) {
-        Page<BoardListDTO> page = boardService.searchPage(condition, pageable);
-        return ApiResult.<Page<BoardListDTO>>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("리스트 조회 성공")
-                .data(page)
-                .build();
+        return boardService.searchPage(condition, pageable);
     }
 
     /**
@@ -82,15 +75,10 @@ public class BoardController {
      * </ul>
      */
     @GetMapping("{boardNo}")
-    public ApiResult<BoardOneDTO> getOne(
+    public BoardOneDTO getOne(
             @PathVariable("boardNo") Long boardNo
     ) {
-        BoardOneDTO boardOneDTO = boardService.getOne(boardNo);
-        return ApiResult.<BoardOneDTO>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("하나 조회 성공")
-                .data(boardOneDTO)
-                .build();
+        return boardService.getOne(boardNo);
     }
 
     /**
@@ -98,12 +86,8 @@ public class BoardController {
      * @return BoardCategoryResponse 카테고리 종류 응답
      */
     @GetMapping("/categories")
-    public ApiResult<BoardCategoryResponse> getCategories() {
-        return ApiResult.<BoardCategoryResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("카테고리 조회 성공")
-                .data(new BoardCategoryResponse(boardService.getCategories()))
-                .build();
+    public BoardCategoryResponse getCategories() {
+        return new BoardCategoryResponse(boardService.getCategories());
     }
 
     /**
@@ -120,45 +104,15 @@ public class BoardController {
      *     <li><b>normalHTMLContent</b> 일반 글 내용</li>
      *     <li><b>sourceCode</b> 소스 코드 글 내용</li>
      * </ul>
-     * @param errors 글쓰기한 form error 들
-     * @return BoardWriteResultDTO
-     * <ul>
-     *     <li><b>boardTitleError</b> 글 제목에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
-     *     <li><b>categoryCodeError</b> 카테고리 코드에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
-     *     <li><b>categoryNameError</b> 카테고리 이름에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
-     *     <li><b>langCodeError</b> 언어 코드에 문제가 있는지 없으면 빈칸, 있으면 문제 코드</li>
-     *     <li><b>langNameError</b> 언어명에 문제가 있는지 없으면 빈칸 있으면 문제코드</li>
-     *     <li><b>problemNoError</b> 문제 번호에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
-     *     <li><b>normalHTMLContentError</b> 일반 글 내용에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
-     *     <li><b>sourceCodeError</b> 소스 코드 글 내용에 문제가 있는지 없으면 빈칸 있으면 문제 코드</li>
-     * </ul>
      */
     @PostMapping("")
-    public ApiResult<BoardWriteResultDTO> addBoard(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid BoardWriteDTO board, Errors errors){
-        BoardWriteResultDTO result = new BoardWriteResultDTO();
-        if(errors.hasErrors()) {
-            for(FieldError error : errors.getFieldErrors()) {
-                String fieldName = error.getField();
-                String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1) + "Error";
-                try {
-                    Method setter = BoardWriteResultDTO.class.getMethod(setterName, String.class);
-                    setter.invoke(result, error.getDefaultMessage());
-                } catch (Exception e) {
-                    log.error("error occur but not handle because this error is tiny", e);
-                }
-            }
+    public EmptyResponse addBoard(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid BoardWriteDTO board){
+        ProblemDTO problemResponse = boardService.getProblemOne(board.getProblemNo());
+        if(problemResponse.getProblemTitle() == null) {
+            throw new ProblemNoNotFoundException(ErrorCode.PROBLEM_NO_NOT_FOUND);
         } else {
-            ProblemDTO problemResponse = boardService.getProblemOne(board.getProblemNo());
-            if(problemResponse.getProblemTitle() == null) {
-                result.setIsProblemNoValid(false);
-            } else {
-                boardService.saveBoard(memberId, board, problemResponse);
-            }
+            boardService.saveBoard(memberId, board, problemResponse);
+            return new EmptyResponse();
         }
-        return ApiResult.<BoardWriteResultDTO>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("게시판 추가 성공")
-                .data(result)
-                .build();
     }
 }

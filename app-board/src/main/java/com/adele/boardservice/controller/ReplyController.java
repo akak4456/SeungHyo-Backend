@@ -1,11 +1,7 @@
 package com.adele.boardservice.controller;
 
-import com.adele.boardservice.dto.BoardListDTO;
-import com.adele.boardservice.dto.BoardSearchCondition;
-import com.adele.boardservice.dto.ReplyDTO;
-import com.adele.boardservice.service.ReplyService;
-import com.adele.common.ApiResult;
-import com.adele.common.ResponseCode;
+import com.adele.domainboard.dto.ReplyDTO;
+import com.adele.domainboard.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,16 +37,11 @@ public class ReplyController {
      * </ul>
      */
     @GetMapping({"{boardNo}"})
-    public ApiResult<Page<ReplyDTO>> getSearch(
+    public Page<ReplyDTO> getSearch(
             @PathVariable Long boardNo,
             @PageableDefault
             Pageable pageable
     ) {
-        Page<ReplyDTO> page = replyService.searchPage(boardNo, pageable);
-        return ApiResult.<Page<ReplyDTO>>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("리스트 조회 성공")
-                .data(page)
-                .build();
+        return replyService.searchPage(boardNo, pageable);
     }
 }

@@ -6,7 +6,7 @@ import com.adele.domainmember.repository.MemberRepository;
 import com.adele.domainmember.service.MemberService;
 import com.adele.domainredis.dto.JwtToken;
 import com.adele.domainredis.jwt.JwtTokenProvider;
-import com.adele.internalcommon.exception.business.*;
+import com.adele.internalcommon.exception.business.member.*;
 import com.adele.internalcommon.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
