@@ -1,4 +1,4 @@
-package com.adele.memberservice.controller;
+package com.adele.memberservice;
 
 import com.adele.domainmember.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

@@ -9,6 +9,7 @@ import com.adele.domainmember.jwt.JwtTokenProvider;
 import com.adele.domainmember.service.MemberService;
 import com.adele.domainmember.service.RefreshTokenService;
 import com.adele.internalcommon.request.AuthHeaderConstant;
+import com.adele.internalcommon.response.EmptyResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
@@ -111,9 +112,10 @@ public class MemberController {
      * </ul>
      */
     @PostMapping("/auth/valid-email")
-    public void validEmail(@RequestBody @Valid ValidEmailRequest validEmailDTO) {
+    public EmptyResponse validEmail(@RequestBody @Valid ValidEmailRequest validEmailDTO) {
         emailCheckCodeService.testCheckCodeCorrect(validEmailDTO.getEmail(), validEmailDTO.getCode());
         emailCheckCodeService.saveValidEmail(validEmailDTO.getEmail());
+        return new EmptyResponse();
     }
 
     /**
@@ -126,8 +128,9 @@ public class MemberController {
      * </ul>
      */
     @PatchMapping("/auth/logout")
-    public void logout(@RequestBody @Valid LogoutRequest logoutRequest) {
+    public EmptyResponse logout(@RequestBody @Valid LogoutRequest logoutRequest) {
         refreshTokenService.deleteRefreshToken(logoutRequest.getRefreshToken());
+        return new EmptyResponse();
     }
 
     /**
@@ -143,9 +146,10 @@ public class MemberController {
      * </ul>
      */
     @PostMapping("/auth/join")
-    public void join(@RequestBody @Valid JoinRequest joinRequest) {
+    public EmptyResponse join(@RequestBody @Valid JoinRequest joinRequest) {
         emailCheckCodeService.testValidEmail(joinRequest.getEmail());
         memberService.join(joinRequest);
+        return new EmptyResponse();
     }
 
     /**
@@ -155,7 +159,7 @@ public class MemberController {
      * @return String 새로운 jwt access token
      */
     @PostMapping("/auth/reissue")
-    public void reissue(@RequestHeader("Refresh-Token") String refreshToken, HttpServletResponse response) {
+    public EmptyResponse reissue(@RequestHeader("Refresh-Token") String refreshToken, HttpServletResponse response) {
         LoginResponse token = memberService.reissue(refreshToken);
         String memberId = jwtTokenProvider.getAuthentication(token.getAccessToken()).getName();
         log.info(memberId);
@@ -163,6 +167,7 @@ public class MemberController {
         response.addHeader("Authorization", "Bearer " + token.getAccessToken());
         response.addHeader("Refresh-Token", refreshToken);
         response.addHeader("new-refresh-token", token.getRefreshToken());
+        return new EmptyResponse();
     }
 
     /**
@@ -190,8 +195,9 @@ public class MemberController {
      * </ul>
      */
     @PatchMapping("/my/info-edit")
-    public void patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid PatchInfoEditRequest dto) {
+    public EmptyResponse patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid PatchInfoEditRequest dto) {
         memberService.patchInfoEdit(dto);
+        return new EmptyResponse();
     }
 
     /**
@@ -213,8 +219,9 @@ public class MemberController {
      * </ul>
      */
     @PatchMapping("/my/change-pw")
-    public void changePw(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid ChangePwRequest dto) {
+    public EmptyResponse changePw(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid ChangePwRequest dto) {
         memberService.changePw(memberId, dto);
+        return new EmptyResponse();
     }
 
     /**
