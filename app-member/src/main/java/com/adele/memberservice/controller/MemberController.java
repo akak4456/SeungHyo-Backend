@@ -1,13 +1,14 @@
 package com.adele.memberservice.controller;
 
-import com.adele.domainemail.EmailConfigProperties;
 import com.adele.domainemail.dto.EmailMessage;
-import com.adele.domainemail.service.EmailCheckCodeService;
 import com.adele.domainemail.service.EmailService;
 import com.adele.domainmember.dto.*;
-import com.adele.domainmember.jwt.JwtTokenProvider;
 import com.adele.domainmember.service.MemberService;
-import com.adele.domainmember.service.RefreshTokenService;
+import com.adele.domainredis.EmailConfigProperties;
+import com.adele.domainredis.dto.JwtToken;
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.domainredis.service.EmailCheckCodeService;
+import com.adele.domainredis.service.RefreshTokenService;
 import com.adele.internalcommon.request.AuthHeaderConstant;
 import com.adele.internalcommon.response.EmptyResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,9 +48,9 @@ public class MemberController {
      * </ul>
      */
     @PostMapping("/auth/login")
-    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) {
+    public JwtToken login(@RequestBody @Valid LoginRequest loginRequest) {
         // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
-        LoginResponse response = memberService.login(loginRequest);
+        JwtToken response = memberService.login(loginRequest);
         refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), response.getRefreshToken());
         return response;
     }
@@ -160,7 +161,7 @@ public class MemberController {
      */
     @PostMapping("/auth/reissue")
     public EmptyResponse reissue(@RequestHeader("Refresh-Token") String refreshToken, HttpServletResponse response) {
-        LoginResponse token = memberService.reissue(refreshToken);
+        JwtToken token = memberService.reissue(refreshToken);
         String memberId = jwtTokenProvider.getAuthentication(token.getAccessToken()).getName();
         log.info(memberId);
         refreshTokenService.saveRefreshToken(memberId, token.getRefreshToken());

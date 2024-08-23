@@ -1,4 +1,4 @@
-package com.adele.domainemail.service;
+package com.adele.domainredis.service;
 
 public interface EmailCheckCodeService {
     void saveEmailCheckCode(String memberEmail, String checkCode , long emailCheckCodeValidTimeInSeconds);

@@ -15,7 +15,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 ext {
@@ -23,22 +22,17 @@ ext {
 }
 
 dependencies {
-    implementation 'com.github.akak4456:SeungHyo-Common:+'
+    implementation project(':internal-common')
+    implementation project(':domain-redis')
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     // eureka-client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    // Jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

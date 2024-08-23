@@ -1,7 +1,7 @@
-package com.adele.domainmember.service.impl;
+package com.adele.domainredis.service.impl;
 
-import com.adele.domainmember.service.RefreshTokenService;
 import com.adele.domainredis.repository.RedisRepository;
+import com.adele.domainredis.service.RefreshTokenService;
 import com.adele.internalcommon.exception.BadTokenException;
 import com.adele.internalcommon.response.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,6 +1,6 @@
 package com.adele.memberservice;
 
-import com.adele.domainmember.jwt.JwtTokenProvider;
+import com.adele.domainredis.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,8 @@
 package com.adele.apigatewayservice;
 
-import com.adele.common.ApiResult;
-import com.adele.common.AuthHeaderConstant;
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.internalcommon.exception.BadTokenException;
+import com.adele.internalcommon.request.AuthHeaderConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -59,13 +60,14 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String jwt = authorizationHeader.replace("Bearer ", "");
 
             // 추출한 JWT 토큰의 유효성을 확인.
-            if (jwtTokenProvider.validateToken(jwt)) {
+            try {
+                jwtTokenProvider.validateToken(jwt);
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                 if(redisUtil.isBlackList(authentication.getName(), jwt)) {
                     return onError(exchange, "this token is logouted", HttpStatus.UNAUTHORIZED);
                 }
                 return chain.filter(getValidWebExchangeFromJWTToken(exchange, authentication, jwt, null));
-            } else {
+            } catch (BadTokenException e) {
                 String refreshToken = request.getHeaders().get("Refresh-Token").get(0);
                 return reissueToken(exchange, chain, refreshToken);
             }

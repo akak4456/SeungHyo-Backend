@@ -1,11 +1,12 @@
 package com.adele.memberservice.controller;
 
-import com.adele.domainemail.service.EmailCheckCodeService;
 import com.adele.domainemail.service.EmailService;
 import com.adele.domainmember.dto.*;
-import com.adele.domainmember.jwt.JwtTokenProvider;
 import com.adele.domainmember.service.MemberService;
-import com.adele.domainmember.service.RefreshTokenService;
+import com.adele.domainredis.dto.JwtToken;
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.domainredis.service.EmailCheckCodeService;
+import com.adele.domainredis.service.RefreshTokenService;
 import com.adele.internalcommon.exception.business.*;
 import com.adele.internalcommon.request.AuthHeaderConstant;
 import com.adele.internalcommon.response.ApiResponse;
@@ -87,12 +88,12 @@ public class MemberControllerTest {
     public void loginTest(
             LoginRequest loginDTO,
             String expectedStatus,
-            LoginResponse expectedResult,
+            JwtToken expectedResult,
             List<String> errorFieldsName
     ) throws Exception {
         String content = gson.toJson(loginDTO);
         Authentication atc = new TestingAuthenticationToken(loginDTO.getMemberId(), null, "ROLE_ADMIN");
-        LoginResponse token = jwtTokenProvider.generateToken(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
         when(memberService.login(loginDTO)).thenReturn(token);
         ResultActions actions =
                 mockMvc.perform(
@@ -108,9 +109,9 @@ public class MemberControllerTest {
 
         if(Objects.equals(expectedStatus, "OK")) {
             String responseJson = mvcResult.getResponse().getContentAsString();
-            Type apiResultType = new TypeToken<ApiResponse<LoginResponse>>() {}.getType();
+            Type apiResultType = new TypeToken<ApiResponse<JwtToken>>() {}.getType();
 
-            ApiResponse<LoginResponse> response = gson.fromJson(responseJson, apiResultType);
+            ApiResponse<JwtToken> response = gson.fromJson(responseJson, apiResultType);
             if(expectedResult.getAccessToken() != null) {
                 expectedResult.setAccessToken(token.getAccessToken());
             }
@@ -135,19 +136,19 @@ public class MemberControllerTest {
                 Arguments.of(
                         new LoginRequest("user1", "pass1"),
                         "OK",
-                        new LoginResponse("", "", ""),
+                        new JwtToken("", "", ""),
                         List.of("")
                 ),
                 Arguments.of(
                         new LoginRequest("", "pass1"),
                         "BAD_REQUEST",
-                        new LoginResponse(),
+                        new JwtToken(),
                         List.of("memberId")
                 ),
                 Arguments.of(
                         new LoginRequest("user1", ""),
                         "BAD_REQUEST",
-                        new LoginResponse(),
+                        new JwtToken(),
                         List.of("memberPw")
                 )
         );

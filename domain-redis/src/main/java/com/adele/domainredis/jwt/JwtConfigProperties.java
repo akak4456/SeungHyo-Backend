@@ -1,4 +1,4 @@
-package com.adele.domainemail;
+package com.adele.domainredis.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,12 +8,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "spring.mail")
+@ConfigurationProperties(prefix = "jwt")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailConfigProperties {
-    private Long emailCheckCodeValidInSeconds = 180L;
-    private Long validEmailTimeInSeconds = 180L;
+public class JwtConfigProperties {
+    private String secret;
+    private Long accessTokenValidityInSeconds;
+    private Long refreshTokenValidityInSeconds;
 }

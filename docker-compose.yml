@@ -63,8 +63,8 @@ services:
     restart: on-failure
   seunghyo-apigateway:
     build:
-      context: ./app-apigateway
-      dockerfile: ./Dockerfile.dev
+      context: .
+      dockerfile: ./Dockerfile-app-apigateway.dev
     container_name: seunghyo-apigateway
     ports:
       - "8999:8999"

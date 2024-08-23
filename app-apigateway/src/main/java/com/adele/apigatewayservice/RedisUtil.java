@@ -1,7 +1,7 @@
 package com.adele.apigatewayservice;
 
+import com.adele.domainredis.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -9,14 +9,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisRepository redisRepository;
 
     public void saveBlackList(String memberId, String jwt, Long accessTokenValid) {
-        redisTemplate.opsForValue().set("blacklist:" + memberId, jwt, accessTokenValid, TimeUnit.SECONDS);
+        redisRepository.setValue("blacklist:" + memberId, jwt, accessTokenValid, TimeUnit.SECONDS);
     }
 
     public boolean isBlackList(String memberId, String jwt) {
-        String storedJwt = (String)redisTemplate.opsForValue().get("blacklist:"+memberId);
+        String storedJwt = (String)redisRepository.getValue("blacklist:"+memberId);
         return jwt.equals(storedJwt);
     }
 }

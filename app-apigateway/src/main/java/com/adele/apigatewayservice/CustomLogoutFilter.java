@@ -1,17 +1,17 @@
 package com.adele.apigatewayservice;
 
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.internalcommon.exception.BadTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -47,7 +47,8 @@ public class CustomLogoutFilter extends AbstractGatewayFilterFactory<CustomLogou
             String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
             String jwt = authorizationHeader.replace("Bearer ", "");
 
-            if (jwtTokenProvider.validateToken(jwt)) {
+            try {
+                jwtTokenProvider.validateToken(jwt);
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                 String memberId = authentication.getName();
                 redisUtil.saveBlackList(memberId, jwt, jwtTokenProvider.getAccessTokenValidityInSeconds());
@@ -55,7 +56,7 @@ public class CustomLogoutFilter extends AbstractGatewayFilterFactory<CustomLogou
                         .build();
 
                 return chain.filter(exchange.mutate().request(newRequest).build());
-            } else {
+            } catch (BadTokenException e) {
                 return onError(exchange, "jwt token is not valid", HttpStatus.UNAUTHORIZED);
             }
         };

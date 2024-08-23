@@ -1,9 +1,9 @@
-package com.adele.domainemail.service.impl;
+package com.adele.domainredis.service.impl;
 
 
-import com.adele.domainemail.EmailConfigProperties;
-import com.adele.domainemail.service.EmailCheckCodeService;
+import com.adele.domainredis.EmailConfigProperties;
 import com.adele.domainredis.repository.RedisRepository;
+import com.adele.domainredis.service.EmailCheckCodeService;
 import com.adele.internalcommon.exception.business.EmailCheckCodeNotCorrectException;
 import com.adele.internalcommon.exception.business.EmailNotValidException;
 import com.adele.internalcommon.response.ErrorCode;

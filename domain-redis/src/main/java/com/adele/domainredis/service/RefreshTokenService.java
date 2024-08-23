@@ -1,4 +1,4 @@
-package com.adele.domainmember.service;
+package com.adele.domainredis.service;
 
 public interface RefreshTokenService {
     void saveRefreshToken(String memberId, String refreshToken);

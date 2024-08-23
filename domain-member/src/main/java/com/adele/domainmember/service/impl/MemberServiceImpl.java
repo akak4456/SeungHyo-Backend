@@ -2,9 +2,10 @@ package com.adele.domainmember.service.impl;
 
 import com.adele.domainmember.domain.Member;
 import com.adele.domainmember.dto.*;
-import com.adele.domainmember.jwt.JwtTokenProvider;
 import com.adele.domainmember.repository.MemberRepository;
 import com.adele.domainmember.service.MemberService;
+import com.adele.domainredis.dto.JwtToken;
+import com.adele.domainredis.jwt.JwtTokenProvider;
 import com.adele.internalcommon.exception.business.*;
 import com.adele.internalcommon.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public JwtToken login(LoginRequest loginRequest) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPw());
@@ -145,7 +146,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public LoginResponse reissue(String refreshToken) {
+    public JwtToken reissue(String refreshToken) {
         jwtTokenProvider.validateRefreshToken(refreshToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         return jwtTokenProvider.generateToken(authentication);

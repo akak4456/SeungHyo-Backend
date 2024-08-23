@@ -9,6 +9,12 @@ eureka:
       defaultZone: ${EUREKA_SERVER_DEFAULT_ZONE}
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  main:
+    web-application-type: reactive
   config:
     import: optional:configtree:/run/secrets/
   application:

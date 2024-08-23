@@ -1,6 +1,7 @@
 package com.adele.domainmember.service;
 
 import com.adele.domainmember.dto.*;
+import com.adele.domainredis.dto.JwtToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface MemberService extends UserDetailsService {
@@ -9,7 +10,7 @@ public interface MemberService extends UserDetailsService {
      * @param loginRequest member 아이디, pw
      * @return JwtToken 검증 성공 시 JWT 토큰
      */
-    LoginResponse login(LoginRequest loginRequest);
+    JwtToken login(LoginRequest loginRequest);
 
     /**
      * 회원가입 시도 AuthService
@@ -73,5 +74,5 @@ public interface MemberService extends UserDetailsService {
      */
     boolean withdraw(String memberId);
 
-    LoginResponse reissue(String refreshToken);
+    JwtToken reissue(String refreshToken);
 }

@@ -1,18 +1,19 @@
-package com.adele.domainmember.jwt;
-import com.adele.domainmember.dto.LoginResponse;
-import com.adele.domainmember.service.RefreshTokenService;
+package com.adele.domainredis.jwt;
+
+import com.adele.domainredis.dto.JwtToken;
+import com.adele.domainredis.service.RefreshTokenService;
 import com.adele.internalcommon.exception.BadTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -26,11 +27,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
+    @Getter
     private final long accessTokenValidityInSeconds;
     private final long refreshTokenValidityInSeconds;
 
@@ -52,10 +55,10 @@ public class JwtTokenProvider {
      * @param authentication spring boot 에서 생성해주는 authentication
      * @return Access Token: 인증된 사용자의 권한 정보와 만료 시간을 담고 있음, Refresh Token: Access Token의 갱신을 위해 사용 됨
      */
-    public LoginResponse generateToken(Authentication authentication) {
+    public JwtToken generateToken(Authentication authentication) {
         return generateToken(authentication, LocalDateTime.now());
     }
-    public LoginResponse generateToken(Authentication authentication, LocalDateTime now) {
+    public JwtToken generateToken(Authentication authentication, LocalDateTime now) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -75,7 +78,7 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
 
-        return LoginResponse.builder()
+        return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -123,7 +126,7 @@ public class JwtTokenProvider {
      * claim.getSubject()는 주어진 토큰의 클레임에서 "sub" 클레임의 값을 반환
      * 토큰의 주체를 나타냄. ex) 사용자의 식별자나 이메일 주소
      * @param token 검증하고자 하는 토큰
-     * @throws com.adele.memberservice.common.exception.BadTokenException 유효하지 않은 토큰일 경우
+     * @throws BadTokenException 유효하지 않은 토큰일 경우
      */
     public void validateToken(String token) {
         try {

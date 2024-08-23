@@ -25,6 +25,7 @@ dependencies {
     implementation project(':internal-common')
     implementation project(':domain-member')
     implementation project(':domain-email')
+    implementation project(':domain-redis')
     // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // eureka-client

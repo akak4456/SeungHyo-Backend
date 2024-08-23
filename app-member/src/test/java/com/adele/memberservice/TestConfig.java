@@ -1,10 +1,9 @@
 package com.adele.memberservice;
 
-import com.adele.domainemail.EmailConfigProperties;
-import com.adele.domainmember.jwt.JwtConfigProperties;
-import com.adele.domainmember.jwt.JwtTokenProvider;
-import com.adele.domainmember.service.RefreshTokenService;
-import com.adele.domainmember.service.impl.RefreshTokenServiceImpl;
+import com.adele.domainredis.EmailConfigProperties;
+import com.adele.domainredis.jwt.JwtConfigProperties;
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.domainredis.service.RefreshTokenService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

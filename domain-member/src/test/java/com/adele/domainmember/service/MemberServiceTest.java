@@ -4,14 +4,14 @@ import com.adele.domainmember.TestConfig;
 import com.adele.domainmember.domain.Member;
 import com.adele.domainmember.dto.GetInfoEditResponse;
 import com.adele.domainmember.dto.LoginRequest;
-import com.adele.domainmember.dto.LoginResponse;
-import com.adele.domainmember.jwt.JwtTokenProvider;
 import com.adele.domainmember.repository.MemberRepository;
 import com.adele.domainmember.service.impl.MemberServiceImpl;
+import com.adele.domainredis.dto.JwtToken;
+import com.adele.domainredis.jwt.JwtTokenProvider;
+import com.adele.domainredis.service.RefreshTokenService;
 import com.adele.internalcommon.exception.BadTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import redis.embedded.RedisServer;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +76,7 @@ public class MemberServiceTest {
         )));
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
-        LoginResponse token = memberService.login(new LoginRequest("user1", "pass1"));
+        JwtToken token = memberService.login(new LoginRequest("user1", "pass1"));
         assertThat(token.getAccessToken()).isNotBlank();
         assertThat(token.getRefreshToken()).isNotBlank();
     }
@@ -108,7 +107,7 @@ public class MemberServiceTest {
         Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
-        LoginResponse token = jwtTokenProvider.generateToken(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
         refreshTokenService.saveRefreshToken("user1", token.getRefreshToken());
         Assertions.assertThat(memberService.reissue(token.getRefreshToken())).isNotNull();
     }
@@ -119,7 +118,7 @@ public class MemberServiceTest {
         Authentication atc = new TestingAuthenticationToken("user1", null, "ROLE_ADMIN");
         when(authenticationManagerBuilder.getObject()).thenReturn(mockAuthenticationManager);
         when(mockAuthenticationManager.authenticate(any())).thenReturn(atc);
-        LoginResponse token = jwtTokenProvider.generateToken(atc);
+        JwtToken token = jwtTokenProvider.generateToken(atc);
         refreshTokenService.saveRefreshToken("user1", token.getRefreshToken());
         Assertions.assertThatCode(() -> memberService.reissue(token.getRefreshToken() + "ABC")).isInstanceOf(BadTokenException.class);
     }

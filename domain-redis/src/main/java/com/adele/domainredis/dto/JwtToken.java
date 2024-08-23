@@ -1,5 +1,6 @@
-package com.adele.apigatewayservice;
+package com.adele.domainredis.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -7,8 +8,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 public class JwtToken {
+    @NotBlank
     private String grantType;
+    @NotBlank
     private String accessToken;
+    @NotBlank
     private String refreshToken;
 }
