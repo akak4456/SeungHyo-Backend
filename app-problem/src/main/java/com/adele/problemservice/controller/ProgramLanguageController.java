@@ -1,9 +1,7 @@
 package com.adele.problemservice.controller;
 
-import com.adele.common.ApiResult;
-import com.adele.common.ResponseCode;
-import com.adele.problemservice.dto.NewSubmitOneDTO;
-import com.adele.problemservice.service.ProgramLanguageService;
+import com.adele.domainproblem.dto.NewSubmitOneDTO;
+import com.adele.domainproblem.service.ProgramLanguageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +24,10 @@ public class ProgramLanguageController {
      * </ul>
      */
     @GetMapping({"{problemNo}"})
-    public ApiResult<NewSubmitOneDTO> addGetOne(
+    public NewSubmitOneDTO addGetOne(
             @PathVariable Long problemNo
     ) {
-        return ApiResult.<NewSubmitOneDTO>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("리스트 조회 성공")
-                .data(programLanguageService.findAll(problemNo))
-                .build();
+        return programLanguageService.findAll(problemNo);
     }
 
     /**
@@ -44,11 +38,7 @@ public class ProgramLanguageController {
      * </ul>
      */
     @GetMapping("")
-    public ApiResult<NewSubmitOneDTO> getAllLanguages() {
-        return ApiResult.<NewSubmitOneDTO>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("리스트 조회 성공")
-                .data(programLanguageService.findAll())
-                .build();
+    public NewSubmitOneDTO getAllLanguages() {
+        return programLanguageService.findAll();
     }
 }

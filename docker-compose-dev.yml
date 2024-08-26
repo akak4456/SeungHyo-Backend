@@ -30,6 +30,9 @@ services:
   seunghyo-problem:
     networks:
       - dev-net
+  seunghyo-submit:
+    networks:
+      - dev-net
   seunghyo-board:
     networks:
       - dev-net

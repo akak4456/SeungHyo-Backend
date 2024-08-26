@@ -42,5 +42,5 @@ out/
 # secret folder
 secret
 
-# problem-service/compiler-tools
-app-problem/compiler-tools
+# app-submit/compiler-tools
+app-submit/compiler-tools

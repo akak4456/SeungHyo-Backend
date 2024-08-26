@@ -1,10 +1,8 @@
 package com.adele.problemservice.controller;
 
-import com.adele.common.ApiResult;
-import com.adele.common.ResponseCode;
-import com.adele.problemservice.dto.ProblemListDTO;
-import com.adele.problemservice.dto.ProblemOneDTO;
-import com.adele.problemservice.service.ProblemService;
+import com.adele.domainproblem.dto.ProblemListDTO;
+import com.adele.domainproblem.dto.ProblemOneDTO;
+import com.adele.domainproblem.service.ProblemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,16 +42,11 @@ public class ProblemController {
      * </ul>
      */
     @GetMapping({""})
-    public ApiResult<Page<ProblemListDTO>> getSearch(
+    public Page<ProblemListDTO> getSearch(
             @PageableDefault
             Pageable pageable
     ) {
-        Page<ProblemListDTO> page = problemService.searchPage(pageable);
-        return ApiResult.<Page<ProblemListDTO>>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("리스트 조회 성공")
-                .data(page)
-                .build();
+        return problemService.searchPage(pageable);
     }
 
     /**
@@ -75,12 +68,7 @@ public class ProblemController {
      * </ul>
      */
     @GetMapping("{problemNo}")
-    public ApiResult<ProblemOneDTO> getOne(@PathVariable Long problemNo) {
-        ProblemOneDTO one = problemService.problemOne(problemNo);
-        return ApiResult.<ProblemOneDTO>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message("하나 조회 성공")
-                .data(one)
-                .build();
+    public ProblemOneDTO getOne(@PathVariable Long problemNo) {
+        return problemService.problemOne(problemNo);
     }
 }

@@ -100,9 +100,29 @@ services:
       - jwt_secret
   seunghyo-problem:
     build:
-      context: ./app-problem
-      dockerfile: ./Dockerfile.dev
+      context: .
+      dockerfile: ./Dockerfile-app-problem.dev
     container_name: seunghyo-problem
+    # restart: on-failure
+    environment:
+      EMAIL_USERNAME: seunghyoalgorithm
+      PROBLEM_SERVICE_DEV_DB_URL: seunghyo-mysql
+      PROBLEM_SERVICE_DEV_DB_PORT: 3306
+      PROBLEM_SERVICE_DEV_DB_NAME: problem_service
+      SEUNGHYO_DEV_DB_USERNAME: adele
+      REDIS_DEV_HOST: seunghyo-redis
+      REDIS_DEV_PORT: 6379
+      EUREKA_SERVER_DEFAULT_ZONE: http://seunghyo-eureka:8761/eureka
+      COMPILER_JAVA11_BIN_PATH: /app/compiler-tools/jdk-11/bin
+      PROBLEM_SERVICE_KAFKA_URL: seunghyo-kafka:9092
+    secrets:
+      - email_password
+      - db_password
+  seunghyo-submit:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-app-submit.dev
+    container_name: seunghyo-submit
     # restart: on-failure
     environment:
       EMAIL_USERNAME: seunghyoalgorithm

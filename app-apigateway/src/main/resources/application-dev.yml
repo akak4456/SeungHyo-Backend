@@ -52,27 +52,27 @@ spring:
             - Path=/api/v1/member/**
           filters:
             - AuthorizationHeaderFilter
-        - id: problem-service
-          uri: lb://PROBLEM-SERVICE
+        - id: app-problem-get
+          uri: lb://APP-PROBLEM
           predicates:
             - Path=/api/v1/problem/**
-        - id: problem-service
-          uri: lb://PROBLEM-SERVICE
+        - id: app-problem-language
+          uri: lb://APP-PROBLEM
           predicates:
             - Path=/api/v1/programlanguage/**
-        - id: problem-service
-          uri: lb://PROBLEM-SERVICE
+        - id: app-submit-compile
+          uri: lb://APP-SUBMIT
           predicates:
-            - Path=/api/v1/submit
+            - Path=/api/v1/compile
             - Method=POST
           filters:
             - AuthorizationHeaderFilter
-        - id: problem-service
-          uri: lb://PROBLEM-SERVICE
+        - id: app-problem-get-submit
+          uri: lb://APP-PROBLEM
           predicates:
             - Path=/api/v1/submit/**
-        - id: compile-socket-service
-          uri: lb:ws://PROBLEM-SERVICE
+        - id: app-submit-compile-socket-service
+          uri: lb:ws://APP-SUBMIT
           predicates:
             - Path=/submit/**
         - id: app-board-get-board

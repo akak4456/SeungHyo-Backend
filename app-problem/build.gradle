@@ -15,7 +15,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 ext {
@@ -23,7 +22,8 @@ ext {
 }
 
 dependencies {
-    implementation 'com.github.akak4456:SeungHyo-Common:+'
+    implementation project(':domain-problem')
+    implementation project(':internal-common')
     // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // eureka-client
@@ -31,36 +31,10 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    // Mysql Connector
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    // JPA
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // QueryDsl
-    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-    // Jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    // Gson
-    implementation 'com.google.code.gson:gson:2.11.0'
-    // Mail
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    //QueryDsl
-    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-    // kafka
-    implementation 'org.springframework.kafka:spring-kafka'
-    // websocket
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
