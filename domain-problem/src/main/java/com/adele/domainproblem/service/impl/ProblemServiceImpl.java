@@ -3,6 +3,7 @@ package com.adele.domainproblem.service.impl;
 import com.adele.domainproblem.domain.Problem;
 import com.adele.domainproblem.domain.ProblemCondition;
 import com.adele.domainproblem.dto.ConditionDTO;
+import com.adele.domainproblem.dto.ProblemInfoInMainPage;
 import com.adele.domainproblem.dto.ProblemListDTO;
 import com.adele.domainproblem.dto.ProblemOneDTO;
 import com.adele.domainproblem.repository.ProblemRepository;
@@ -62,5 +63,12 @@ public class ProblemServiceImpl implements ProblemService {
                 condition.getConditionTime(),
                 condition.getConditionMemory()
         );
+    }
+
+    @Override
+    public ProblemInfoInMainPage getProblemInfoInMainPage() {
+        ProblemInfoInMainPage info = problemRepository.getProblemInfoInMainPage();
+        info.setProblemGradeInfoList(problemRepository.getProblemGradeInfoList());
+        return info;
     }
 }

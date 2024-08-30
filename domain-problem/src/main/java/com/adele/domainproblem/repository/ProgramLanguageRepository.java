@@ -10,6 +10,6 @@ import java.util.List;
 public interface ProgramLanguageRepository extends JpaRepository<ProgramLanguage, String> {
     @Query("SELECT l FROM ProgramLanguage l " +
             "JOIN l.correlationList lc " +
-            "WHERE lc.problem.problemNo = :id")
+            "WHERE lc.problem.problemNo = :id AND lc.problem.isGradable")
     List<ProgramLanguage> findByIdWithProblemNo(@Param("id") Long id);
 }

@@ -2,13 +2,17 @@ package com.adele.domainproblem.repository.custom.impl;
 
 import com.adele.domainproblem.SubmitStatus;
 import com.adele.domainproblem.domain.QProblem;
+import com.adele.domainproblem.domain.QProgramLanguage;
 import com.adele.domainproblem.domain.QSubmitList;
+import com.adele.domainproblem.dto.ProblemGradeInfo;
+import com.adele.domainproblem.dto.ProblemInfoInMainPage;
 import com.adele.domainproblem.dto.ProblemListDTO;
 import com.adele.domainproblem.repository.custom.ProblemRepositoryCustom;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -52,6 +56,7 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                         correctionExpression(problem, submitList)
                 ))
                 .from(problem)
+                .where(problem.isGradable)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -73,6 +78,66 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                 .from(problem)
                 .where(problem.problemNo.eq(id))
                 .fetchOne();
+    }
+
+    @Override
+    public ProblemInfoInMainPage getProblemInfoInMainPage() {
+        QProblem problem = QProblem.problem;
+        QSubmitList submitList = QSubmitList.submitList;
+        QProgramLanguage programLanguage = QProgramLanguage.programLanguage;
+        return queryFactory
+                .select(Projections.bean(
+                        ProblemInfoInMainPage.class,
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(problem.problemNo.countDistinct())
+                                        .from(problem),
+                                "allProblemCount"
+                        ),
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(problem.problemNo.countDistinct())
+                                        .from(problem)
+                                        .where(problem.isGradable),
+                                "availableProblemCount"
+                        ),
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(problem.problemNo.countDistinct())
+                                        .from(problem)
+                                        .join(submitList).on(submitList.problem.problemNo.eq(problem.problemNo))
+                                        .where(submitList.submitResult.eq(SubmitStatus.CORRECT)),
+                                "correctProblemCount"
+                        ),
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(programLanguage.langCode.countDistinct())
+                                        .from(programLanguage)
+                                        .where(programLanguage.isGradable),
+                                "availableLanguageCount"
+                        )
+                ))
+                .from(problem)
+                .fetchOne();
+    }
+
+    @Override
+    public List<ProblemGradeInfo> getProblemGradeInfoList() {
+        QProblem problem = QProblem.problem;
+        QSubmitList submitList = QSubmitList.submitList;
+        NumberPath<Long> aliasQuantity = Expressions.numberPath(Long.class, "submitCount");
+        return queryFactory
+                .select(Projections.bean(
+                        ProblemGradeInfo.class,
+                        problem.problemNo,
+                        problem.problemTitle,
+                        submitList.submitNo.countDistinct().as(aliasQuantity)
+                ))
+                .from(problem)
+                .join(submitList).on(submitList.problem.problemNo.eq(problem.problemNo))
+                .groupBy(problem.problemNo)
+                .orderBy(aliasQuantity.desc())
+                .fetch();
     }
 
     private Expression<BigDecimal> correctionExpression(QProblem problem, QSubmitList submitList) {

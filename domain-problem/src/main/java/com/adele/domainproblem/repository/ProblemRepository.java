@@ -1,6 +1,7 @@
 package com.adele.domainproblem.repository;
 
 import com.adele.domainproblem.domain.*;
+import com.adele.domainproblem.dto.ProblemGradeInfo;
 import com.adele.domainproblem.repository.custom.ProblemRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

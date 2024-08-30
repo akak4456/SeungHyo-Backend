@@ -1,5 +1,6 @@
 package com.adele.problemservice.controller;
 
+import com.adele.domainproblem.dto.ProblemInfoInMainPage;
 import com.adele.domainproblem.dto.ProblemListDTO;
 import com.adele.domainproblem.dto.ProblemOneDTO;
 import com.adele.domainproblem.service.ProblemService;
@@ -19,6 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ProblemController {
     private final ProblemService problemService;
+
+    /**
+     * 메인 화면에 보이는 문제 관련 정보들을 얻어온다
+     * @return ProblemInfoInMainPage
+     * <ul>
+     *     <li><b>allProblemCount</b> 전체 문제 수</li>
+     *     <li><b>availableProblemCount</b> 채점 가능한 문제 수</li>
+     *     <li><b>correctProblemCount</b> 풀린 문제 수</li>
+     *     <li><b>availableLanguageCount</b> 채점 가능 언어</li>
+     *     <li><b>problemGradeInfoList</b> 메인화면에 보이는 문제 순위 정보들</li>
+     * </ul>
+     */
+    @GetMapping("/main")
+    public ProblemInfoInMainPage getProblemInfoInMainPage() {
+        return problemService.getProblemInfoInMainPage();
+    }
 
     /**
      * problem list 를 조회한다.

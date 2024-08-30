@@ -14,5 +14,5 @@ INSERT INTO problem
  'A+B를 구하세요',
  'A와 B가 주어집니다',
  'A+B를 출력하세요',
- 'N'
+ 'Y'
 );

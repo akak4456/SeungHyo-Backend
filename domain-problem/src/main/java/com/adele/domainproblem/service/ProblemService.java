@@ -1,6 +1,7 @@
 package com.adele.domainproblem.service;
 
 import com.adele.domainproblem.dto.ConditionDTO;
+import com.adele.domainproblem.dto.ProblemInfoInMainPage;
 import com.adele.domainproblem.dto.ProblemListDTO;
 import com.adele.domainproblem.dto.ProblemOneDTO;
 import org.springframework.data.domain.Page;
@@ -27,4 +28,9 @@ public interface ProblemService {
      * @return ConditionDTO input, output, 조건들
      */
     ConditionDTO getCondition(Long problemNo, String langCode);
+
+    /**
+     * Main 화면에 보이는 Problem 관련 정보들을 얻는 서비스
+     */
+    ProblemInfoInMainPage getProblemInfoInMainPage();
 }
