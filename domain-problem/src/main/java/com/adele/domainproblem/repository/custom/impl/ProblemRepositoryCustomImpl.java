@@ -137,6 +137,8 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                 .join(submitList).on(submitList.problem.problemNo.eq(problem.problemNo))
                 .groupBy(problem.problemNo)
                 .orderBy(aliasQuantity.desc())
+                .offset(0)
+                .limit(5)
                 .fetch();
     }
 
