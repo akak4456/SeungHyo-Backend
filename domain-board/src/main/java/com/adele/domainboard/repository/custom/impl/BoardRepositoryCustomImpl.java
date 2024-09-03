@@ -1,8 +1,11 @@
 package com.adele.domainboard.repository.custom.impl;
 
+import com.adele.domainboard.domain.Board;
 import com.adele.domainboard.domain.QBoard;
 import com.adele.domainboard.domain.QBoardCategory;
 import com.adele.domainboard.domain.QReply;
+import com.adele.domainboard.dto.BoardInfoDTO;
+import com.adele.domainboard.dto.BoardInfoInMain;
 import com.adele.domainboard.dto.BoardListDTO;
 import com.adele.domainboard.dto.BoardSearchCondition;
 import com.adele.domainboard.repository.custom.BoardRepositoryCustom;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -70,5 +74,73 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .where(whereClause);
 
         return PageableExecutionUtils.getPage(fetch, pageable, countQuery::fetchCount);
+    }
+
+    @Override
+    public BoardInfoDTO getBoardInfoInMainPage() {
+        QBoard board = QBoard.board;
+        QBoardCategory boardCategory = QBoardCategory.boardCategory;
+        QReply reply = QReply.reply; // QReply 객체 추가
+
+        // 1. 새로운 글: regDate가 가장 최근인 것 5개
+        List<BoardInfoInMain> newBoard = queryFactory
+                .select(Projections.constructor(BoardInfoInMain.class,
+                        board.boardNo,
+                        board.memberId,
+                        board.boardTitle,
+                        board.regDate,
+                        board.likeCount,
+                        JPAExpressions
+                                .select(reply.count()) // replyCount 계산
+                                .from(reply)
+                                .where(reply.board.eq(board))
+                ))
+                .from(board)
+                .orderBy(board.regDate.desc())
+                .limit(5)
+                .fetch();
+
+        // 2. 인기 글: regDate가 한 달 이내인 글 중 likeCount가 가장 높은 5개
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        List<BoardInfoInMain> popularBoard = queryFactory
+                .select(Projections.constructor(BoardInfoInMain.class,
+                        board.boardNo,
+                        board.memberId,
+                        board.boardTitle,
+                        board.regDate,
+                        board.likeCount,
+                        JPAExpressions
+                                .select(reply.count()) // replyCount 계산
+                                .from(reply)
+                                .where(reply.board.eq(board))
+                ))
+                .from(board)
+                .where(board.regDate.after(oneMonthAgo))
+                .orderBy(board.likeCount.desc())
+                .limit(5)
+                .fetch();
+
+        // 3. 공지 글: boardCategory.categoryCode가 'NOTICE'인 것 중에서 regDate가 가장 최근인 것 5개
+        List<BoardInfoInMain> noticeBoard = queryFactory
+                .select(Projections.constructor(BoardInfoInMain.class,
+                        board.boardNo,
+                        board.memberId,
+                        board.boardTitle,
+                        board.regDate,
+                        board.likeCount,
+                        JPAExpressions
+                                .select(reply.count()) // replyCount 계산
+                                .from(reply)
+                                .where(reply.board.eq(board))
+                ))
+                .from(board)
+                .join(board.boardCategory, boardCategory)
+                .where(boardCategory.categoryCode.eq("NOTICE"))
+                .orderBy(board.regDate.desc())
+                .limit(5)
+                .fetch();
+
+        // 결과를 BoardInfoDTO에 담아서 반환
+        return new BoardInfoDTO(newBoard, popularBoard, noticeBoard);
     }
 }

@@ -60,6 +60,20 @@ public class BoardController {
     }
 
     /**
+     * 메인화면에 필요한 Board 관련 정보를 얻어온다
+     * @return BoardInfoDTO
+     * <ul>
+     *     <li><b>newBoard</b> 새로운 글 최대 5개</li>
+     *     <li><b>popularBoard</b> 인기글 최대 5개</li>
+     *     <li><b>noticeBoard</b> 공지글 최대 5개</li>
+     * </ul>
+     */
+    @GetMapping("/main")
+    public BoardInfoDTO getMainBoard() {
+        return boardService.getBoardInfoInMainPage();
+    }
+
+    /**
      * 게시글 조회를 한다. 여기에서 댓글은 조회하지 않으며
      * 댓글 같은 경우 별도의 paging api 를 이용하도록 한다.
      * @param boardNo 게시글 번호

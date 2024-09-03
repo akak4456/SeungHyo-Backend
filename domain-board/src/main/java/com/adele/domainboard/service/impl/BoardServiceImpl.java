@@ -79,4 +79,9 @@ public class BoardServiceImpl implements BoardService {
         board.setSourceCode(boardDTO.getSourceCode());
         boardRepository.save(board);
     }
+
+    @Override
+    public BoardInfoDTO getBoardInfoInMainPage() {
+        return boardRepository.getBoardInfoInMainPage();
+    }
 }
