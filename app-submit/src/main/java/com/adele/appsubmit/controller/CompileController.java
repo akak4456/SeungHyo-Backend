@@ -3,6 +3,7 @@ package com.adele.appsubmit.controller;
 import com.adele.appsubmit.executor.CompileExecutor;
 import com.adele.appsubmit.compilestrategy.CompileStrategy;
 import com.adele.appsubmit.compilestrategy.impl.Java11CompileStrategy;
+import com.adele.appsubmit.kafka.KafkaDynamicListener;
 import com.adele.appsubmit.properties.CompilerConfigProperties;
 import com.adele.domainproblem.CompileStatus;
 import com.adele.domainproblem.dto.ConditionDTO;
@@ -32,6 +33,7 @@ public class CompileController {
     private final KafkaTemplate<String, KafkaCompile> kafkaTemplate;
     private final CompileExecutor compileExecutor;
     private final CompilerConfigProperties compilerConfigProperties;
+    private final KafkaDynamicListener kafkaDynamicListener;
     /**
      * 소스코드 새로운 제출을 시도한다
      * @param newSubmitRequestDTO
