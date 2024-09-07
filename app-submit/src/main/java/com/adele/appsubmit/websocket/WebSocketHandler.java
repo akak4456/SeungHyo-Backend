@@ -55,9 +55,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         try {
                             entry.getValue().close();
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            // no-op
+                            log.error("error occur", e);
                         }
                     }
+                    sessions.remove(submitNo);
+                    submitNoToCompileResults.remove(submitNo);
+                    log.info("submit {} close done", submitNo);
                 } else {
                     CopyOnWriteArrayList<KafkaCompile> compileResults = submitNoToCompileResults.computeIfAbsent(submitNo, k -> new CopyOnWriteArrayList<>());
                     compileResults.add(kafkaCompile);
@@ -92,6 +96,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         } catch (Exception e) {
             // no-op
+            log.error("error occur", e);
         }
     }
 
