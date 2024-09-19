@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProblemRepositoryCustom {
-    Page<ProblemListDTO> searchPage(Pageable pageable);
+    Page<ProblemListDTO> searchPage(Pageable pageable, String title);
 
     BigDecimal getCorrectionRatioById(Long id);
 

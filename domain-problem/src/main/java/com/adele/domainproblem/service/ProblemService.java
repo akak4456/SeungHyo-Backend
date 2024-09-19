@@ -11,9 +11,10 @@ public interface ProblemService {
     /**
      * problem list 조회 서비스
      * @param pageable 조회할 페이지
+     * @param title title 검색 조건
      * @return Page&lt;ProblemListDTO&gt; 페이지 객체
      */
-    Page<ProblemListDTO> searchPage(Pageable pageable);
+    Page<ProblemListDTO> searchPage(Pageable pageable, String title);
 
     /**
      * problem 상세 조회 서비스

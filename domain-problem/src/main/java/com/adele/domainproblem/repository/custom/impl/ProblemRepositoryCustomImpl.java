@@ -8,6 +8,7 @@ import com.adele.domainproblem.dto.ProblemGradeInfo;
 import com.adele.domainproblem.dto.ProblemInfoInMainPage;
 import com.adele.domainproblem.dto.ProblemListDTO;
 import com.adele.domainproblem.repository.custom.ProblemRepositoryCustom;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -29,9 +30,16 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ProblemListDTO> searchPage(Pageable pageable) {
+    public Page<ProblemListDTO> searchPage(Pageable pageable, String title) {
         QProblem problem = QProblem.problem;
         QSubmitList submitList = QSubmitList.submitList;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(problem.isGradable);
+
+        if(title != null && !title.isBlank()) {
+            builder.and(problem.problemTitle.contains(title));
+        }
 
         // Fetch problem list with correct people count, submit count, and correct ratio
         List<ProblemListDTO> fetch = queryFactory
@@ -56,7 +64,7 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
                         correctionExpression(problem, submitList)
                 ))
                 .from(problem)
-                .where(problem.isGradable)
+                .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -64,7 +72,8 @@ public class ProblemRepositoryCustomImpl implements ProblemRepositoryCustom {
         // Count total problems for pagination
         JPQLQuery<Long> countQuery = queryFactory
                 .select(problem.count())
-                .from(problem);
+                .from(problem)
+                .where(builder);
 
         return PageableExecutionUtils.getPage(fetch, pageable, countQuery::fetchCount);
     }

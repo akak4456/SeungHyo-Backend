@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/problem")
@@ -61,9 +58,11 @@ public class ProblemController {
     @GetMapping({""})
     public Page<ProblemListDTO> getSearch(
             @PageableDefault
-            Pageable pageable
+            Pageable pageable,
+            @RequestParam(required = false) String title
     ) {
-        return problemService.searchPage(pageable);
+        log.info("title {}", title);
+        return problemService.searchPage(pageable, title);
     }
 
     /**

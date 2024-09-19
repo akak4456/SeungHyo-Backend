@@ -24,8 +24,8 @@ import java.util.List;
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepository problemRepository;
     @Override
-    public Page<ProblemListDTO> searchPage(Pageable pageable) {
-        return problemRepository.searchPage(pageable);
+    public Page<ProblemListDTO> searchPage(Pageable pageable, String title) {
+        return problemRepository.searchPage(pageable, title);
     }
 
     @Override

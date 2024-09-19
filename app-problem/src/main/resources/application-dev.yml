@@ -33,6 +33,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true # ANSI 코드에 색을 나타낸다
+
   data:
     redis:
       host: ${REDIS_DEV_HOST}
@@ -53,3 +55,8 @@ compiler:
 
 kafka:
   url: ${PROBLEM_SERVICE_KAFKA_URL}
+
+logging:
+  level:
+    org.hibernate.SQL: debug # logger에 출력하려면
+    org.hibernate.type.descriptor.sql: trace # 파라미터 값 출력
