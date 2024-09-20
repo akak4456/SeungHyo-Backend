@@ -28,13 +28,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class WebSocketHandler extends TextWebSocketHandler {
     private final KafkaDynamicListener kafkaDynamicListener;
     /**
-     * sessions.first: submitNo
-     * sessions.second.first: session id
-     * sessions.second.second: target websocket
+     * first: submitNo
+     * second.first: session id
+     * second.second: websocket
      */
-    private final ConcurrentHashMap<String, ConcurrentHashMap<String, WebSocketSession>> sessions =
-            new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, CopyOnWriteArrayList<KafkaCompile>> submitNoToCompileResults = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConcurrentHashMap<String, WebSocketSession>> sessions = new ConcurrentHashMap<>();
+    /**
+     * first: submit No
+     * second: kafka consumer
+     */
     private final ConcurrentHashMap<String, ConcurrentMessageListenerContainer<String, KafkaCompile>> kafkaConsumers = new ConcurrentHashMap<>();
 
     @Override
@@ -43,10 +45,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String submitNo = getSubmitNoFromSession(session);
         ConcurrentHashMap<String, WebSocketSession> m = sessions.computeIfAbsent(submitNo, k -> new ConcurrentHashMap<>());
         m.put(session.getId(), session);
-        log.info("session established {}", session.getId());
-        if(!submitNoToCompileResults.containsKey(submitNo)) {
+        log.info("session established {} submitNo {}", session.getId(), submitNo);
+        if(!kafkaConsumers.containsKey(submitNo)) {
             kafkaConsumers.put(submitNo, kafkaDynamicListener.addDynamicTopicListener(submitNo, (kafkaCompile) -> {
-                if(kafkaCompile.getCompileStatus() == CompileStatus.EXIT_FOR_KAFKA) {
+                log.info("kafka compile {}", kafkaCompile);
+                if (kafkaCompile.getCompileStatus() == CompileStatus.EXIT_FOR_KAFKA) {
                     ConcurrentMessageListenerContainer<String, KafkaCompile> kafkaConsumer = kafkaConsumers.get(submitNo);
                     kafkaConsumer.stop();
                     kafkaConsumer.destroy();
@@ -60,15 +63,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         }
                     }
                     sessions.remove(submitNo);
-                    submitNoToCompileResults.remove(submitNo);
                     log.info("submit {} close done", submitNo);
                 } else {
-                    CopyOnWriteArrayList<KafkaCompile> compileResults = submitNoToCompileResults.computeIfAbsent(submitNo, k -> new CopyOnWriteArrayList<>());
-                    compileResults.add(kafkaCompile);
                     for (Map.Entry<String, WebSocketSession> entry : sessions.get(submitNo).entrySet()) {
                         try {
                             WebSocketSession target = entry.getValue();
-                            target.sendMessage(new TextMessage("!total " + compileResults.size()));
+                            Gson gson = new Gson();
+                            String jsonStr = gson.toJson(kafkaCompile);
+                            target.sendMessage(new TextMessage(jsonStr));
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -81,23 +83,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         super.handleTextMessage(session, message);
-        try {
-            StringTokenizer st = new StringTokenizer(message.getPayload(), ":");
-            int begin = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
-            String submitNo = getSubmitNoFromSession(session);
-            if (submitNoToCompileResults.containsKey(submitNo)) {
-                CopyOnWriteArrayList<KafkaCompile> compileResults = submitNoToCompileResults.get(submitNo);
-                for (int i = begin; i < end; i++) {
-                    Gson gson = new Gson();
-                    String jsonStr = gson.toJson(compileResults.get(i));
-                    session.sendMessage(new TextMessage(jsonStr));
-                }
-            }
-        } catch (Exception e) {
-            // no-op
-            log.error("error occur", e);
-        }
+        // no-op
     }
 
     @Override

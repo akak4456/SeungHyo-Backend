@@ -22,6 +22,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/compile")
@@ -33,7 +34,6 @@ public class CompileController {
     private final KafkaTemplate<String, KafkaCompile> kafkaTemplate;
     private final CompileExecutor compileExecutor;
     private final CompilerConfigProperties compilerConfigProperties;
-    private final KafkaDynamicListener kafkaDynamicListener;
     /**
      * 소스코드 새로운 제출을 시도한다
      * @param newSubmitRequestDTO
@@ -84,8 +84,9 @@ public class CompileController {
                             compileResult.getCompileErrorReason(),
                             compileResult.getRuntimeErrorReason()
                     ));
+                    submitService.saveCompileResult(submitNo, idx, compileResult);
                 }).thenAccept(result -> {
-            submitService.saveCompileResult(submitNo, result);
+                    submitService.updateSubmitStatusWhenNormal(submitNo, result);
             kafkaTemplate.send("submit." + submitNo, new KafkaCompile(
                     CompileStatus.EXIT_FOR_KAFKA,
                     -1L,

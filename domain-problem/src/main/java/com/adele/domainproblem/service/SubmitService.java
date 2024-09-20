@@ -19,10 +19,19 @@ public interface SubmitService {
      * service
      *
      * @param submitNo       submit 번호
-     * @param compileResults compile 결과들 input의 개수와 일치할 수도 일치하지 않을 수도 있다.
+     * @param gradeCaseNo grade case no
+     * @param compileResult compile 결과
      * @return UpdateSubmitResponse response
      */
-    UpdateSubmitResponse saveCompileResult(Long submitNo, List<CompileResultDTO> compileResults);
+    boolean saveCompileResult(Long submitNo, int gradeCaseNo, CompileResultDTO compileResult);
+
+    /**
+     * 컴파일 서비스에 문제가 없을 때 status 를 바꿔주는 service
+     * @param submitNo submit 번호
+     * @param compileResults ompile 결과들 input의 개수와 일치할 수도 일치하지 않을 수도 있다.
+     * @return UpdateSubmitResponse response
+     */
+    UpdateSubmitResponse updateSubmitStatusWhenNormal(Long submitNo, List<CompileResultDTO> compileResults);
 
     /**
      * 컴파일 서비스에서 문제가가 발생할 때 status를 바꿔주는

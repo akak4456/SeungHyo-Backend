@@ -4,6 +4,7 @@ import com.adele.domainproblem.CompileStatus;
 import com.adele.domainproblem.SourceCodeDisclosureScope;
 import com.adele.domainproblem.SubmitStatus;
 import com.adele.domainproblem.domain.Problem;
+import com.adele.domainproblem.domain.ProblemGrade;
 import com.adele.domainproblem.domain.ProgramLanguage;
 import com.adele.domainproblem.domain.SubmitList;
 import com.adele.domainproblem.dto.*;
@@ -55,7 +56,46 @@ public class SubmitServiceImpl implements SubmitService {
     }
 
     @Override
-    public UpdateSubmitResponse saveCompileResult(Long submitNo, List<CompileResultDTO> compileResults) {
+    public boolean saveCompileResult(Long submitNo, int gradeCaseNo, CompileResultDTO compileResult) {
+        String sql = "INSERT INTO problem_grade(grade_result, input_no, output_no, submit_no, grade_case_no, compile_error_reason, runtime_error_reason) VALUES(?,?,?,?,?,?,?)";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int notUsed) throws SQLException {
+                ps.setString(1, compileResult.getStatus().toString());
+                if(compileResult.getExpectedInput() == null) {
+                    ps.setLong(2, -1L);
+                } else {
+                    ps.setLong(2, compileResult.getExpectedInput().getInputNo());
+                }
+                if(compileResult.getExpectedOutput() == null) {
+                    ps.setLong(3, -1L);
+                } else {
+                    ps.setLong(3, compileResult.getExpectedOutput().getOutputNo());
+                }
+                ps.setLong(4, submitNo);
+                ps.setInt(5, gradeCaseNo + 1);
+                if(compileResult.getCompileErrorReason() != null) {
+                    ps.setString(6, compileResult.getCompileErrorReason().toString());
+                } else {
+                    ps.setString(6, null);
+                }
+                if(compileResult.getRuntimeErrorReason() != null) {
+                    ps.setString(7, compileResult.getRuntimeErrorReason().toString());
+                } else {
+                    ps.setString(7, null);
+                }
+            }
+
+            @Override
+            public int getBatchSize() {
+                return 1;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public UpdateSubmitResponse updateSubmitStatusWhenNormal(Long submitNo, List<CompileResultDTO> compileResults) {
         SubmitStatus status = SubmitStatus.CORRECT;
         if(compileResults.stream().anyMatch((result) -> result.getStatus() == CompileStatus.COMPILE_ERROR)) {
             status = SubmitStatus.COMPILE_ERROR;
@@ -71,41 +111,6 @@ public class SubmitServiceImpl implements SubmitService {
             return new UpdateSubmitResponse(false, SubmitStatus.ETC_ERROR);
         }
         originSubmit.setSubmitResult(status);
-        String sql = "INSERT INTO problem_grade(grade_result, input_no, output_no, submit_no, grade_case_no, compile_error_reason, runtime_error_reason) VALUES(?,?,?,?,?,?,?)";
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                CompileResultDTO compileResult = compileResults.get(i);
-                ps.setString(1, compileResult.getStatus().toString());
-                if(compileResult.getExpectedInput() == null) {
-                    ps.setLong(2, -1L);
-                } else {
-                    ps.setLong(2, compileResult.getExpectedInput().getInputNo());
-                }
-                if(compileResult.getExpectedOutput() == null) {
-                    ps.setLong(3, -1L);
-                } else {
-                    ps.setLong(3, compileResult.getExpectedOutput().getOutputNo());
-                }
-                ps.setLong(4, submitNo);
-                ps.setInt(5, i + 1);
-                if(compileResult.getCompileErrorReason() != null) {
-                    ps.setString(6, compileResult.getCompileErrorReason().toString());
-                } else {
-                    ps.setString(6, null);
-                }
-                if(compileResult.getRuntimeErrorReason() != null) {
-                    ps.setString(7, compileResult.getRuntimeErrorReason().toString());
-                } else {
-                    ps.setString(7, null);
-                }
-            }
-
-            @Override
-            public int getBatchSize() {
-                return compileResults.size();
-            }
-        });
         return new UpdateSubmitResponse(true, status);
     }
 
