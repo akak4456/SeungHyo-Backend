@@ -45,6 +45,10 @@ spring:
           uri: lb://APP-MEMBER
           predicates:
             - Path=/api/v1/member/auth/**
+        - id: app-member-info
+          uri: lb://APP-MEMBER
+          predicates:
+            - Path=/api/v1/member/info
         - id: app-member-my
           uri: lb://APP-MEMBER
           predicates:

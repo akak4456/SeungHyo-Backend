@@ -75,4 +75,11 @@ public interface MemberService extends UserDetailsService {
     boolean withdraw(String memberId);
 
     JwtToken reissue(String refreshToken);
+
+    /**
+     * member id 에 해당하는 요약된 정보를 얻어오는 service
+     * @param memberId 요약된 정보를 얻어올 id
+     * @return 요약된 정보
+     */
+    InfoResponse getInfo(String memberId);
 }

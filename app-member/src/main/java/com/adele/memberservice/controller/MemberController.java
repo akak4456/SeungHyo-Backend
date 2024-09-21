@@ -234,4 +234,18 @@ public class MemberController {
         return memberService.withdraw(memberId);
     }
 
+    /**
+     * 회원에 대한 요약된 정보를 얻어온다
+     * @param memberId 회원 아이디
+     * @return InfoResponse
+     * <ul>
+     *     <li><b>memberId</b> member id</li>
+     *     <li><b>statusMessage</b> status message</li>
+     * </ul>
+     */
+    @GetMapping("/info")
+    public InfoResponse getInfo(@RequestParam("memberId") String memberId) {
+        return memberService.getInfo(memberId);
+    }
+
 }

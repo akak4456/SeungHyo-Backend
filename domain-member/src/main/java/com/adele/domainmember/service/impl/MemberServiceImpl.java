@@ -151,4 +151,15 @@ public class MemberServiceImpl implements MemberService {
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         return jwtTokenProvider.generateToken(authentication);
     }
+
+    @Override
+    public InfoResponse getInfo(String memberId) {
+        InfoResponse result = new InfoResponse();
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member != null) {
+            result.setMemberId(member.getMemberId());
+            result.setStatusMessage(member.getStatusMessage());
+        }
+        return result;
+    }
 }
