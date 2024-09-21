@@ -55,4 +55,6 @@ public interface SubmitService {
      * @return Page&lt;ProblemListDTO&gt; 페이지 객체
      */
     Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable);
+
+    SubmitStatisticsResponse getSubmitStatistics(String memberId);
 }

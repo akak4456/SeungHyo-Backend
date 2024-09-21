@@ -2,6 +2,7 @@ package com.adele.problemservice.controller;
 
 import com.adele.domainproblem.dto.ProblemGradeResponse;
 import com.adele.domainproblem.dto.ReflectionNoteListDTO;
+import com.adele.domainproblem.dto.SubmitStatisticsResponse;
 import com.adele.domainproblem.service.SubmitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/submit")
@@ -65,5 +64,15 @@ public class SubmitController {
             Pageable pageable
     ) {
         return submitService.searchReflectionNotePage(pageable);
+    }
+
+    /**
+     * user 화면에 보이는 통계 정보들을 구성하기 위해 호출함
+     * @param memberId 통계 조회할 유저 id
+     * @return SubmitStatisticsResponse doc 주석 참조
+     */
+    @GetMapping("/statistics")
+    public SubmitStatisticsResponse getSubmitStatistics(@RequestParam("memberId") String memberId) {
+        return submitService.getSubmitStatistics(memberId);
     }
 }

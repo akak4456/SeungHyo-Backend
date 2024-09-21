@@ -141,4 +141,9 @@ public class SubmitServiceImpl implements SubmitService {
     public Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable) {
         return submitRepository.searchPage(pageable);
     }
+
+    @Override
+    public SubmitStatisticsResponse getSubmitStatistics(String memberId) {
+        return submitRepository.getSubmitStatistics(memberId);
+    }
 }
