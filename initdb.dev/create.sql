@@ -125,5 +125,7 @@ CREATE TABLE reply(
     like_count BIGINT NOT NULL,
     reply_content LONGTEXT NOT NULL,
     source_code LONGTEXT,
+    lang_code VARCHAR(255) NOT NULL DEFAULT 'JAVA_11',
+    lang_name VARCHAR(255) NOT NULL DEFAULT '자바11',
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

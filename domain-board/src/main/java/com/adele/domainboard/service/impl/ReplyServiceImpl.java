@@ -36,6 +36,8 @@ public class ReplyServiceImpl implements ReplyService {
         reply.setMemberId(memberId);
         reply.setSourceCode(req.getSourceContent());
         reply.setRegDate(LocalDateTime.now());
+        reply.setLangCode(req.getLangCode());
+        reply.setLangName(req.getLangName());
         replyRepository.save(reply);
     }
 }

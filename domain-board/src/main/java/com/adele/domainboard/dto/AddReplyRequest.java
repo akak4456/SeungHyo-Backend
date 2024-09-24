@@ -14,4 +14,6 @@ public class AddReplyRequest {
     @NotBlank
     private String content;
     private String sourceContent;
+    private String langCode;
+    private String langName;
 }
