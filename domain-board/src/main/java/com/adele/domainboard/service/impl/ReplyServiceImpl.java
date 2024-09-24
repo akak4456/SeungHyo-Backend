@@ -1,6 +1,10 @@
 package com.adele.domainboard.service.impl;
 
+import com.adele.domainboard.domain.Board;
+import com.adele.domainboard.domain.Reply;
+import com.adele.domainboard.dto.AddReplyRequest;
 import com.adele.domainboard.dto.ReplyDTO;
+import com.adele.domainboard.repository.BoardRepository;
 import com.adele.domainboard.repository.ReplyRepository;
 import com.adele.domainboard.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +13,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ReplyServiceImpl implements ReplyService {
+    private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
     @Override
     public Page<ReplyDTO> searchPage(Long boardNo, Pageable pageable) {
         return replyRepository.searchPage(boardNo, pageable);
+    }
+
+    @Override
+    public void addReply(String memberId, Long boardNo, AddReplyRequest req) {
+        Board board = boardRepository.getReferenceById(boardNo);
+        Reply reply = new Reply();
+        reply.setReplyContent(req.getContent());
+        reply.setBoard(board);
+        reply.setLikeCount(0L);
+        reply.setMemberId(memberId);
+        reply.setSourceCode(req.getSourceContent());
+        reply.setRegDate(LocalDateTime.now());
+        replyRepository.save(reply);
     }
 }

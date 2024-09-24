@@ -1,7 +1,11 @@
 package com.adele.boardservice.controller;
 
+import com.adele.domainboard.dto.AddReplyRequest;
 import com.adele.domainboard.dto.ReplyDTO;
 import com.adele.domainboard.service.ReplyService;
+import com.adele.internalcommon.request.AuthHeaderConstant;
+import com.adele.internalcommon.response.EmptyResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,5 +47,11 @@ public class ReplyController {
             Pageable pageable
     ) {
         return replyService.searchPage(boardNo, pageable);
+    }
+
+    @PostMapping({"{boardNo}"})
+    public EmptyResponse addReply(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @PathVariable Long boardNo, @RequestBody @Valid AddReplyRequest req) {
+        replyService.addReply(memberId, boardNo, req);
+        return new EmptyResponse();
     }
 }

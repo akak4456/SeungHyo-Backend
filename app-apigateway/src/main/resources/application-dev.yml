@@ -95,6 +95,13 @@ spring:
             - Method=POST
           filters:
             - AuthorizationHeaderFilter
+        - id: app-board-post-reply
+          uri: lb://APP-BOARD
+          predicates:
+            - Path=/api/v1/reply/**
+            - Method=POST
+          filters:
+            - AuthorizationHeaderFilter
 
 jwt:
   secret: ${jwt_secret}
