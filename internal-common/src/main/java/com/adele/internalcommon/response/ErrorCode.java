@@ -26,7 +26,8 @@ public enum ErrorCode {
     NEW_PW_AND_NEW_PW_CHECK_DOES_NOT_MATCH("M008", "New Password Does Not Match", HttpStatus.BAD_REQUEST),
 
     // Board
-    PROBLEM_NO_NOT_FOUND("B001", "Problem No Not Found", HttpStatus.BAD_REQUEST)
+    PROBLEM_NO_NOT_FOUND("B001", "Problem No Not Found", HttpStatus.BAD_REQUEST),
+    LIKE_DUPLICATE("B002", "Like Duplicate", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

@@ -91,7 +91,7 @@ spring:
         - id: app-board-post-board
           uri: lb://APP-BOARD
           predicates:
-            - Path=/api/v1/board
+            - Path=/api/v1/board/**
             - Method=POST
           filters:
             - AuthorizationHeaderFilter

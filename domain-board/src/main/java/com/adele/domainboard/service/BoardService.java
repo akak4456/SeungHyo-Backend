@@ -47,4 +47,6 @@ public interface BoardService {
      * 메인화면에 필요한 board 관련 정보를 얻어오는 서비스
      */
     BoardInfoDTO getBoardInfoInMainPage();
+
+    void addBoardLike(String memberId, Long boardNo);
 }

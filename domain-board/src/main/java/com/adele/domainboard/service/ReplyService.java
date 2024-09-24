@@ -14,4 +14,6 @@ public interface ReplyService {
     Page<ReplyDTO> searchPage(Long boardNo, Pageable pageable);
 
     void addReply(String memberId, Long boardNo, AddReplyRequest req);
+
+    void addReplyLike(Long replyNo, String memberId);
 }

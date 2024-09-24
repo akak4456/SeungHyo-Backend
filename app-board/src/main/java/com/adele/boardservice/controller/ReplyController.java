@@ -54,4 +54,10 @@ public class ReplyController {
         replyService.addReply(memberId, boardNo, req);
         return new EmptyResponse();
     }
+
+    @PostMapping("{boardNo}/{replyNo}")
+    public EmptyResponse addReplyLike(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @PathVariable Long boardNo, @PathVariable Long replyNo) {
+        replyService.addReplyLike(replyNo, memberId);
+        return new EmptyResponse();
+    }
 }

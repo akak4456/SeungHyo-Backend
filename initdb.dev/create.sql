@@ -129,3 +129,15 @@ CREATE TABLE reply(
     lang_name VARCHAR(255) NOT NULL DEFAULT '자바11',
     reg_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE board_like(
+      board_like_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      board_no BIGINT NOT NULL REFERENCES board(board_no),
+      member_id VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE reply_like(
+       reply_like_no BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+       reply_no BIGINT NOT NULL REFERENCES reply(reply_no),
+       member_id VARCHAR(255) NOT NULL
+);

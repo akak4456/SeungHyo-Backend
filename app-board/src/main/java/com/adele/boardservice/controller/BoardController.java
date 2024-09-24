@@ -129,4 +129,10 @@ public class BoardController {
             return new EmptyResponse();
         }
     }
+
+    @PostMapping({"{boardNo}"})
+    public EmptyResponse addBoardLike(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @PathVariable("boardNo") Long boardNo){
+        boardService.addBoardLike(memberId, boardNo);
+        return new EmptyResponse();
+    }
 }

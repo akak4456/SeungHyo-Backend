@@ -1,12 +1,16 @@
 package com.adele.domainboard.service.impl;
 
 import com.adele.domainboard.domain.Board;
+import com.adele.domainboard.domain.BoardLike;
 import com.adele.domainboard.dto.*;
 import com.adele.domainboard.repository.BoardCategoryRepository;
+import com.adele.domainboard.repository.BoardLikeRepository;
 import com.adele.domainboard.repository.BoardRepository;
 import com.adele.domainboard.repository.ProblemClient;
 import com.adele.domainboard.service.BoardService;
+import com.adele.internalcommon.exception.business.member.LikeDuplicateException;
 import com.adele.internalcommon.response.ApiResponse;
+import com.adele.internalcommon.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +28,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardCategoryRepository boardCategoryRepository;
     private final ProblemClient problemClient;
+    private final BoardLikeRepository boardLikeRepository;
 
     @Override
     public Page<BoardListDTO> searchPage(BoardSearchCondition condition, Pageable pageable) {
@@ -86,5 +91,19 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardInfoDTO getBoardInfoInMainPage() {
         return boardRepository.getBoardInfoInMainPage();
+    }
+
+    @Override
+    public void addBoardLike(String memberId, Long boardNo) {
+        Board board = boardRepository.findById(boardNo).orElse(null);
+        if(boardLikeRepository.findByBoardAndMemberId(board, memberId) != null) {
+            throw new LikeDuplicateException(ErrorCode.LIKE_DUPLICATE);
+        }
+        assert board != null;
+        board.setLikeCount(board.getLikeCount() + 1);
+        BoardLike boardLike = new BoardLike();
+        boardLike.setBoard(board);
+        boardLike.setMemberId(memberId);
+        boardLikeRepository.save(boardLike);
     }
 }
