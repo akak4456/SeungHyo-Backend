@@ -43,7 +43,10 @@ public class BoardServiceImpl implements BoardService {
                 board.getMemberId(),
                 board.getRegDate(),
                 board.getLikeCount(),
-                board.getBoardContent()
+                board.getBoardContent(),
+                board.getLangCode(),
+                board.getLangName(),
+                board.getSourceCode()
                 );
     }
 

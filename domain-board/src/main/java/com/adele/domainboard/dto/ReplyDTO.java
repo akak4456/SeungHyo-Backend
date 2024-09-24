@@ -15,4 +15,7 @@ public class ReplyDTO {
     private LocalDateTime regDate;
     private Long likeCount;
     private String replyContent;
+    private String langCode;
+    private String langName;
+    private String sourceCode;
 }

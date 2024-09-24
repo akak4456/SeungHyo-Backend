@@ -29,7 +29,10 @@ public class ReplyRepositoryCustomImpl implements ReplyRepositoryCustom {
                         reply.memberId,
                         reply.regDate,
                         reply.likeCount,
-                        reply.replyContent
+                        reply.replyContent,
+                        reply.langCode,
+                        reply.langName,
+                        reply.sourceCode
                 ))
                 .from(reply)
                 .where(reply.board.boardNo.eq(boardNo))

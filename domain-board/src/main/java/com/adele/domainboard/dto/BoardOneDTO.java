@@ -17,4 +17,7 @@ public class BoardOneDTO {
     private LocalDateTime boardRegDate;
     private Long boardLikeCount;
     private String boardContent;
+    private String langCode;
+    private String langName;
+    private String sourceCode;
 }
