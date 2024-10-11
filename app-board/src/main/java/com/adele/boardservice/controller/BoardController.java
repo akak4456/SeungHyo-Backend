@@ -30,6 +30,8 @@ public class BoardController {
      * @param pageable
      * page: 조회할 page number. 0부터 시작한다
      * size: 한 페이지당 들어갈 content 갯수
+     * title: 조회할 게시판 제목
+     * categoryCode: 조회할 게시판 카테고리
      * @return Page&lt;ProblemListDTO&gt;
      * <ul>
      *     <li><b>totalElements<b/> 조회된 elements 수</li>

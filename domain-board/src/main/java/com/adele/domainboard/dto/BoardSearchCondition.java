@@ -11,4 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BoardSearchCondition {
     private String categoryCode;
+    private String title;
 }

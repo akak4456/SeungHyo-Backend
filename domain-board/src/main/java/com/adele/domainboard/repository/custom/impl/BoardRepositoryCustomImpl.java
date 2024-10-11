@@ -33,11 +33,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     public Page<BoardListDTO> searchPage(BoardSearchCondition condition, Pageable pageable) {
         QBoard board = QBoard.board;
         QReply reply = QReply.reply;
-        QBoardCategory boardCategory = QBoardCategory.boardCategory;
 
         BooleanBuilder whereClause = new BooleanBuilder();
         if (condition.getCategoryCode() != null && !"ALL".equals(condition.getCategoryCode())) {
             whereClause.and(board.boardCategory.categoryCode.eq(condition.getCategoryCode()));
+        }
+
+        if(condition.getTitle() != null && !condition.getTitle().isBlank()) {
+            whereClause.and(board.boardTitle.contains(condition.getTitle()));
         }
 
         // Fetch problem list with correct people count, submit count, and correct ratio
