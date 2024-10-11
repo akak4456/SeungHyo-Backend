@@ -51,10 +51,14 @@ public interface SubmitService {
 
     /**
      * 오답노트 list 조회 서비스
-     * @param pageable 조회할 페이지
+     * @param 
+     * pageable 조회할 페이지
+     * title 검색할 문제 제목
+     * langCode 검색할 문제 언어 코드
+     * resultCode 검색할 문제 결과 코드
      * @return Page&lt;ProblemListDTO&gt; 페이지 객체
      */
-    Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable);
+    Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable, String title, String langCode, String resultCode);
 
     SubmitStatisticsResponse getSubmitStatistics(String memberId);
 }

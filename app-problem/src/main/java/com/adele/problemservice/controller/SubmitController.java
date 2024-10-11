@@ -38,10 +38,13 @@ public class SubmitController {
     }
 
     /**
-     * problem list 를 조회한다.
+     * reflection note list list 를 조회한다.
      * @param pageable
      * page: 조회할 page number. 0부터 시작한다
      * size: 한 페이지당 들어갈 content 갯수
+     * title: 검색할 오답노트 문제 제목
+     * langCode: 검색할 오답노트 언어 코드
+     * resultCode: 검색할 오답노트 결과 코드
      * @return Page&lt;ProblemListDTO&gt;
      * <ul>
      *     <li><b>totalElements<b/> 조회된 elements 수</li>
@@ -61,9 +64,13 @@ public class SubmitController {
     @GetMapping({""})
     public Page<ReflectionNoteListDTO> getSearch(
             @PageableDefault
-            Pageable pageable
+            Pageable pageable,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String langCode,
+            @RequestParam(required = false) String resultCode
     ) {
-        return submitService.searchReflectionNotePage(pageable);
+        log.info("search param title: {}, langCode: {}, resultCode: {}", title, langCode, resultCode);
+        return submitService.searchReflectionNotePage(pageable, title, langCode, resultCode);
     }
 
     /**

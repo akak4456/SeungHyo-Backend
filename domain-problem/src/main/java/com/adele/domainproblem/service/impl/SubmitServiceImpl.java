@@ -138,8 +138,8 @@ public class SubmitServiceImpl implements SubmitService {
     }
 
     @Override
-    public Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable) {
-        return submitRepository.searchPage(pageable);
+    public Page<ReflectionNoteListDTO> searchReflectionNotePage(Pageable pageable, String title, String langCode, String resultCode) {
+        return submitRepository.searchPage(pageable, title, langCode, resultCode);
     }
 
     @Override

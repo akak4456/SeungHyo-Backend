@@ -9,6 +9,7 @@ import com.adele.domainproblem.dto.SubmitCommitDTO;
 import com.adele.domainproblem.dto.SubmitInYear;
 import com.adele.domainproblem.dto.SubmitStatisticsResponse;
 import com.adele.domainproblem.repository.custom.SubmitRepositoryCustom;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,10 +27,28 @@ public class SubmitRepositoryCustomImpl implements SubmitRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ReflectionNoteListDTO> searchPage(Pageable pageable) {
+    public Page<ReflectionNoteListDTO> searchPage(Pageable pageable, String title, String langCode, String resultCode) {
         QSubmitList submitList = QSubmitList.submitList;
         QProblem problem = QProblem.problem;
         QProgramLanguage language = QProgramLanguage.programLanguage;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if(title != null && !title.isBlank()) {
+            builder.and(submitList.problem.problemTitle.contains(title));
+        }
+
+        if(langCode != null && !langCode.isBlank() && !langCode.equals("ALL")) {
+            builder.and(submitList.language.langCode.contains(langCode));
+        }
+
+        if(resultCode != null && !resultCode.isBlank() && !resultCode.equals("ALL")) {
+            if(resultCode.equals("CORRECT")) {
+                builder.and(submitList.submitResult.eq(SubmitStatus.CORRECT));
+            } else {
+                builder.and(submitList.submitResult.ne(SubmitStatus.CORRECT));
+            }
+        }
 
         // Fetch problem list with correct people count, submit count, and correct ratio
         List<ReflectionNoteListDTO> fetch = queryFactory
@@ -44,6 +63,7 @@ public class SubmitRepositoryCustomImpl implements SubmitRepositoryCustom {
                 .from(submitList)
                 .join(submitList.problem, problem)
                 .join(submitList.language, language)
+                .where(builder)
                 .orderBy(submitList.submitNo.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -52,7 +72,8 @@ public class SubmitRepositoryCustomImpl implements SubmitRepositoryCustom {
         // Count total problems for pagination
         JPQLQuery<Long> countQuery = queryFactory
                 .select(submitList.count())
-                .from(submitList);
+                .from(submitList)
+                .where(builder);
 
         return PageableExecutionUtils.getPage(fetch, pageable, countQuery::fetchCount);
     }

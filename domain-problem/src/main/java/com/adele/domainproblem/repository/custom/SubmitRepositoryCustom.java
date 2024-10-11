@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface SubmitRepositoryCustom {
-    Page<ReflectionNoteListDTO> searchPage(Pageable pageable);
+    Page<ReflectionNoteListDTO> searchPage(Pageable pageable, String title, String langCode, String resultCode);
 
     SubmitStatisticsResponse getSubmitStatistics(String memberId);
 }
