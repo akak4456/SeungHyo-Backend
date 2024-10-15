@@ -164,4 +164,21 @@ public class MemberServiceImpl implements MemberService {
         }
         return result;
     }
+
+    @Override
+    public void checkIdAndEmailValid(String memberId, String email) {
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null || member.getEmail() == null || !member.getEmail().equals(email)) {
+            throw new EmailNotValidException(ErrorCode.EMAIL_NOT_VALID);
+        }
+    }
+
+    @Override
+    public void changePw(String memberId, String newPassword) {
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null) {
+            throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
+        }
+        member.setMemberPw(passwordEncoder.encode(newPassword));
+    }
 }

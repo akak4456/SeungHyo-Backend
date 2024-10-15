@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Slf4j
@@ -248,4 +249,60 @@ public class MemberController {
         return memberService.getInfo(memberId);
     }
 
+    /**
+     * 비밀번호를 초기화 하는 API
+     * @param dto
+     * <ul>
+     *     <li><b>id</b> 초기화 할려고 하는 id</li>
+     *     <li><b>email</b> 초기화 할려고 하는 email</li>
+     * </ul>
+     */
+    @PutMapping("/auth/reset-password")
+    public EmptyResponse resetPassword(@RequestBody @Valid ResetPasswordRequest dto) {
+        final SecureRandom random = new SecureRandom();
+        String newPassword = generatePassword(random.nextInt(8)+8, random);
+        memberService.checkIdAndEmailValid(dto.getId(), dto.getEmail());
+        emailService.sendMail(new EmailMessage(dto.getEmail(), "임시 비밀번호 설정 안내", "임시 비밀번호: " + newPassword));
+        memberService.changePw(dto.getId(), newPassword);
+        return new EmptyResponse();
+    }
+
+    public static String generatePassword(int length, SecureRandom random) {
+        final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String LOWER = "abcdefghijklmnopqrstuvwxyz";
+        final String DIGITS = "0123456789";
+        final String SPECIAL = "!@#$%^&*";
+        final String ALL_CHARS = UPPER + LOWER + DIGITS + SPECIAL;
+        if (length < 8 || length > 16) {
+            throw new IllegalArgumentException("Password length must be between 8 and 16 characters.");
+        }
+
+        StringBuilder password = new StringBuilder(length);
+
+        // Ensure at least one character from each required set
+        password.append(LOWER.charAt(random.nextInt(LOWER.length())));
+        password.append(UPPER.charAt(random.nextInt(UPPER.length())));
+        password.append(DIGITS.charAt(random.nextInt(DIGITS.length())));
+        password.append(SPECIAL.charAt(random.nextInt(SPECIAL.length())));
+
+        // Fill remaining characters randomly
+        for (int i = 4; i < length; i++) {
+            password.append(ALL_CHARS.charAt(random.nextInt(ALL_CHARS.length())));
+        }
+
+        // Shuffle to ensure random order
+        return shuffleString(password.toString(), random);
+    }
+
+    // Helper method to shuffle the generated password to make it more random
+    private static String shuffleString(String input, SecureRandom random) {
+        char[] chars = input.toCharArray();
+        for (int i = chars.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = chars[i];
+            chars[i] = chars[j];
+            chars[j] = temp;
+        }
+        return new String(chars);
+    }
 }

@@ -74,4 +74,8 @@ public interface MemberService extends UserDetailsService {
      * @return 요약된 정보
      */
     InfoResponse getInfo(String memberId);
+
+    void checkIdAndEmailValid(String memberId, String email);
+
+    void changePw(String memberId, String newPassword);
 }
