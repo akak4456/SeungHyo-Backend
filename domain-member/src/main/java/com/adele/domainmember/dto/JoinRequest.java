@@ -2,15 +2,13 @@ package com.adele.domainmember.dto;
 
 import com.adele.domainmember.FormPattern;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Setter
 public class JoinRequest {
     @Pattern(regexp = FormPattern.ID_PATTERN)
     private String memberId;

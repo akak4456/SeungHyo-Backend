@@ -33,6 +33,13 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     @Override
     public JwtToken login(LoginRequest loginRequest) {
+        Member member = memberRepository.findById(loginRequest.getMemberId()).orElse(null);
+        if(member == null) {
+            throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
+        }
+        else if(member.isDeleteYn()) {
+            throw new AlreadyWithdrawMemberException(ErrorCode.ALREADY_WITHDRAW_MEMBER_EXCEPTION);
+        }
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPw());
@@ -55,10 +62,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 return
+    // https://velog.io/@nestour95/Spring-Security-UserDetailsService%EC%97%90%EC%84%9C-%EB%B9%84%EB%B0%80%EB%B2%88%ED%98%B8%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90%EC%84%9C-%EA%B2%80%EC%82%AC%ED%95%98%EB%8A%94-%EA%B1%B8%EA%B9%8C 참고하기
     private UserDetails createUserDetails(Member member) {
         return User.builder()
                 .username(member.getUsername())
-                .password(passwordEncoder.encode(member.getPassword()))
+                .password(member.getPassword())
                 .roles(member.getRoles().toArray(new String[0]))
                 .build();
     }
@@ -76,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
         }
         Member member = new Member();
         member.setMemberId(joinRequest.getMemberId());
-        member.setMemberPw(joinRequest.getMemberPw());
+        member.setMemberPw(passwordEncoder.encode(joinRequest.getMemberPw()));
         member.setRoles(List.of("MEMBER"));
         member.setStatusMessage(joinRequest.getStatusMessage());
         member.setEmail(joinRequest.getEmail());
@@ -108,22 +116,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void patchInfoEdit(PatchInfoEditRequest dto) {
         Member member = memberRepository.findById(dto.getMemberId()).orElse(null);
-        if(member == null || !member.getMemberPw().equals(dto.getMemberPw())) {
+        if(member == null || dto.getMemberPw() == null ||!passwordEncoder.matches(dto.getMemberPw(), member.getMemberPw())) {
             throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
         }
         member.setStatusMessage(dto.getStatusMessage());
     }
 
     @Override
-    public boolean isPwMatch(String id, String pw) {
-        Member member = memberRepository.findById(id).orElse(null);
-        return member != null && member.getMemberPw().equals(pw);
-    }
-
-    @Override
     public void changePw(String memberId, ChangePwRequest request) {
         Member member = memberRepository.findById(memberId).orElse(null);
-        if(member == null || request.getCurrentPw() == null || !member.getMemberPw().equals(request.getCurrentPw())) {
+        if(member == null || request.getCurrentPw() == null || !passwordEncoder.matches(request.getCurrentPw(), member.getMemberPw())) {
             throw new CurrentPwNotMatchException(ErrorCode.CURRENT_PW_NOT_MATCH);
         }
         if(request.getCurrentPw().equals(request.getNewPw())) {
@@ -132,7 +134,7 @@ public class MemberServiceImpl implements MemberService {
         if(request.getNewPw() == null || !request.getNewPw().equals(request.getNewPwCheck())) {
             throw new NewPwAndNewPwCheckDoesNotMatchException(ErrorCode.NEW_PW_AND_NEW_PW_CHECK_DOES_NOT_MATCH);
         }
-        member.setMemberPw(request.getNewPw());
+        member.setMemberPw(passwordEncoder.encode(request.getNewPw()));
     }
 
     @Override

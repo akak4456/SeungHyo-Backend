@@ -53,14 +53,6 @@ public interface MemberService extends UserDetailsService {
     void patchInfoEdit(PatchInfoEditRequest dto);
 
     /**
-     * 비밀번호 일치 여부 확인 service
-     * @param id: 비밀번호를 확인할 유저 id
-     * @param pw: 확인할 비밀번호
-     * @return 비밀번호가 일치하는지 여부
-     */
-    boolean isPwMatch(String id,String pw);
-
-    /**
      * 비밀번호 변경 서비스
      * @param memberId 비밀번호 변경하고자 하는 member id 
      * @param request request

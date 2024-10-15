@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Setter
 public class LoginRequest {
     @Pattern(regexp = FormPattern.ID_PATTERN)
     private String memberId;

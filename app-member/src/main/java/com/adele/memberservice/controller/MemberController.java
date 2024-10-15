@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
@@ -49,7 +50,6 @@ public class MemberController {
      */
     @PostMapping("/auth/login")
     public JwtToken login(@RequestBody @Valid LoginRequest loginRequest) {
-        // TODO 회원탈퇴한 유저 같은 경우 로그인이 되지 않도록 변경하기
         JwtToken response = memberService.login(loginRequest);
         refreshTokenService.saveRefreshToken(loginRequest.getMemberId(), response.getRefreshToken());
         return response;
@@ -196,7 +196,7 @@ public class MemberController {
      * </ul>
      */
     @PatchMapping("/my/info-edit")
-    public EmptyResponse patchInfoEdit(@RequestHeader(AuthHeaderConstant.AUTH_USER) String memberId, @RequestBody @Valid PatchInfoEditRequest dto) {
+    public EmptyResponse patchInfoEdit(@RequestBody @Valid PatchInfoEditRequest dto) {
         memberService.patchInfoEdit(dto);
         return new EmptyResponse();
     }

@@ -24,6 +24,7 @@ public enum ErrorCode {
     EMAIL_NOT_VALID("M006", "Email Not Valid", HttpStatus.BAD_REQUEST),
     CURRENT_PW_AND_NEW_PW_MATCH_EXCEPTION("M007", "Current Password And New Password Match", HttpStatus.BAD_REQUEST),
     NEW_PW_AND_NEW_PW_CHECK_DOES_NOT_MATCH("M008", "New Password Does Not Match", HttpStatus.BAD_REQUEST),
+    ALREADY_WITHDRAW_MEMBER_EXCEPTION("M009", "Already Withdraw Member", HttpStatus.BAD_REQUEST),
 
     // Board
     PROBLEM_NO_NOT_FOUND("B001", "Problem No Not Found", HttpStatus.BAD_REQUEST),
