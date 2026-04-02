@@ -29,7 +29,7 @@ services:
       timeout: 10s
       retries: 10
   seunghyo-zookeeper:
-    image: bitnami/zookeeper:3.7.1
+    image: bitnamilegacy/zookeeper:3.9.3-debian-12-r22
     container_name: seunghyo-zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -38,11 +38,11 @@ services:
       timeout: 10s
       retries: 10
   seunghyo-kafka:
-    image: bitnami/kafka:3.4.0
+    image: bitnamilegacy/kafka:3.3.2-debian-11-r11
     container_name: seunghyo-kafka
     environment:
       - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://seunghyo-kafka:9092
       - KAFKA_ZOOKEEPER_CONNECT=seunghyo-zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
